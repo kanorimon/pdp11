@@ -1,0 +1,138 @@
+00000000 <.text>:
+   0:   f009            setd
+   2:   1180            mov     sp, r0
+   4:   1226            mov     (r0), -(sp)
+   6:   0bd0            tst     (r0)+
+   8:   1036 0002       mov     r0, 2(sp)
+   c:   09f7 0008       jsr     pc, 0x18
+  10:   100e            mov     r0, (sp)
+  12:   09df 0098       jsr     pc, *$230
+  16:   8901            sys     1
+  18:   0977 0086       jsr     r5, 0xa2
+  1c:   15ce 0061       mov     $141, (sp)
+  20:   09df 0028       jsr     pc, *$50
+  24:   0077 0088       jmp     0xb0
+  28:   1166            mov     r5, -(sp)
+  2a:   1185            mov     sp, r5
+  2c:   1dc0 009a       mov     $0xca, r0
+  30:   0204            bne     0x3a
+  32:   09f7 002c       jsr     pc, 0x62
+  36:   1dc0 0090       mov     $0xca, r0
+  3a:   9d50 0004       movb    4(r5), (r0)+
+  3e:   0307            beq     0x4e
+  40:   0ab7 0086       inc     $0xca
+  44:   0af7 0080       dec     $0xc8
+  48:   0602            bgt     0x4e
+  4a:   09f7 0014       jsr     pc, 0x62
+  4e:   1d40 0004       mov     4(r5), r0
+  52:   1585            mov     (sp)+, r5
+  54:   0087            rts     pc
+  56:   1166            mov     r5, -(sp)
+  58:   1185            mov     sp, r5
+  5a:   09f7 0004       jsr     pc, 0x62
+  5e:   1585            mov     (sp)+, r5
+  60:   0087            rts     pc
+  62:   1dc0 0064       mov     $0xca, r0
+  66:   030a            beq     0x7c
+  68:   e5c0 00cc       sub     $314, r0
+  6c:   1037 0052       mov     r0, $0xc2
+  70:   1dc0 0052       mov     $0xc6, r0
+  74:   0201            bne     0x78
+  76:   0a80            inc     r0
+  78:   8900            sys     0
+  7a:   00be            se_e
+  7c:   15f7 00cc 0048  mov     $314, $0xca
+  82:   15f7 0200 0040  mov     $1000, $0xc8
+  88:   2dd7 003a 0002  cmp     $0xc6, $2
+  8e:   8203            bhi     0x96
+  90:   15f7 0001 0032  mov     $1, $0xc8
+  96:   0087            rts     pc
+  98:   1166            mov     r5, -(sp)
+  9a:   1185            mov     sp, r5
+  9c:   1d40 0004       mov     4(r5), r0
+  a0:   8901            sys     1
+  a2:   1140            mov     r5, r0
+  a4:   1185            mov     sp, r5
+  a6:   1126            mov     r4, -(sp)
+  a8:   10e6            mov     r3, -(sp)
+  aa:   10a6            mov     r2, -(sp)
+  ac:   0be6            tst     -(sp)
+  ae:   0048            jmp     (r0)
+  b0:   1141            mov     r5, r1
+  b2:   1844            mov     -(r1), r4
+  b4:   1843            mov     -(r1), r3
+  b6:   1842            mov     -(r1), r2
+  b8:   1146            mov     r5, sp
+  ba:   1585            mov     (sp)+, r5
+  bc:   0087            rts     pc
+
+uzuramon@uzura-MOBILE ~
+$ v6run -v a.out
+0000,0000,0000,0000,0000,0000,sp=fff6,pc=0000: setd
+0000,0000,0000,0000,0000,0000,sp=fff6,pc=0002: mov sp, r0
+fff6,0000,0000,0000,0000,0000,sp=fff6,pc=0004: mov (r0), -(sp)
+fff6,0000,0000,0000,0000,0000,sp=fff4,pc=0006: tst (r0)+
+fff8,0000,0000,0000,0000,0000,sp=fff4,pc=0008: mov r0, 2(sp)
+fff8,0000,0000,0000,0000,0000,sp=fff4,pc=000c: jsr pc, 0018
+fff8,0000,0000,0000,0000,0000,sp=fff2,pc=0018: jsr r5, 00a2
+fff8,0000,0000,0000,0000,001c,sp=fff0,pc=00a2: mov r5, r0
+001c,0000,0000,0000,0000,001c,sp=fff0,pc=00a4: mov sp, r5
+001c,0000,0000,0000,0000,fff0,sp=fff0,pc=00a6: mov r4, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffee,pc=00a8: mov r3, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffec,pc=00aa: mov r2, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffea,pc=00ac: tst -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffe8,pc=00ae: jmp (r0)
+001c,0000,0000,0000,0000,fff0,sp=ffe8,pc=001c: mov $0061, (sp)
+001c,0000,0000,0000,0000,fff0,sp=ffe8,pc=0020: jsr pc, *$0028
+001c,0000,0000,0000,0000,fff0,sp=ffe6,pc=0028: mov r5, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffe4,pc=002a: mov sp, r5
+001c,0000,0000,0000,0000,ffe4,sp=ffe4,pc=002c: mov 00ca, r0
+0000,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0030: bne
+0000,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0032: jsr pc, 0062
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0062: mov 00ca, r0
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0066: beq
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=007c: mov $00cc, 00ca
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0082: mov $0200, 00c8
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0088: cmp 00c6, $0002
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=008e: bhi
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0090: mov $0001, 00c8
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0096: rts pc
+0000,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0036: mov 00ca, r0
+00cc,0000,0000,0000,0000,ffe4,sp=ffe4,pc=003a: movb 4(r5), (r0)+
+00cd,0000,0000,0000,0000,ffe4,sp=ffe4,pc=003e: beq
+00cd,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0040: inc 00ca
+00cd,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0044: dec 00c8
+00cd,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0048: bgt
+00cd,0000,0000,0000,0000,ffe4,sp=ffe4,pc=004a: jsr pc, 0062
+00cd,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0062: mov 00ca, r0
+00cd,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0066: beq
+00cd,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0068: sub $00cc, r0
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=006c: mov r0, 00c2
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0070: mov 00c6, r0
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0074: bne
+0000,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0076: inc r0
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0078: sys indir; 00be
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0078: sys write; 00cc; 0001
+a0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=007c: mov $00cc, 00ca
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0082: mov $0200, 00c8
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0088: cmp 00c6, $0002
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=008e: bhi
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0090: mov $0001, 00c8
+0001,0000,0000,0000,0000,ffe4,sp=ffe2,pc=0096: rts pc
+0001,0000,0000,0000,0000,ffe4,sp=ffe4,pc=004e: mov 4(r5), r0
+0061,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0052: mov (sp)+, r5
+0061,0000,0000,0000,0000,fff0,sp=ffe6,pc=0054: rts pc
+0061,0000,0000,0000,0000,fff0,sp=ffe8,pc=0024: jmp 00b0
+0061,0000,0000,0000,0000,fff0,sp=ffe8,pc=00b0: mov r5, r1
+0061,fff0,0000,0000,0000,fff0,sp=ffe8,pc=00b2: mov -(r1), r4
+0061,ffee,0000,0000,0000,fff0,sp=ffe8,pc=00b4: mov -(r1), r3
+0061,ffec,0000,0000,0000,fff0,sp=ffe8,pc=00b6: mov -(r1), r2
+0061,ffea,0000,0000,0000,fff0,sp=ffe8,pc=00b8: mov r5, sp
+0061,ffea,0000,0000,0000,fff0,sp=fff0,pc=00ba: mov (sp)+, r5
+0061,ffea,0000,0000,0000,0000,sp=fff2,pc=00bc: rts pc
+0061,ffea,0000,0000,0000,0000,sp=fff4,pc=0010: mov r0, (sp)
+0061,ffea,0000,0000,0000,0000,sp=fff4,pc=0012: jsr pc, *$0098
+0061,ffea,0000,0000,0000,0000,sp=fff2,pc=0098: mov r5, -(sp)
+0061,ffea,0000,0000,0000,0000,sp=fff0,pc=009a: mov sp, r5
+0061,ffea,0000,0000,0000,fff0,sp=fff0,pc=009c: mov 4(r5), r0
+0061,ffea,0000,0000,0000,fff0,sp=fff0,pc=00a0: sys exit
