@@ -1,0 +1,500 @@
+
+00000000 <.text>:
+   0:   f009            setd
+   2:   1180            mov     sp, r0
+   4:   1226            mov     (r0), -(sp)
+   6:   0bd0            tst     (r0)+
+   8:   1036 0002       mov     r0, 2(sp)
+   c:   09f7 0008       jsr     pc, 0x18
+  10:   100e            mov     r0, (sp)
+  12:   09df 024a       jsr     pc, *$1112
+  16:   8901            sys     1
+  18:   0977 0238       jsr     r5, 0x254
+  1c:   15ce 0270       mov     $1160, (sp)
+  20:   09df 0028       jsr     pc, *$50
+  24:   0077 023a       jmp     0x262
+  28:   0977 0228       jsr     r5, 0x254
+  2c:   e5c6 007e       sub     $176, sp
+  30:   1d77 0004 027c  mov     4(r5), $0x2b2
+  36:   1144            mov     r5, r4
+  38:   65c4 0006       add     $6, r4
+  3c:   9fc0 0272       movb    *$0x2b2, r0
+  40:   0309            beq     0x54
+  42:   0ab7 026c       inc     $0x2b2
+  46:   2017 0025       cmp     r0, $45
+  4a:   0306            beq     0x58
+  4c:   100e            mov     r0, (sp)
+  4e:   09df 01da       jsr     pc, *$732
+  52:   01f4            br      0x3c
+  54:   0077 020a       jmp     0x262
+  58:   0a37 0258       clr     $0x2b4
+  5c:   0a37 0258       clr     $0x2b8
+  60:   afd7 024e 002d  cmpb    *$0x2b2, $55
+  66:   0204            bne     0x70
+  68:   0ab7 0246       inc     $0x2b2
+  6c:   0ab7 0244       inc     $0x2b4
+  70:   08f7 0128       jsr     r3, 0x19c
+  74:   1077 0238       mov     r1, $0x2b0
+  78:   0a37 023a       clr     $0x2b6
+  7c:   2017 002e       cmp     r0, $56
+  80:   0204            bne     0x8a
+  82:   08f7 0116       jsr     r3, 0x19c
+  86:   1077 022e       mov     r1, $0x2b8
+  8a:   1183            mov     sp, r3
+  8c:   65c3 0004       add     $4, r3
+  90:   15c1 0278       mov     $1170, r1
+  94:   1442            mov     (r1)+, r2
+  96:   03da            beq     0x4c
+  98:   2011            cmp     r0, (r1)+
+  9a:   02fc            bne     0x94
+  9c:   004a            jmp     (r2)
+  9e:   1501            mov     (r4)+, r1
+  a0:   0405            bge     0xac
+  a2:   0b01            neg     r1
+  a4:   95d3 002d       movb    $55, (r3)+
+  a8:   0101            br      0xac
+  aa:   1501            mov     (r4)+, r1
+  ac:   09f7 0002       jsr     pc, 0xb2
+  b0:   0152            br      0x156
+  b2:   0a00            clr     r0
+  b4:   7217 000a       div     $12, r0
+  b8:   1066            mov     r1, -(sp)
+  ba:   1001            mov     r0, r1
+  bc:   0302            beq     0xc2
+  be:   09f7 fff0       jsr     pc, 0xb2
+  c2:   1580            mov     (sp)+, r0
+  c4:   65c0 0030       add     $60, r0
+  c8:   9013            movb    r0, (r3)+
+  ca:   0087            rts     pc
+  cc:   9513            movb    (r4)+, (r3)+
+  ce:   0201            bne     0xd2
+  d0:   0ac3            dec     r3
+  d2:   9513            movb    (r4)+, (r3)+
+  d4:   0240            bne     0x156
+  d6:   0ac3            dec     r3
+  d8:   013e            br      0x156
+  da:   1dc1 01da       mov     $0x2b8, r1
+  de:   0a03            clr     r3
+  e0:   1302            mov     (r4), r2
+  e2:   8bd2            tstb    (r2)+
+  e4:   0302            beq     0xea
+  e6:   0a83            inc     r3
+  e8:   7e44            sob     r1, 0xe2
+  ea:   1502            mov     (r4)+, r2
+  ec:   0138            br      0x15e
+  ee:   15c2 02a0       mov     $1240, r2
+  f2:   0102            br      0xf8
+  f4:   15c2 02a4       mov     $1244, r2
+  f8:   1501            mov     (r4)+, r1
+  fa:   0305            beq     0x106
+  fc:   0bf7 01b8       tst     $0x2b8
+ 100:   0302            beq     0x106
+ 102:   95d3 0030       movb    $60, (r3)+
+ 106:   0a00            clr     r0
+ 108:   09f7 0002       jsr     pc, 0x10e
+ 10c:   0124            br      0x156
+ 10e:   1066            mov     r1, -(sp)
+ 110:   760a            ashc    (r2), r0
+ 112:   0302            beq     0x118
+ 114:   09f7 fff6       jsr     pc, 0x10e
+ 118:   1580            mov     (sp)+, r0
+ 11a:   4c80 0002       bic     2(r2), r0
+ 11e:   65c0 0030       add     $60, r0
+ 122:   2017 0039       cmp     r0, $71
+ 126:   0702            ble     0x12c
+ 128:   65c0 0007       add     $7, r0
+ 12c:   9013            movb    r0, (r3)+
+ 12e:   0087            rts     pc
+ 130:   1dc0 0184       mov     $0x2b8, r0
+ 134:   1dc2 017e       mov     $0x2b6, r2
+ 138:   09f7 0094       jsr     pc, 0x1d0
+ 13c:   010c            br      0x156
+ 13e:   1dc0 0176       mov     $0x2b8, r0
+ 142:   1dc2 0170       mov     $0x2b6, r2
+ 146:   09f7 0086       jsr     pc, 0x1d0
+ 14a:   0105            br      0x156
+ 14c:   1504            mov     (r4)+, r4
+ 14e:   1537 0160       mov     (r4)+, $0x2b2
+ 152:   0077 fee6       jmp     0x3c
+ 156:   1182            mov     sp, r2
+ 158:   65c2 0004       add     $4, r2
+ 15c:   e083            sub     r2, r3
+ 15e:   1126            mov     r4, -(sp)
+ 160:   15e6 0020       mov     $40, -(sp)
+ 164:   10c4            mov     r3, r4
+ 166:   0b03            neg     r3
+ 168:   6dc3 0144       add     $0x2b0, r3
+ 16c:   0706            ble     0x17a
+ 16e:   0bf7 0142       tst     $0x2b4
+ 172:   0203            bne     0x17a
+ 174:   09df 01da       jsr     pc, *$732
+ 178:   7ec3            sob     r3, 0x174
+ 17a:   0bc4            tst     r4
+ 17c:   0304            beq     0x186
+ 17e:   948e            movb    (r2)+, (sp)
+ 180:   09df 01da       jsr     pc, *$732
+ 184:   7f04            sob     r4, 0x17e
+ 186:   0bc3            tst     r3
+ 188:   0705            ble     0x194
+ 18a:   15ce 0020       mov     $40, (sp)
+ 18e:   09df 01da       jsr     pc, *$732
+ 192:   7ec3            sob     r3, 0x18e
+ 194:   0bd6            tst     (sp)+
+ 196:   1584            mov     (sp)+, r4
+ 198:   0077 fea0       jmp     0x3c
+ 19c:   0a37 0116       clr     $0x2b6
+ 1a0:   0a01            clr     r1
+ 1a2:   9fc0 010c       movb    *$0x2b2, r0
+ 1a6:   0ab7 0108       inc     $0x2b2
+ 1aa:   e5c0 0030       sub     $60, r0
+ 1ae:   2017 fffa       cmp     r0, $-6
+ 1b2:   0202            bne     0x1b8
+ 1b4:   1500            mov     (r4)+, r0
+ 1b6:   0103            br      0x1be
+ 1b8:   2017 0009       cmp     r0, $11
+ 1bc:   8206            bhi     0x1ca
+ 1be:   0ab7 00f4       inc     $0x2b6
+ 1c2:   7057 000a       mul     $12, r1
+ 1c6:   6001            add     r0, r1
+ 1c8:   01ec            br      0x1a2
+ 1ca:   65c0 0030       add     $60, r0
+ 1ce:   0083            rts     r3
+ 1d0:   65c4 0008       add     $10, r4
+ 1d4:   95d3 003f       movb    $77, (r3)+
+ 1d8:   0087            rts     pc
+ 1da:   1166            mov     r5, -(sp)
+ 1dc:   1185            mov     sp, r5
+ 1de:   1dc0 00dc       mov     $0x2be, r0
+ 1e2:   0204            bne     0x1ec
+ 1e4:   09f7 002c       jsr     pc, 0x214
+ 1e8:   1dc0 00d2       mov     $0x2be, r0
+ 1ec:   9d50 0004       movb    4(r5), (r0)+
+ 1f0:   0307            beq     0x200
+ 1f2:   0ab7 00c8       inc     $0x2be
+ 1f6:   0af7 00c2       dec     $0x2bc
+ 1fa:   0602            bgt     0x200
+ 1fc:   09f7 0014       jsr     pc, 0x214
+ 200:   1d40 0004       mov     4(r5), r0
+ 204:   1585            mov     (sp)+, r5
+ 206:   0087            rts     pc
+ 208:   1166            mov     r5, -(sp)
+ 20a:   1185            mov     sp, r5
+ 20c:   09f7 0004       jsr     pc, 0x214
+ 210:   1585            mov     (sp)+, r5
+ 212:   0087            rts     pc
+ 214:   1dc0 00a6       mov     $0x2be, r0
+ 218:   030a            beq     0x22e
+ 21a:   e5c0 02c0       sub     $1300, r0
+ 21e:   1037 008a       mov     r0, $0x2ac
+ 222:   1dc0 0094       mov     $0x2ba, r0
+ 226:   0201            bne     0x22a
+ 228:   0a80            inc     r0
+ 22a:   8900            sys     0
+ 22c:   02a8            bne     0x17e
+ 22e:   15f7 02c0 008a  mov     $1300, $0x2be
+ 234:   15f7 0200 0082  mov     $1000, $0x2bc
+ 23a:   2dd7 007c 0002  cmp     $0x2ba, $2
+ 240:   8203            bhi     0x248
+ 242:   15f7 0001 0074  mov     $1, $0x2bc
+ 248:   0087            rts     pc
+ 24a:   1166            mov     r5, -(sp)
+ 24c:   1185            mov     sp, r5
+ 24e:   1d40 0004       mov     4(r5), r0
+ 252:   8901            sys     1
+ 254:   1140            mov     r5, r0
+ 256:   1185            mov     sp, r5
+ 258:   1126            mov     r4, -(sp)
+ 25a:   10e6            mov     r3, -(sp)
+ 25c:   10a6            mov     r2, -(sp)
+ 25e:   0be6            tst     -(sp)
+ 260:   0048            jmp     (r0)
+ 262:   1141            mov     r5, r1
+ 264:   1844            mov     -(r1), r4
+ 266:   1843            mov     -(r1), r3
+ 268:   1842            mov     -(r1), r2
+ 26a:   1146            mov     r5, sp
+ 26c:   1585            mov     (sp)+, r5
+ 26e:   0087            rts     pc
+
+
+
+$ v6run -v a.out
+0000,0000,0000,0000,0000,0000,sp=fff6,pc=0000: setd
+0000,0000,0000,0000,0000,0000,sp=fff6,pc=0002: mov sp, r0
+fff6,0000,0000,0000,0000,0000,sp=fff6,pc=0004: mov (r0), -(sp)
+fff6,0000,0000,0000,0000,0000,sp=fff4,pc=0006: tst (r0)+
+fff8,0000,0000,0000,0000,0000,sp=fff4,pc=0008: mov r0, 2(sp)
+fff8,0000,0000,0000,0000,0000,sp=fff4,pc=000c: jsr pc, 0018
+fff8,0000,0000,0000,0000,0000,sp=fff2,pc=0018: jsr r5, 0254
+fff8,0000,0000,0000,0000,001c,sp=fff0,pc=0254: mov r5, r0
+001c,0000,0000,0000,0000,001c,sp=fff0,pc=0256: mov sp, r5
+001c,0000,0000,0000,0000,fff0,sp=fff0,pc=0258: mov r4, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffee,pc=025a: mov r3, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffec,pc=025c: mov r2, -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffea,pc=025e: tst -(sp)
+001c,0000,0000,0000,0000,fff0,sp=ffe8,pc=0260: jmp (r0)
+001c,0000,0000,0000,0000,fff0,sp=ffe8,pc=001c: mov $0270, (sp)
+001c,0000,0000,0000,0000,fff0,sp=ffe8,pc=0020: jsr pc, *$0028
+001c,0000,0000,0000,0000,fff0,sp=ffe6,pc=0028: jsr r5, 0254
+001c,0000,0000,0000,0000,002c,sp=ffe4,pc=0254: mov r5, r0
+002c,0000,0000,0000,0000,002c,sp=ffe4,pc=0256: mov sp, r5
+002c,0000,0000,0000,0000,ffe4,sp=ffe4,pc=0258: mov r4, -(sp)
+002c,0000,0000,0000,0000,ffe4,sp=ffe2,pc=025a: mov r3, -(sp)
+002c,0000,0000,0000,0000,ffe4,sp=ffe0,pc=025c: mov r2, -(sp)
+002c,0000,0000,0000,0000,ffe4,sp=ffde,pc=025e: tst -(sp)
+002c,0000,0000,0000,0000,ffe4,sp=ffdc,pc=0260: jmp (r0)
+002c,0000,0000,0000,0000,ffe4,sp=ffdc,pc=002c: sub $007e, sp
+002c,0000,0000,0000,0000,ffe4,sp=ff5e,pc=0030: mov 4(r5), 02b2
+002c,0000,0000,0000,0000,ffe4,sp=ff5e,pc=0036: mov r5, r4
+002c,0000,0000,0000,ffe4,ffe4,sp=ff5e,pc=0038: add $0006, r4
+002c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0042: inc 02b2
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0046: cmp r0, $0025
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004a: beq
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004c: mov r0, (sp)
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004e: jsr pc, *$01da
+0068,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=01da: mov r5, -(sp)
+0068,0000,0000,0000,ffea,ffe4,sp=ff5a,pc=01dc: mov sp, r5
+0068,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01de: mov 02be, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e2: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e4: jsr pc, 0214
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0000,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e8: mov 02be, r0
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01ec: movb 4(r5), (r0)+
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f0: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f2: inc 02be
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f6: dec 02bc
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fa: bgt
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fc: jsr pc, 0214
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021a: sub $02c0, r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021e: mov r0, 02ac
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0222: mov 02ba, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0226: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0228: inc r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys indir; 02a8
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys write; 02c0; 0001
+h0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0001,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0200: mov 4(r5), r0
+0068,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0204: mov (sp)+, r5
+0068,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=0206: rts pc
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0052: br
+0068,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0042: inc 02b2
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0046: cmp r0, $0025
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004a: beq
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004c: mov r0, (sp)
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004e: jsr pc, *$01da
+0065,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=01da: mov r5, -(sp)
+0065,0000,0000,0000,ffea,ffe4,sp=ff5a,pc=01dc: mov sp, r5
+0065,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01de: mov 02be, r0
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e2: bne
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01ec: movb 4(r5), (r0)+
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f0: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f2: inc 02be
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f6: dec 02bc
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fa: bgt
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fc: jsr pc, 0214
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021a: sub $02c0, r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021e: mov r0, 02ac
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0222: mov 02ba, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0226: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0228: inc r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys indir; 02a8
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys write; 02c0; 0001
+e0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0001,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0200: mov 4(r5), r0
+0065,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0204: mov (sp)+, r5
+0065,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=0206: rts pc
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0052: br
+0065,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0042: inc 02b2
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0046: cmp r0, $0025
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004a: beq
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004c: mov r0, (sp)
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004e: jsr pc, *$01da
+006c,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=01da: mov r5, -(sp)
+006c,0000,0000,0000,ffea,ffe4,sp=ff5a,pc=01dc: mov sp, r5
+006c,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01de: mov 02be, r0
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e2: bne
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01ec: movb 4(r5), (r0)+
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f0: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f2: inc 02be
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f6: dec 02bc
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fa: bgt
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fc: jsr pc, 0214
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021a: sub $02c0, r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021e: mov r0, 02ac
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0222: mov 02ba, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0226: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0228: inc r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys indir; 02a8
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys write; 02c0; 0001
+l0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0001,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0200: mov 4(r5), r0
+006c,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0204: mov (sp)+, r5
+006c,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=0206: rts pc
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0052: br
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0042: inc 02b2
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0046: cmp r0, $0025
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004a: beq
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004c: mov r0, (sp)
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004e: jsr pc, *$01da
+006c,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=01da: mov r5, -(sp)
+006c,0000,0000,0000,ffea,ffe4,sp=ff5a,pc=01dc: mov sp, r5
+006c,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01de: mov 02be, r0
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e2: bne
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01ec: movb 4(r5), (r0)+
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f0: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f2: inc 02be
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f6: dec 02bc
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fa: bgt
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fc: jsr pc, 0214
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021a: sub $02c0, r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021e: mov r0, 02ac
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0222: mov 02ba, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0226: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0228: inc r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys indir; 02a8
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys write; 02c0; 0001
+l0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0001,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0200: mov 4(r5), r0
+006c,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0204: mov (sp)+, r5
+006c,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=0206: rts pc
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0052: br
+006c,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0042: inc 02b2
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0046: cmp r0, $0025
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004a: beq
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004c: mov r0, (sp)
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004e: jsr pc, *$01da
+006f,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=01da: mov r5, -(sp)
+006f,0000,0000,0000,ffea,ffe4,sp=ff5a,pc=01dc: mov sp, r5
+006f,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01de: mov 02be, r0
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e2: bne
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01ec: movb 4(r5), (r0)+
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f0: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f2: inc 02be
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f6: dec 02bc
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fa: bgt
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fc: jsr pc, 0214
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021a: sub $02c0, r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021e: mov r0, 02ac
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0222: mov 02ba, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0226: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0228: inc r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys indir; 02a8
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys write; 02c0; 0001
+o0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0001,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0200: mov 4(r5), r0
+006f,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0204: mov (sp)+, r5
+006f,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=0206: rts pc
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0052: br
+006f,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0042: inc 02b2
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0046: cmp r0, $0025
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004a: beq
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004c: mov r0, (sp)
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=004e: jsr pc, *$01da
+000a,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=01da: mov r5, -(sp)
+000a,0000,0000,0000,ffea,ffe4,sp=ff5a,pc=01dc: mov sp, r5
+000a,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01de: mov 02be, r0
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01e2: bne
+02c0,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01ec: movb 4(r5), (r0)+
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f0: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f2: inc 02be
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01f6: dec 02bc
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fa: bgt
+02c1,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=01fc: jsr pc, 0214
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0214: mov 02be, r0
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0218: beq
+02c1,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021a: sub $02c0, r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=021e: mov r0, 02ac
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0222: mov 02ba, r0
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0226: bne
+0000,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0228: inc r0
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys indir; 02a8
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022a: sys write; 02c0; 0001
+
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=022e: mov $02c0, 02be
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0234: mov $0200, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=023a: cmp 02ba, $0002
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0240: bhi
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0242: mov $0001, 02bc
+0001,0000,0000,0000,ffea,ff5a,sp=ff58,pc=0248: rts pc
+0001,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0200: mov 4(r5), r0
+000a,0000,0000,0000,ffea,ff5a,sp=ff5a,pc=0204: mov (sp)+, r5
+000a,0000,0000,0000,ffea,ffe4,sp=ff5c,pc=0206: rts pc
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0052: br
+000a,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=003c: movb *02b2, r0
+0000,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0040: beq
+0000,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0054: jmp 0262
+0000,0000,0000,0000,ffea,ffe4,sp=ff5e,pc=0262: mov r5, r1
+0000,ffe4,0000,0000,ffea,ffe4,sp=ff5e,pc=0264: mov -(r1), r4
+0000,ffe2,0000,0000,0000,ffe4,sp=ff5e,pc=0266: mov -(r1), r3
+0000,ffe0,0000,0000,0000,ffe4,sp=ff5e,pc=0268: mov -(r1), r2
+0000,ffde,0000,0000,0000,ffe4,sp=ff5e,pc=026a: mov r5, sp
+0000,ffde,0000,0000,0000,ffe4,sp=ffe4,pc=026c: mov (sp)+, r5
+0000,ffde,0000,0000,0000,fff0,sp=ffe6,pc=026e: rts pc
+0000,ffde,0000,0000,0000,fff0,sp=ffe8,pc=0024: jmp 0262
+0000,ffde,0000,0000,0000,fff0,sp=ffe8,pc=0262: mov r5, r1
+0000,fff0,0000,0000,0000,fff0,sp=ffe8,pc=0264: mov -(r1), r4
+0000,ffee,0000,0000,0000,fff0,sp=ffe8,pc=0266: mov -(r1), r3
+0000,ffec,0000,0000,0000,fff0,sp=ffe8,pc=0268: mov -(r1), r2
+0000,ffea,0000,0000,0000,fff0,sp=ffe8,pc=026a: mov r5, sp
+0000,ffea,0000,0000,0000,fff0,sp=fff0,pc=026c: mov (sp)+, r5
+0000,ffea,0000,0000,0000,0000,sp=fff2,pc=026e: rts pc
+0000,ffea,0000,0000,0000,0000,sp=fff4,pc=0010: mov r0, (sp)
+0000,ffea,0000,0000,0000,0000,sp=fff4,pc=0012: jsr pc, *$024a
+0000,ffea,0000,0000,0000,0000,sp=fff2,pc=024a: mov r5, -(sp)
+0000,ffea,0000,0000,0000,0000,sp=fff0,pc=024c: mov sp, r5
+0000,ffea,0000,0000,0000,fff0,sp=fff0,pc=024e: mov 4(r5), r0
+0000,ffea,0000,0000,0000,fff0,sp=fff0,pc=0252: sys exit

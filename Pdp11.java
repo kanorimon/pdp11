@@ -10,7 +10,8 @@ public class Pdp11{
 		boolean flgDism = false;
 		boolean flgDebug = false;
 		boolean flgExe = false;
-		
+		boolean flgMmr = false;
+
 		//引数エラー
 		if (args.length>1){
 			for(int i=1;i<args.length;i++){
@@ -27,7 +28,10 @@ public class Pdp11{
 				if(args[i].equals("-e")){
 					flgExe = true;
 				}
-				
+				if(args[i].equals("-m")){
+					flgMmr = true;
+				}
+
 			}
 		}else if (args.length!=1){
 			System.out.println("ファイル名は一つだけ指定してください");
@@ -36,11 +40,11 @@ public class Pdp11{
 			flgDism = true;
 			flgExe = true;
 		}
-		
+
 		//ファイル名取得
 		File file = new File(args[0]);
 		Path fileName = file.toPath();
-		
+
 		//ファイル内容取得
 		byte[] bf = null;
 		try {
@@ -48,20 +52,31 @@ public class Pdp11{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		//仮想メモリにロード
 		VirtualAddressSpace vas = new VirtualAddressSpace(bf);
 
+		//逆アセンブル
 		if(flgDism){
 			vas.disassemble(0,vas.textSize);
 		}
-		
+
+		//デバッグ、ダンプ設定
 		if(flgDebug){
-			vas.reset(1);
+			if(flgMmr){
+				vas.reset(1,1);
+			}else{
+				vas.reset(1,0);
+			}
 		}else{
-			vas.reset(0);
+			if(flgMmr){
+				vas.reset(0,1);
+			}else{
+				vas.reset(0,0);
+			}
 		}
 
+		//実行
 		if(flgExe){
 			vas.execute(0, vas.textSize);
 		}
@@ -76,13 +91,13 @@ class Register{
 
 	//レジスタ
 	int[] reg;
-	
+
 	//コンストラクタ（初期化）
 	Register(){
 		reg = new int[8];
 		reset();
 	}
-	
+
 	void reset(){
 		reg[0] = 0;
 		reg[1] = 0;
@@ -93,7 +108,7 @@ class Register{
 		reg[6] = 65526; //spは最後尾のアドレスを指す
 		reg[7] = 0;
 	}
-	
+
 	void set(int regNo,int val){
 		reg[regNo] = val;
 	}
@@ -112,24 +127,24 @@ class Register{
  * コンディションコードクラス
  */
 class ConditionCode{
-	
+
 	int n;
 	int z;
 	int v;
 	int c;
-	
+
 	//コンストラクタ（初期化）
 	ConditionCode(){
 		reset();
 	}
-	
+
 	void reset(){
 		n = 0;
 		z = 0;
 		v = 0;
 		c = 0;
 	}
-	
+
 	void setN(int input){
 		if(input < 0){
 			n = 1;
@@ -159,25 +174,23 @@ class ConditionCode{
 	}
 
 	void setC(int input){
-		if(input == 0){
+		if(input < Math.pow(2.0, 16.0)){
 			c = 1;
 		}else{
 			c = 0;
 		}
 	}
-	
+
 	void clearC(){
 		c = 0;
 	}
-	
-	
 }
 
 /*
  * 仮想アドレス空間クラス
  */
 class VirtualAddressSpace{
-	
+
 	//仮想メモリ
 	byte[] mem;
 	//メモリサイズ
@@ -185,10 +198,10 @@ class VirtualAddressSpace{
 
 	//レジスタ
 	Register reg;
-	
+
 	//コンディションコード
 	ConditionCode cc;
-	
+
 	//出力用ユーティリティ
 	int strnum;
 
@@ -197,17 +210,27 @@ class VirtualAddressSpace{
 
 	//モード（実行=0,デバッグ=1）
 	int dbgFlg;
+	int mmrFlg;
 
 	//領域の大きさ
 	int headerSize = 16;
 	int textSize;
 	int dataSize;
+	int bssSize;
 	
+	//マジックナンバー
+	int magicNo;
+
 	//コンストラクタ
 	VirtualAddressSpace(byte[] bf){
+
+		//マジックナンバーを取得
+		magicNo = ((int)bf[1] & 0xFF)|(((int)bf[2] & 0xFF) << 8);
 		
-		//テキストのサイズを取得
+		//サイズを取得
 		textSize = ((int)bf[2] & 0xFF)|(((int)bf[3] & 0xFF) << 8);
+		dataSize = ((int)bf[4] & 0xFF)|(((int)bf[5] & 0xFF) << 8);
+		bssSize = ((int)bf[6] & 0xFF)|(((int)bf[7] & 0xFF) << 8);
 
 		//メモリ初期化
 		mem = new byte[memorySize];
@@ -215,29 +238,29 @@ class VirtualAddressSpace{
 		int cnt = 0;
 		
 		//テキスト領域読み込み
-		for(i=headerSize;i<textSize;i++){
+		for(i=headerSize;i<headerSize+textSize;i++){
+			mem[cnt] = bf[i];
+			cnt++;
+		}
+		
+		//データ領域読み込み
+		for(;i<headerSize+textSize+dataSize;i++){
 			mem[cnt] = bf[i];
 			cnt++;
 		}
 
-		//データ領域読み込み
-		for(;i<bf.length;i++){
-			mem[cnt] = bf[i];
-			cnt++;
-		}
-		
 		//その他のメモリ初期化
 		for(;cnt<memorySize;cnt++){
 			mem[cnt] = 0;
 		}
-		
+
 		//レジスタ初期化
 		reg = new Register();
-		
+
 		//コンディションコード初期化
 		cc = new ConditionCode();
 	}
-	
+
 	//2バイト単位でリトルエンディアンを反転して10進数で取得
 	int getMemory2(int start){
 		return (int) ((int)(mem[start]) & 0xFF)|( (int)((mem[start+1] & 0xFF) << 8));
@@ -248,7 +271,7 @@ class VirtualAddressSpace{
 		int val = Integer.parseInt(String.format("%06o",dec).substring(index, index+1));
 		return val;
 	}
-	
+
 	//ASCIIコードに変換したデータの任意の箇所を取得
 	char getChar(int dec,int index){
 		char val = (char)Integer.parseInt(String.format("%02x",dec),16);
@@ -259,7 +282,7 @@ class VirtualAddressSpace{
 	//メモリ上のデータを取得して、PC+2する
 	int getMem(){
 		int opcode = getMemory2(reg.get(7));
-		
+
 		//逆アセンブルの場合は出力
 		if(exeFlg == 0){
 			printOpcode(opcode);
@@ -269,13 +292,13 @@ class VirtualAddressSpace{
 				printOpcode(opcode);
 			}
 		}
-		
+
 		//PC+2
 		reg.add(7,2);
 
 		return opcode;
 	}
-	
+
 	//指定箇所のメモリを1byte取得
 	int getMemory1(int start){
 		return mem[start];
@@ -298,13 +321,13 @@ class VirtualAddressSpace{
 		System.out.print(String.format("%04x", opcode));
 		System.out.print(" ");
 	}
-	
+
 	//逆アセンブル
 	void disassemble(int start, int end){
-	
+
 		//実行フラグ=0
 		exeFlg = 0;
-		
+
 		//レジスタ初期化
 		reg.reset();
 
@@ -314,13 +337,13 @@ class VirtualAddressSpace{
 			//プログラムカウンタを出力
 			System.out.print(String.format("%4x", reg.get(7)));
 			System.out.print(":   ");
-			
+
 			strnum = 0;
 
 			String mnemonic = "";
 			String srcOperand = "";
 			String dstOperand = "";
-			
+
 			int opcode = getMem();
 			Mnemonic nic = getMnemonic(opcode);
 
@@ -333,7 +356,7 @@ class VirtualAddressSpace{
 			case JMP:
 				mnemonic = "jmp";
 				srcOperand = "";
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case RTS:
 				mnemonic = "rts";
@@ -343,66 +366,66 @@ class VirtualAddressSpace{
 			case JSR:
 				mnemonic = "jsr";
 				srcOperand = getRegisterName(getOctal(opcode,3));
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case CLR:
 				mnemonic = "clr";
 				srcOperand = "";
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case INC:
 				mnemonic = "inc";
 				srcOperand = "";
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case DEC:
 				mnemonic = "dec";
 				srcOperand = "";
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case TST:
 				mnemonic = "tst";
 				srcOperand = "";
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case MOV:
 				mnemonic = "mov";
-				srcOperand = getOperand(getOctal(opcode,2),getOctal(opcode,3)).oprndStr;
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case MOVB:
 				mnemonic = "movb";
-				srcOperand = getOperand(getOctal(opcode,2),getOctal(opcode,3)).oprndStr;
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case CMP:
 				mnemonic = "cmp";
-				srcOperand = getOperand(getOctal(opcode,2),getOctal(opcode,3)).oprndStr;
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BCC:
 				mnemonic = "bcc";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BNE:
 				mnemonic = "bne";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BEQ:
 				mnemonic = "beq";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BGT:
 				mnemonic = "bgt";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BHI:
 				mnemonic = "bhi";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case SYS:	
@@ -412,8 +435,8 @@ class VirtualAddressSpace{
 				break;
 			case SUB:
 				mnemonic = "sub";
-				srcOperand = getOperand(getOctal(opcode,2),getOctal(opcode,3)).oprndStr;
-				dstOperand = getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case SETD:
 				mnemonic = "setd";
@@ -422,22 +445,22 @@ class VirtualAddressSpace{
 				break;
 			case WORD:
 				mnemonic = ".word";
-				srcOperand = getNormal(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndStr;
+				srcOperand = getNormal(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			}
-			
+
 			//出力
 			for(;strnum<3;strnum++){
 				System.out.print("     ");
 			}
 			System.out.print(" ");
 			System.out.print(mnemonic);
-			
+
 			for(int j=mnemonic.length();j<9;j++){
 				System.out.print(" ");
 			}
-			
+
 			System.out.print(srcOperand);
 			if(!(srcOperand.equals("")) && !(dstOperand.equals(""))){
 				System.out.print(", ");
@@ -445,34 +468,41 @@ class VirtualAddressSpace{
 			System.out.print(dstOperand + "\n");
 		}
 	}
-	
+
 	//インタプリタ実行前設定
-	public void reset(int debugFlg){
+	public void reset(int debugFlg,int memoryFlg){
 		//デバッグフラグ
 		dbgFlg = debugFlg;
+		mmrFlg = memoryFlg;
 
 		//レジスタ初期化
 		reg.reset();
-		
+
 		//コンディションコード初期化
 		cc.reset();
 	}
-	
+
 	//インタプリタ
 	public void execute(int start, int end){
 
 		//実行フラグ=1
 		exeFlg = 1;
-		
+
 		reg.set(7,start);	
 
 		for(reg.set(7,start);reg.get(7)<end;){
 
-			OprndDto srcObj;
-			OprndDto dstObj;
+			//debug用
+			if(dbgFlg == 1){
+				printDebug();
+			}
 			
+			FieldDto srcObj;
+			FieldDto dstObj;
+
 			int tmp = 0;
-			
+
+			//命令取得
 			int opcode = getMem();
 			Mnemonic nic = getMnemonic(opcode);
 
@@ -480,14 +510,14 @@ class VirtualAddressSpace{
 			case RTT:
 				break;
 			case JMP:
-				OprndDto a = getOperand(getOctal(opcode,4),getOctal(opcode,5));
-				
-				if(a.flgReg){
-					reg.set(7,reg.get(a.oprndReg));
-				}else if(a.flgAdd){
-					reg.set(7,a.oprndAdd);
+				FieldDto a = getField(getOctal(opcode,4),getOctal(opcode,5));
+
+				if(a.flgRegister){
+					reg.set(7,reg.get(a.register));
+				}else if(a.flgAddress){
+					reg.set(7,a.address);
 				}else{
-					reg.set(7,a.oprndInt);
+					reg.set(7,a.operand);
 				}
 				break;
 			case RTS:
@@ -496,151 +526,151 @@ class VirtualAddressSpace{
 				reg.add(6,2);
 				break;
 			case JSR:
-				srcObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				pushStack(reg.get(getOctal(opcode,3)));
 				reg.set(getOctal(opcode,3),reg.get(7));
-				reg.set(7, srcObj.oprndAdd);
+				reg.set(7, srcObj.address);
 				break;
 			case CLR:
-				setMemory2(getOperand(getOctal(opcode,4),getOctal(opcode,5)).oprndInt,0);
+				setMemory2(getField(getOctal(opcode,4),getOctal(opcode,5)).operand,0);
 				cc.reset();
 				break;
 			case INC:
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
-				if(dstObj.flgReg){
-					tmp = reg.get(dstObj.oprndReg) + 1;
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				if(dstObj.flgRegister){
+					tmp = reg.get(dstObj.register) + 1;
 					cc.setN(tmp);
 					cc.setZ(tmp);
-					reg.set(dstObj.oprndReg, tmp);
-				}else if(dstObj.flgAdd){
-					tmp = getMemory2(dstObj.oprndAdd) + 1;
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					tmp = getMemory2(dstObj.address) + 1;
 					cc.setN(tmp);
 					cc.setZ(tmp);
-					setMemory2(dstObj.oprndAdd, tmp);
+					setMemory2(dstObj.address, tmp);
 				}else{
-					tmp = dstObj.oprndInt + 1;
+					tmp = dstObj.operand + 1;
 					cc.setN(tmp);
 					cc.setZ(tmp);
-					setMemory2(dstObj.oprndAdd, tmp);
+					setMemory2(dstObj.address, tmp);
 				}
 				break;
 			case DEC:
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
-				if(dstObj.flgReg){
-					tmp = reg.get(dstObj.oprndReg) - 1;
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				if(dstObj.flgRegister){
+					tmp = reg.get(dstObj.register) - 1;
 					cc.setN(tmp);
 					cc.setZ(tmp);
-					reg.set(dstObj.oprndReg, tmp);
-				}else if(dstObj.flgAdd){
-					tmp = getMemory2(dstObj.oprndAdd) - 1;
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					tmp = getMemory2(dstObj.address) - 1;
 					cc.setN(tmp);
 					cc.setZ(tmp);
-					setMemory2(dstObj.oprndAdd, tmp);
+					setMemory2(dstObj.address, tmp);
 				}else{
-					tmp = dstObj.oprndInt - 1;
+					tmp = dstObj.operand - 1;
 					cc.setN(tmp);
 					cc.setZ(tmp);
-					setMemory2(dstObj.oprndAdd, tmp);
+					setMemory2(dstObj.address, tmp);
 				}
 				break;
 			case TST:
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
-				cc.setN(dstObj.oprndInt);
-				cc.setZ(dstObj.oprndInt);
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				cc.setN(dstObj.operand);
+				cc.setZ(dstObj.operand);
 				cc.clearV();
 				cc.clearC();
-				
+
 				break;
 			case MOVB:
-				srcObj = getOperand(getOctal(opcode,2),getOctal(opcode,3),1);
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5),1);
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3),1);
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
 
-				cc.setN(srcObj.oprndInt);
-				cc.setZ(srcObj.oprndInt);
+				cc.setN(srcObj.operand);
+				cc.setZ(srcObj.operand);
 				cc.clearV();
-				
-				if(srcObj.flgReg){
-					if(dstObj.flgReg){
-						reg.set(dstObj.oprndReg, reg.get(srcObj.oprndReg));
-					}else if(dstObj.flgAdd){
-						setMemory2(dstObj.oprndAdd, reg.get(srcObj.oprndReg));
+
+				if(srcObj.flgRegister){
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, reg.get(srcObj.register));
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, reg.get(srcObj.register));
 					}
-				}else if(srcObj.flgAdd){
-					if(dstObj.flgReg){
-						reg.set(dstObj.oprndReg, getMemory2(srcObj.oprndAdd));
-					}else if(dstObj.flgAdd){
-						setMemory2(dstObj.oprndAdd, getMemory2(srcObj.oprndAdd));
+				}else if(srcObj.flgAddress){
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, getMemory2(srcObj.address));
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, getMemory2(srcObj.address));
 					}
 				}else{
-					if(dstObj.flgReg){
-						reg.set(dstObj.oprndReg, srcObj.oprndInt);
-					}else if(dstObj.flgAdd){
-						setMemory2(dstObj.oprndAdd, srcObj.oprndInt);
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, srcObj.operand);
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, srcObj.operand);
 					}
 				}
 				break;
 			case MOV:
-				srcObj = getOperand(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 
-				cc.setN(srcObj.oprndInt);
-				cc.setZ(srcObj.oprndInt);
+				cc.setN(srcObj.operand);
+				cc.setZ(srcObj.operand);
 				cc.clearV();
-				
-				if(srcObj.flgReg){
-					if(dstObj.flgReg){
-						reg.set(dstObj.oprndReg, reg.get(srcObj.oprndReg));
-					}else if(dstObj.flgAdd){
-						setMemory2(dstObj.oprndAdd, reg.get(srcObj.oprndReg));
+
+				if(srcObj.flgRegister){
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, reg.get(srcObj.register));
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, reg.get(srcObj.register));
 					}
-				}else if(srcObj.flgAdd){
-					if(dstObj.flgReg){
-						reg.set(dstObj.oprndReg, getMemory2(srcObj.oprndAdd));
-					}else if(dstObj.flgAdd){
-						setMemory2(dstObj.oprndAdd, getMemory2(srcObj.oprndAdd));
+				}else if(srcObj.flgAddress){
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, getMemory2(srcObj.address));
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, getMemory2(srcObj.address));
 					}
 				}else{
-					if(dstObj.flgReg){
-						reg.set(dstObj.oprndReg, srcObj.oprndInt);
-					}else if(dstObj.flgAdd){
-						setMemory2(dstObj.oprndAdd, srcObj.oprndInt);
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, srcObj.operand);
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, srcObj.operand);
 					}
 				}
 				break;
 			case CMP:	//後で確認
-				srcObj = getOperand(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
-				tmp = srcObj.oprndInt -dstObj.oprndInt;
-				System.out.println(srcObj.oprndInt + " " + dstObj.oprndInt + " " + tmp);
-				
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				tmp = srcObj.operand -dstObj.operand;
+
 				cc.setN(tmp);
 				cc.setZ(tmp);
 				cc.setV(tmp);
-				
+				cc.setC(srcObj.operand + ~dstObj.operand + 1);
+
 				break;
 			case BCC:
 				if(cc.c == 0){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndAdd);
+					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BNE:
 				if(cc.z == 0){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndAdd);
+					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BEQ:
 				if(cc.z == 1){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndAdd);
+					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BGT:
 				if(cc.z == 0 && cc.n == cc.v){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndAdd);
+					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BHI:
 				if(cc.c == 0 && cc.z == 0){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).oprndAdd);
+					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case SYS:	
@@ -649,7 +679,7 @@ class VirtualAddressSpace{
 					int sub = getMem();
 					tmp = reg.get(7);
 					execute(sub, sub+1);
-					
+
 					reg.set(7, tmp);
 
 					break;
@@ -659,7 +689,7 @@ class VirtualAddressSpace{
 				case 4:
 					int textMemNum = getMem();
 					int operand2 = getMem();
-					
+
 					for(int i=0;i<operand2;i++){
 						getChar(getMemory1(textMemNum),2);
 						textMemNum++;
@@ -668,45 +698,43 @@ class VirtualAddressSpace{
 				}
 				break;
 			case SUB:
-				srcObj = getOperand(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getOperand(getOctal(opcode,4),getOctal(opcode,5));
-				setMemory2(dstObj.oprndAdd,(dstObj.oprndInt - srcObj.oprndInt));
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				
+				tmp = (dstObj.operand - srcObj.operand);
+				
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					setMemory2(dstObj.address, tmp);
+				}else{
+					setMemory2(dstObj.address, tmp);
+				}
+				
+				cc.setN(tmp);
+				cc.setZ(tmp);
+				cc.setV(tmp);
+				cc.setC(srcObj.operand + ~dstObj.operand + 1);
+
 				break;
 			case SETD:
 				break;
 			case WORD:
 				break;
 			}
-			
+
 			//debug用
 			if(dbgFlg == 1){
-				System.out.print("\n");
-			
-				System.out.print(" r0=" + String.format("%04x",reg.get(0)));
-				System.out.print(" r1=" + String.format("%04x",reg.get(1)));
-				System.out.print(" r2=" + String.format("%04x",reg.get(2)));
-				System.out.print(" r3=" + String.format("%04x",reg.get(3)));
-				System.out.print(" r4=" + String.format("%04x",reg.get(4)));
-				System.out.print(" r5=" + String.format("%04x",reg.get(5)));
-				System.out.print(" sp=" + String.format("%04x",reg.get(6)));
-				System.out.println(" pc=" + String.format("%04x",reg.get(7)));
-
-				System.out.print(" n=" + cc.n);
-				System.out.print(" z=" + cc.z);
-				System.out.print(" v=" + cc.v);
-				System.out.println(" c=" + cc.c);
-
-				System.out.print(" [ca]=" + getMemory2(0xca));
-				System.out.print(" [c8]=" + getMemory2(0xc8));
-				System.out.println(" [c6]=" + getMemory2(0xc6));
-
-				System.out.println("---------------");
+				printDebug();
 			}
 
+			//メモリダンプ用
+			if(mmrFlg == 1){
+				printMemory();
+			}
 		}
 	}
-	
+
 	//ニーモニック取得
 	Mnemonic getMnemonic(int opcode){
 		Mnemonic mnemonic = null;
@@ -830,14 +858,14 @@ class VirtualAddressSpace{
 				}
 				break;
 			}
-			
+
 			if(mnemonic == null){
 				mnemonic = Mnemonic.WORD;
 			}
-		
+
 		return mnemonic;
 	}
-	
+
 	//レジスタ名称取得
 	String getRegisterName(int no){
 		if(no == 7){
@@ -848,56 +876,56 @@ class VirtualAddressSpace{
 			return "r" + no;
 		}
 	}
-	
-	//オペランド取得
-	OprndDto getXX(int first,int second){
-		OprndDto operand = new OprndDto();
+
+	//フィールド取得（PC+オフセット*2 6bit）
+	FieldDto getXX(int first,int second){
+		FieldDto operand = new FieldDto();
 		operand.setStr("$0x" + String.format("%02x",(((first << 3) + second) * 2 + reg.get(7))));
-		operand.setAdd(((first << 3) + second) * 2 + reg.get(7));
-	
+		operand.setAddress(((first << 3) + second) * 2 + reg.get(7));
+
 		return operand;
 	}
-	
-	//オペランド取得
-	OprndDto getPcAddOff2(int first,int second,int third){
-		OprndDto operand = new OprndDto();
+
+	//フィールド取得（PC+オフセット*2 8bit）
+	FieldDto getPcAddOff2(int first,int second,int third){
+		FieldDto operand = new FieldDto();
 		int tmp = (first << 6) + (second << 3) + third;
 		if(tmp > (0xFF+1)){
 			tmp = tmp -(0xFF+1);
 		}
 		tmp = tmp * 2 + reg.get(7);
-		
+
 		operand.setStr("$0x" + String.format("%03x",tmp));
-		operand.setAdd(tmp);
-	
+		operand.setAddress(tmp);
+
 		return operand;
 	}
 
-	//オペランド取得
-	OprndDto getNormal(int first,int second,int third){
-		OprndDto operand = new OprndDto();
+	//フィールド取得（8進数 6bit）
+	FieldDto getNormal(int first,int second,int third){
+		FieldDto operand = new FieldDto();
 		operand.setStr(String.format("%o",(first << 6) + (second << 3) + third));
-		operand.setAdd(((first << 3) + second) * 2 + reg.get(7));
-	
+		operand.setAddress(((first << 3) + second) * 2 + reg.get(7));
+
 		return operand;
 	}
 
-	//オペランド取得
-	OprndDto getOperand(int first, int second){
-		OprndDto operand = getOperand(first, second, 0);
-		return operand;
+	//フィールド取得（dst,src）
+	FieldDto getField(int first, int second){
+		FieldDto field = getField(first, second, 0);
+		return field;
 	}
-	
-	//オペランド取得
-	OprndDto getOperand(int first, int second, int flgByte){
-		
+
+	//フィールド取得（dst,src）
+	FieldDto getField(int first, int second, int flgByte){
+
 		//返り値
-		OprndDto operand = new OprndDto();
-		
+		FieldDto field = new FieldDto();
+
 		//ワーク
 		short opcodeShort;
 		int opcodeInt;
-		
+
 		switch(second){
 		case 0:
 		case 1:
@@ -910,23 +938,23 @@ class VirtualAddressSpace{
 			case 0:
 				//レジスタ
 				//registerにオペランドがある。
-				operand.setStr(getRegisterName(second));
-				operand.setInt(reg.get(second));
-				operand.setReg(second);
+				field.setStr(getRegisterName(second));
+				field.setOperand(reg.get(second));
+				field.setReg(second);
 				break;
 			case 1:
 				//レジスタ間接
 				//registerにオペランドのアドレスがある。
-				operand.setStr("(" + getRegisterName(second) + ")");
-				operand.setInt(getMemory2(reg.get(second)));
-				operand.setAdd(reg.get(second));
+				field.setStr("(" + getRegisterName(second) + ")");
+				field.setOperand(getMemory2(reg.get(second)));
+				field.setAddress(reg.get(second));
 				break;
 			case 2:
 				//自動インクリメント
 				//registerにオペランドのアドレスがあり、命令実行後にregisterの内容をインクリメントする。
-				operand.setStr("(" + getRegisterName(second) + ")+");
-				operand.setInt(getMemory2(reg.get(second)));
-				operand.setAdd(reg.get(second));
+				field.setStr("(" + getRegisterName(second) + ")+");
+				field.setOperand(getMemory2(reg.get(second)));
+				field.setAddress(reg.get(second));
 				if(exeFlg == 1){
 					if(flgByte == 1){
 						reg.add(second,1);
@@ -938,9 +966,9 @@ class VirtualAddressSpace{
 			case 3:
 				//自動インクリメント間接
 				//registerにオペランドへのポインタのアドレスがあり、命令実行後にregisterの内容を2だけインクリメントする。
-				operand.setStr("*(" + getRegisterName(second) + ")+");
-				operand.setInt(getMemory2(getMemory2(reg.get(second))));
-				operand.setAdd(getMemory2(reg.get(second)));
+				field.setStr("*(" + getRegisterName(second) + ")+");
+				field.setOperand(getMemory2(getMemory2(reg.get(second))));
+				field.setAddress(getMemory2(reg.get(second)));
 				if(exeFlg == 1){
 					reg.add(second,4);
 				}
@@ -955,9 +983,9 @@ class VirtualAddressSpace{
 						reg.add(second,-2);
 					}
 				}
-				operand.setStr("-(" + getRegisterName(second) + ")");
-				operand.setInt(getMemory2(reg.get(second)));
-				operand.setAdd(reg.get(second));
+				field.setStr("-(" + getRegisterName(second) + ")");
+				field.setOperand(getMemory2(reg.get(second)));
+				field.setAddress(reg.get(second));
 				break;
 			case 5:
 				//自動デクリメント間接
@@ -965,29 +993,29 @@ class VirtualAddressSpace{
 				if(exeFlg == 1){
 					reg.add(second,-4);
 				}
-				operand.setStr("*-(" + getRegisterName(second) + ")");
-				operand.setInt(getMemory2(getMemory2(reg.get(second))));
-				operand.setAdd(getMemory2(reg.get(second)));
+				field.setStr("*-(" + getRegisterName(second) + ")");
+				field.setOperand(getMemory2(getMemory2(reg.get(second))));
+				field.setAddress(getMemory2(reg.get(second)));
 				break;
 			case 6:
 				//インデックス
 				//register+Xがオペランドのアドレス。Xはこの命令に続くワード。
 				opcodeInt = getMem();
-				operand.setStr(String.format("%01o",opcodeInt) + "(" + getRegisterName(second) + ")");
-				operand.setInt(getMemory2(reg.get(second) + opcodeInt));
-				operand.setAdd(reg.get(second) + opcodeInt);
+				field.setStr(String.format("%01o",opcodeInt) + "(" + getRegisterName(second) + ")");
+				field.setOperand(getMemory2(reg.get(second) + opcodeInt));
+				field.setAddress(reg.get(second) + opcodeInt);
 				break;
 			case 7:
 				//インデックス間接
 				//register+Xがオペランドへのポインタのアドレス。Xはこの命令に続くワード。
 				opcodeInt = getMem();
-				operand.setStr("*" + String.format("%01o",opcodeInt) + "(" + getRegisterName(second) + ")");
-				operand.setInt(getMemory2(getMemory2(reg.get(second) + opcodeInt)));
-				operand.setAdd(getMemory2(reg.get(second) + opcodeInt));
+				field.setStr("*" + String.format("%01o",opcodeInt) + "(" + getRegisterName(second) + ")");
+				field.setOperand(getMemory2(getMemory2(reg.get(second) + opcodeInt)));
+				field.setAddress(getMemory2(reg.get(second) + opcodeInt));
 				break;
 			}
 			break;
-		
+
 		case 7:
 			switch(first){
 			case 2:
@@ -995,23 +1023,23 @@ class VirtualAddressSpace{
 				//オペランドは命令内にある。
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
-					operand.setStr("$" + "-" + String.format("%01o",~(opcodeShort - 1)));
+					field.setStr("$" + "-" + String.format("%01o",~(opcodeShort - 1)));
 				}else{
-					operand.setStr("$" + String.format("%01o",opcodeShort));
+					field.setStr("$" + String.format("%01o",opcodeShort));
 				}
-				operand.setInt((int)opcodeShort); //ちょっとあやしい？
+				field.setOperand((int)opcodeShort); //ちょっとあやしい？
 				break;
 			case 3:
 				//絶対
 				//オペランドの絶対アドレスが命令内にある。
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
-					operand.setStr("*$" + "-" + String.format("%01o",~(opcodeShort - 1)));
+					field.setStr("*$" + "-" + String.format("%01o",~(opcodeShort - 1)));
 				}else{
-					operand.setStr("*$" + String.format("%01o",opcodeShort));
+					field.setStr("*$" + String.format("%01o",opcodeShort));
 				}
-				operand.setInt((int)opcodeShort); //ちょっとあやしい？
-				operand.setAdd(opcodeShort);
+				field.setOperand((int)opcodeShort); //ちょっとあやしい？
+				field.setAddress((int)opcodeShort);
 				break;
 			case 6:
 				//相対
@@ -1021,24 +1049,62 @@ class VirtualAddressSpace{
 				if(tmp >= 0x10000){
 					tmp = tmp - 0x10000;
 				}
-				operand.setStr("0x" + String.format("%02x",tmp));
-				//operand.setInt(tmp); //ちょっとあやしい？
-				operand.setInt(getMemory2(tmp)); //ちょっとあやしい？
-				operand.setAdd(tmp);
+				field.setStr("0x" + String.format("%02x",tmp));
+				field.setOperand(getMemory2(tmp));
+				field.setAddress(tmp);
 				break;
 			case 7:
 				//相対間接
 				//命令に続くワードの内容 a を PC+2 に加算したものをアドレスのアドレスとして使用する。
 				opcodeInt = getMem();
-				operand.setStr("*0x" + String.format("%02x",(opcodeInt + reg.get(7))));
-				operand.setInt(getMemory2(opcodeInt + reg.get(7))); //ちょっとあやしい？
-				operand.setAdd(getMemory2(opcodeInt + reg.get(7)));
+				field.setStr("*0x" + String.format("%02x",(opcodeInt + reg.get(7))));
+				field.setOperand(getMemory2(opcodeInt + reg.get(7))); //ちょっとあやしい？
+				field.setAddress(getMemory2(opcodeInt + reg.get(7)));
 				break;
 			}
 			break;
 		}	
-		
-		return operand;
+
+		return field;
+	}
+	
+	void printDebug(){
+		System.out.print("\n");
+		System.out.println("-s-register-start------------");
+
+		System.out.print(" r0=" + String.format("%04x",reg.get(0)));
+		System.out.print(" r1=" + String.format("%04x",reg.get(1)));
+		System.out.print(" r2=" + String.format("%04x",reg.get(2)));
+		System.out.print(" r3=" + String.format("%04x",reg.get(3)));
+		System.out.print(" r4=" + String.format("%04x",reg.get(4)));
+		System.out.print(" r5=" + String.format("%04x",reg.get(5)));
+		System.out.print(" sp=" + String.format("%04x",reg.get(6)));
+		System.out.println(" pc=" + String.format("%04x",reg.get(7)));
+
+		System.out.print(" n=" + cc.n);
+		System.out.print(" z=" + cc.z);
+		System.out.print(" v=" + cc.v);
+		System.out.println(" c=" + cc.c);
+
+		System.out.println("-s-register-end-------------");
+	}
+	
+	void printMemory(){
+		System.out.print("--memory-start-------------");
+		for(int m=0;m<textSize+dataSize+bssSize;m=m+2){
+			if(m%16==0){
+				System.out.print(String.format("\n%02x:",m/16));
+			}
+			System.out.print(" " + String.format("%04x",getMemory2(m)));
+		}
+		System.out.print("\n--memory-center-------------");
+		for(int m=memorySize-128;m<memorySize;m=m+2){
+			if(m%16==0){
+				System.out.print("\n");
+			}
+			System.out.print(" " + String.format("%04x",getMemory2(m)));
+		}
+		System.out.println("\n--memory-end-------------");
 	}
 }
 
@@ -1046,46 +1112,45 @@ enum Mnemonic {
 	RTT, JMP, RTS, JSR, CLR, TST, MOV, CMP, BCC, SYS, SETD, WORD, BNE, BEQ, INC, DEC, BGT, SUB, BHI, MOVB
 };
 
-class OprndDto{
-	
-	String oprndStr;
-	int oprndInt;
-	int oprndAdd;
-	int oprndReg;
-	
-	boolean flgReg;
-	boolean flgAdd;
+class FieldDto{
 
-	public OprndDto(){
-		flgReg = false;
-		flgAdd = false;
+	String str;
+	int operand;
+	int address;
+	int register;
+
+	boolean flgRegister;
+	boolean flgAddress;
+
+	public FieldDto(){
+		flgRegister = false;
+		flgAddress = false;
 	}
-	
-	public void setInt(int input){
-		oprndInt = input;
+
+	public void setOperand(int input){
+		operand = input;
 	}
 
 	public void setStr(String input){
-		oprndStr = input;
+		str = input;
 	}
 
-	public void setAdd(int input){
-		oprndAdd = input;
-		flgAdd = true;
+	public void setAddress(int input){
+		address = input;
+		flgAddress = true;
 	}
 
 	public void setReg(int input){
-		oprndReg = input;
-		flgReg = true;
+		register = input;
+		flgRegister = true;
 	}
 
-	public void set(OprndDto input){
-		oprndInt = input.oprndInt;
-		oprndStr = input.oprndStr;
-		oprndAdd = input.oprndAdd;
-		oprndReg = input.oprndReg;
-		flgAdd = input.flgAdd;
-		flgReg = input.flgReg;
+	public void set(FieldDto input){
+		operand = input.operand;
+		str = input.str;
+		address = input.address;
+		register = input.register;
+		flgAddress = input.flgAddress;
+		flgRegister = input.flgRegister;
 	}
 }
-
