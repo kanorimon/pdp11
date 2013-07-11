@@ -128,10 +128,10 @@ class Register{
  */
 class ConditionCode{
 
-	int n;
-	int z;
-	int v;
-	int c;
+	boolean n;
+	boolean z;
+	boolean v;
+	boolean c;
 
 	//コンストラクタ（初期化）
 	ConditionCode(){
@@ -139,51 +139,19 @@ class ConditionCode{
 	}
 
 	void reset(){
-		n = 0;
-		z = 0;
-		v = 0;
-		c = 0;
+		n = false;
+		z = false;
+		v = false;
+		c = false;
+	}
+	
+	void set(boolean boolN,boolean boolZ,boolean boolV,boolean boolC){
+		n= boolN;
+		z= boolZ;
+		v= boolV;
+		c= boolC;
 	}
 
-	void setN(int input){
-		if(input < 0){
-			n = 1;
-		}else{
-			n = 0;
-		}
-	}
-
-	void setZ(int input){
-		if(input == 0){
-			z = 1;
-		}else{
-			z = 0;
-		}
-	}
-
-	void setV(int input){
-		if(input >= 0x10000){
-			v = 1;
-		}else{
-			v = 0;
-		}
-	}
-
-	void clearV(){
-		v = 0;
-	}
-
-	void setC(int input){
-		if(input < Math.pow(2.0, 16.0)){
-			c = 1;
-		}else{
-			c = 0;
-		}
-	}
-
-	void clearC(){
-		c = 0;
-	}
 }
 
 /*
@@ -217,7 +185,7 @@ class VirtualAddressSpace{
 	int textSize;
 	int dataSize;
 	int bssSize;
-	
+
 	//マジックナンバー
 	int magicNo;
 
@@ -226,7 +194,7 @@ class VirtualAddressSpace{
 
 		//マジックナンバーを取得
 		magicNo = ((int)bf[1] & 0xFF)|(((int)bf[2] & 0xFF) << 8);
-		
+
 		//サイズを取得
 		textSize = ((int)bf[2] & 0xFF)|(((int)bf[3] & 0xFF) << 8);
 		dataSize = ((int)bf[4] & 0xFF)|(((int)bf[5] & 0xFF) << 8);
@@ -236,13 +204,13 @@ class VirtualAddressSpace{
 		mem = new byte[memorySize];
 		int i;
 		int cnt = 0;
-		
+
 		//テキスト領域読み込み
 		for(i=headerSize;i<headerSize+textSize;i++){
 			mem[cnt] = bf[i];
 			cnt++;
 		}
-		
+
 		//データ領域読み込み
 		for(;i<headerSize+textSize+dataSize;i++){
 			mem[cnt] = bf[i];
@@ -383,6 +351,11 @@ class VirtualAddressSpace{
 				srcOperand = "";
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case TSTB:
+				mnemonic = "tstb";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case TST:
 				mnemonic = "tst";
 				srcOperand = "";
@@ -398,35 +371,75 @@ class VirtualAddressSpace{
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case CMPB:
+				mnemonic = "cmpb";
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case CMP:
 				mnemonic = "cmp";
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case ADD:
+				mnemonic = "add";
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case NEG:
+				mnemonic = "neg";
+				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = "";
+				break;
+			case SOB:
+				mnemonic = "sob";
+				srcOperand = getRegisterName(getOctal(opcode,3));
+				dstOperand = getOffset6(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case BR:
+				mnemonic = "br";
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = "";
+				break;
 			case BCC:
 				mnemonic = "bcc";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BNE:
 				mnemonic = "bne";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BEQ:
 				mnemonic = "beq";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = "";
+				break;
+			case BGE:
+				mnemonic = "bge";
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BGT:
 				mnemonic = "bgt";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
 				break;
 			case BHI:
 				mnemonic = "bhi";
-				srcOperand = getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
+				break;
+			case BLE:
+				mnemonic = "ble";
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = "";
+				break;
+			case BIC:
+				mnemonic = "bic";
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case SYS:	
 				mnemonic = "sys";
@@ -437,6 +450,21 @@ class VirtualAddressSpace{
 				mnemonic = "sub";
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case DIV:
+				mnemonic = "div";
+				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getRegisterName(getOctal(opcode,3));
+				break;
+			case MUL:
+				mnemonic = "mul";
+				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getRegisterName(getOctal(opcode,3));
+				break;
+			case ASHC:
+				mnemonic = "ashc";
+				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getRegisterName(getOctal(opcode,3));
 				break;
 			case SETD:
 				mnemonic = "setd";
@@ -496,7 +524,7 @@ class VirtualAddressSpace{
 			if(dbgFlg == 1){
 				printDebug();
 			}
-			
+
 			FieldDto srcObj;
 			FieldDto dstObj;
 
@@ -539,83 +567,86 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) + 1;
-					cc.setN(tmp);
-					cc.setZ(tmp);
 					reg.set(dstObj.register, tmp);
 				}else if(dstObj.flgAddress){
 					tmp = getMemory2(dstObj.address) + 1;
-					cc.setN(tmp);
-					cc.setZ(tmp);
 					setMemory2(dstObj.address, tmp);
 				}else{
 					tmp = dstObj.operand + 1;
-					cc.setN(tmp);
-					cc.setZ(tmp);
 					setMemory2(dstObj.address, tmp);
 				}
+
+				cc.set(tmp<0, tmp==0, cc.v, cc.c);
+
 				break;
 			case DEC:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) - 1;
-					cc.setN(tmp);
-					cc.setZ(tmp);
 					reg.set(dstObj.register, tmp);
 				}else if(dstObj.flgAddress){
 					tmp = getMemory2(dstObj.address) - 1;
-					cc.setN(tmp);
-					cc.setZ(tmp);
 					setMemory2(dstObj.address, tmp);
 				}else{
 					tmp = dstObj.operand - 1;
-					cc.setN(tmp);
-					cc.setZ(tmp);
 					setMemory2(dstObj.address, tmp);
 				}
+
+				cc.set(tmp<0, tmp==0, cc.v, cc.c);
+				
+				break;
+			case TSTB:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
+				cc.set(dstObj.operand<0, dstObj.operand==0, false, false);
+
 				break;
 			case TST:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				cc.setN(dstObj.operand);
-				cc.setZ(dstObj.operand);
-				cc.clearV();
-				cc.clearC();
+				cc.set(dstObj.operand<0, dstObj.operand==0, false, false);
 
 				break;
 			case MOVB:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3),1);
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
 
-				cc.setN(srcObj.operand);
-				cc.setZ(srcObj.operand);
-				cc.clearV();
 
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
-						reg.set(dstObj.register, reg.get(srcObj.register));
+						tmp = reg.get(srcObj.register) << 24;
+						tmp = tmp >> 24;
+						reg.set(dstObj.register, tmp);
 					}else if(dstObj.flgAddress){
-						setMemory2(dstObj.address, reg.get(srcObj.register));
+						tmp = reg.get(srcObj.register);
+						setMemory2(dstObj.address, tmp);
 					}
 				}else if(srcObj.flgAddress){
 					if(dstObj.flgRegister){
-						reg.set(dstObj.register, getMemory2(srcObj.address));
+						tmp = getMemory2(srcObj.address) << 24;
+						tmp = tmp >> 24;
+						reg.set(dstObj.register, tmp);
 					}else if(dstObj.flgAddress){
-						setMemory2(dstObj.address, getMemory2(srcObj.address));
+						tmp = getMemory2(srcObj.address);
+						setMemory2(dstObj.address, tmp);
 					}
 				}else{
 					if(dstObj.flgRegister){
-						reg.set(dstObj.register, srcObj.operand);
+						tmp = srcObj.operand << 24;
+						tmp = tmp >> 24;
+						reg.set(dstObj.register, tmp);
 					}else if(dstObj.flgAddress){
-						setMemory2(dstObj.address, srcObj.operand);
+						tmp = srcObj.operand;
+						setMemory2(dstObj.address, tmp);
 					}
 				}
+
+				cc.set(tmp<0, tmp==0, false, cc.c);
+				
 				break;
 			case MOV:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 
-				cc.setN(srcObj.operand);
-				cc.setZ(srcObj.operand);
-				cc.clearV();
+				cc.set(srcObj.operand<0, srcObj.operand==0, false, cc.c);
 
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
@@ -637,41 +668,113 @@ class VirtualAddressSpace{
 					}
 				}
 				break;
-			case CMP:	//後で確認
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				tmp = srcObj.operand -dstObj.operand;
+			case CMPB:
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3),1);
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
+				tmp = srcObj.operand - dstObj.operand;
 
-				cc.setN(tmp);
-				cc.setZ(tmp);
-				cc.setV(tmp);
-				cc.setC(srcObj.operand + ~dstObj.operand + 1);
+				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
 
 				break;
+			case CMP:
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				tmp = srcObj.operand - dstObj.operand;
+
+				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+
+				break;
+			case ADD:
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				tmp = srcObj.operand + dstObj.operand;
+				
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					setMemory2(dstObj.address, tmp);
+				}else{
+					setMemory2(dstObj.address, tmp);
+				}				
+				
+				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+
+				break;
+			case NEG:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				tmp = ~(dstObj.operand) + 1;
+				
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					setMemory2(dstObj.address, tmp);
+				}else{
+					setMemory2(dstObj.address, tmp);
+				}				
+
+				cc.set(tmp<0, tmp==0, tmp>=100000, tmp!=0);
+
+				break;
+			case SOB:
+				reg.set(getOctal(opcode,3),getOctal(opcode,3) - 1);
+				if(reg.get(getOctal(opcode,3)) != 0){
+					reg.set(7,getOffset6(getOctal(opcode,4),getOctal(opcode,5)).address);
+				}
+				break;
+			case BR:
+				reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				break;
 			case BCC:
-				if(cc.c == 0){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.c == false){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BNE:
-				if(cc.z == 0){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == false){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BEQ:
-				if(cc.z == 1){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == true){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				}
+				break;
+			case BGE:
+				if(cc.n == cc.v){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BGT:
-				if(cc.z == 0 && cc.n == cc.v){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == false && cc.n == cc.v){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
 			case BHI:
-				if(cc.c == 0 && cc.z == 0){
-					reg.set(7,getPcAddOff2(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.c == false && cc.z == false){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
+				break;
+			case BLE:
+				if(cc.z == true || cc.n != cc.v){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				}
+				break;
+			case BIC:
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+
+				tmp = ~(srcObj.operand) & dstObj.operand;
+
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					setMemory2(dstObj.address, tmp);
+				}else{
+					setMemory2(dstObj.address, tmp);
+				}
+
+				cc.set(tmp>0xFF+1, tmp==0, false, cc.c);
+	
 				break;
 			case SYS:	
 				switch(getOctal(opcode,5)){
@@ -700,9 +803,9 @@ class VirtualAddressSpace{
 			case SUB:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				
+
 				tmp = (dstObj.operand - srcObj.operand);
-				
+
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, tmp);
 				}else if(dstObj.flgAddress){
@@ -710,12 +813,15 @@ class VirtualAddressSpace{
 				}else{
 					setMemory2(dstObj.address, tmp);
 				}
-				
-				cc.setN(tmp);
-				cc.setZ(tmp);
-				cc.setV(tmp);
-				cc.setC(srcObj.operand + ~dstObj.operand + 1);
 
+				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+	
+				break;
+			case DIV: //後で書く
+				break;
+			case MUL: //後で書く
+				break;
+			case ASHC: //後で書く
 				break;
 			case SETD:
 				break;
@@ -767,22 +873,53 @@ class VirtualAddressSpace{
 								break;
 							}
 							break;
+						case 4:
+						case 5:
+						case 6:
+						case 7:
+							mnemonic = Mnemonic.BR;
+							break;
 						}
 						break;
 					case 1:
 						switch(getOctal(opcode,3)){
 						case 0:
+						case 1:
+						case 2:
+						case 3:
 							mnemonic = Mnemonic.BNE;
 							break;
 						case 4:
+						case 5:
+						case 6:
+						case 7:
 							mnemonic = Mnemonic.BEQ;
+							break;
+						}
+						break;
+					case 2:
+						switch(getOctal(opcode,3)){
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+							mnemonic = Mnemonic.BGE;
 							break;
 						}
 						break;
 					case 3:
 						switch(getOctal(opcode,3)){
 						case 0:
+						case 1:
+						case 2:
+						case 3:
 							mnemonic = Mnemonic.BGT;
+							break;
+						case 4:
+						case 5:
+						case 6:
+						case 7:
+							mnemonic = Mnemonic.BLE;
 							break;
 						}
 						break;
@@ -800,6 +937,9 @@ class VirtualAddressSpace{
 						case 3:
 							mnemonic = Mnemonic.DEC;
 							break;
+						case 4:
+							mnemonic = Mnemonic.NEG;
+							break;
 						case 7:
 							mnemonic = Mnemonic.TST;
 							break;
@@ -813,13 +953,32 @@ class VirtualAddressSpace{
 				case 2:
 					mnemonic = Mnemonic.CMP;
 					break;
+				case 4:
+					mnemonic = Mnemonic.BIC;
+					break;
+				case 6:
+					mnemonic = Mnemonic.ADD;
+					break;
+				case 7:
+					switch(getOctal(opcode,2)){
+					case 0:
+						mnemonic = Mnemonic.MUL;
+						break;
+					case 1:
+						mnemonic = Mnemonic.DIV;
+						break;
+					case 3:
+						mnemonic = Mnemonic.ASHC;
+						break;
+					case 7:
+						mnemonic = Mnemonic.SOB;
+						break;
+					}
+					break;
 				}
 				break;
 			case 1:
 				switch(getOctal(opcode,1)){
-				case 1:
-					mnemonic = Mnemonic.MOVB;
-					break;
 				case 0:
 					switch(getOctal(opcode,2)){
 					case 1:
@@ -847,7 +1006,20 @@ class VirtualAddressSpace{
 							break;
 						}
 						break;
+					case 5:
+						switch(getOctal(opcode,3)){
+						case 7:
+							mnemonic = Mnemonic.TSTB;
+							break;
+						}
+						break;
 					}
+					break;
+				case 1:
+					mnemonic = Mnemonic.MOVB;
+					break;
+				case 2:
+					mnemonic = Mnemonic.CMPB;
 					break;
 				case 6:
 					mnemonic = Mnemonic.SUB;
@@ -877,25 +1049,32 @@ class VirtualAddressSpace{
 		}
 	}
 
-	//フィールド取得（PC+オフセット*2 6bit）
-	FieldDto getXX(int first,int second){
+	//フィールド取得（PC+オフセット*2 8bit）
+	FieldDto getOffset(int first,int second,int third){
 		FieldDto operand = new FieldDto();
-		operand.setStr("$0x" + String.format("%02x",(((first << 3) + second) * 2 + reg.get(7))));
-		operand.setAddress(((first << 3) + second) * 2 + reg.get(7));
+		int tmp = (first << 6) + (second << 3) + third;
+		tmp = tmp << 24;
+		tmp = tmp >>> 24;
+		tmp = reg.get(7) + tmp * 2;
+
+		if(first!=0 && first!=4){
+			tmp = tmp << 24;
+			tmp = tmp >>> 24;
+		}
+		
+		operand.setStr("0x" + String.format("%x",tmp));
+		operand.setAddress(tmp);
 
 		return operand;
 	}
 
-	//フィールド取得（PC+オフセット*2 8bit）
-	FieldDto getPcAddOff2(int first,int second,int third){
+	//フィールド取得（PC-オフセット*2 6bit）
+	FieldDto getOffset6(int first,int second){
 		FieldDto operand = new FieldDto();
-		int tmp = (first << 6) + (second << 3) + third;
-		if(tmp > (0xFF+1)){
-			tmp = tmp -(0xFF+1);
-		}
-		tmp = tmp * 2 + reg.get(7);
+		int tmp = (first << 3) + second;
+		tmp = reg.get(7) - tmp * 2;
 
-		operand.setStr("$0x" + String.format("%03x",tmp));
+		operand.setStr("0x" + String.format("%x",tmp));
 		operand.setAddress(tmp);
 
 		return operand;
@@ -1034,9 +1213,9 @@ class VirtualAddressSpace{
 				//オペランドの絶対アドレスが命令内にある。
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
-					field.setStr("*$" + "-" + String.format("%01o",~(opcodeShort - 1)));
+					field.setStr("$" + "-" + String.format("%01o",~(opcodeShort - 1)));
 				}else{
-					field.setStr("*$" + String.format("%01o",opcodeShort));
+					field.setStr("$" + String.format("%01o",opcodeShort));
 				}
 				field.setOperand((int)opcodeShort); //ちょっとあやしい？
 				field.setAddress((int)opcodeShort);
@@ -1057,7 +1236,7 @@ class VirtualAddressSpace{
 				//相対間接
 				//命令に続くワードの内容 a を PC+2 に加算したものをアドレスのアドレスとして使用する。
 				opcodeInt = getMem();
-				field.setStr("*0x" + String.format("%02x",(opcodeInt + reg.get(7))));
+				field.setStr("$0x" + String.format("%02x",(opcodeInt + reg.get(7))));
 				field.setOperand(getMemory2(opcodeInt + reg.get(7))); //ちょっとあやしい？
 				field.setAddress(getMemory2(opcodeInt + reg.get(7)));
 				break;
@@ -1067,7 +1246,7 @@ class VirtualAddressSpace{
 
 		return field;
 	}
-	
+
 	void printDebug(){
 		System.out.print("\n");
 		System.out.println("-s-register-start------------");
@@ -1086,9 +1265,11 @@ class VirtualAddressSpace{
 		System.out.print(" v=" + cc.v);
 		System.out.println(" c=" + cc.c);
 
+		System.out.println(" ff5e=" + getMemory2(0xff5e));
+
 		System.out.println("-s-register-end-------------");
 	}
-	
+
 	void printMemory(){
 		System.out.print("--memory-start-------------");
 		for(int m=0;m<textSize+dataSize+bssSize;m=m+2){
@@ -1109,7 +1290,12 @@ class VirtualAddressSpace{
 }
 
 enum Mnemonic { 
-	RTT, JMP, RTS, JSR, CLR, TST, MOV, CMP, BCC, SYS, SETD, WORD, BNE, BEQ, INC, DEC, BGT, SUB, BHI, MOVB
+	RTT, RTS, JMP, JSR, CLR, TST, TSTB, MOV, MOVB, CMP, CMPB,
+	INC, DEC, SUB, ADD, SOB,
+	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE,
+	NEG,
+	DIV, ASHC, MUL,
+	SETD, SYS, WORD
 };
 
 class FieldDto{
