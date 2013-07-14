@@ -1,0 +1,228 @@
+00000000 <.text>:
+   0:   f009            setd
+   2:   1180            mov     sp, r0
+   4:   1226            mov     (r0), -(sp)
+   6:   0bd0            tst     (r0)+
+   8:   1036 0002       mov     r0, 2(sp)
+   c:   09f7 0008       jsr     pc, 0x18
+  10:   100e            mov     r0, (sp)
+  12:   09df 0270       jsr     pc, *$1160
+  16:   8901            sys     1
+  18:   0977 025e       jsr     r5, 0x27a
+  1c:   0be6            tst     -(sp)
+  1e:   0a35 fff8       clr     -10(r5)
+  22:   2d75 0004 fff8  cmp     4(r5), -10(r5)
+  28:   0710            ble     0x4a
+  2a:   1d40 fff8       mov     -10(r5), r0
+  2e:   0cc0            asl     r0
+  30:   6d40 0006       add     6(r5), r0
+  34:   120e            mov     (r0), (sp)
+  36:   1d66 fff8       mov     -10(r5), -(sp)
+  3a:   15e6 0296       mov     $1226, -(sp)
+  3e:   09df 004e       jsr     pc, *$116
+  42:   2596            cmp     (sp)+, (sp)+
+  44:   0ab5 fff8       inc     -10(r5)
+  48:   01ec            br      0x22
+  4a:   0077 023a       jmp     0x288
+  4e:   0977 0228       jsr     r5, 0x27a
+  52:   e5c6 007e       sub     $176, sp
+  56:   1d77 0004 0282  mov     4(r5), $0x2de
+  5c:   1144            mov     r5, r4
+  5e:   65c4 0006       add     $6, r4
+  62:   9fc0 0278       movb    *$0x2de, r0
+  66:   0309            beq     0x7a
+  68:   0ab7 0272       inc     $0x2de
+  6c:   2017 0025       cmp     r0, $45
+  70:   0306            beq     0x7e
+  72:   100e            mov     r0, (sp)
+  74:   09df 0200       jsr     pc, *$1000
+  78:   01f4            br      0x62
+  7a:   0077 020a       jmp     0x288
+  7e:   0a37 025e       clr     $0x2e0
+  82:   0a37 025e       clr     $0x2e4
+  86:   afd7 0254 002d  cmpb    *$0x2de, $55
+  8c:   0204            bne     0x96
+  8e:   0ab7 024c       inc     $0x2de
+  92:   0ab7 024a       inc     $0x2e0
+  96:   08f7 0128       jsr     r3, 0x1c2
+  9a:   1077 023e       mov     r1, $0x2dc
+  9e:   0a37 0240       clr     $0x2e2
+  a2:   2017 002e       cmp     r0, $56
+  a6:   0204            bne     0xb0
+  a8:   08f7 0116       jsr     r3, 0x1c2
+  ac:   1077 0234       mov     r1, $0x2e4
+  b0:   1183            mov     sp, r3
+  b2:   65c3 0004       add     $4, r3
+  b6:   15c1 02a4       mov     $1244, r1
+  ba:   1442            mov     (r1)+, r2
+  bc:   03da            beq     0x72
+  be:   2011            cmp     r0, (r1)+
+  c0:   02fc            bne     0xba
+  c2:   004a            jmp     (r2)
+  c4:   1501            mov     (r4)+, r1
+  c6:   0405            bge     0xd2
+  c8:   0b01            neg     r1
+  ca:   95d3 002d       movb    $55, (r3)+
+  ce:   0101            br      0xd2
+  d0:   1501            mov     (r4)+, r1
+  d2:   09f7 0002       jsr     pc, 0xd8
+  d6:   0152            br      0x17c
+  d8:   0a00            clr     r0
+  da:   7217 000a       div     $12, r0
+  de:   1066            mov     r1, -(sp)
+  e0:   1001            mov     r0, r1
+  e2:   0302            beq     0xe8
+  e4:   09f7 fff0       jsr     pc, 0xd8
+  e8:   1580            mov     (sp)+, r0
+  ea:   65c0 0030       add     $60, r0
+  ee:   9013            movb    r0, (r3)+
+  f0:   0087            rts     pc
+  f2:   9513            movb    (r4)+, (r3)+
+  f4:   0201            bne     0xf8
+  f6:   0ac3            dec     r3
+  f8:   9513            movb    (r4)+, (r3)+
+  fa:   0240            bne     0x17c
+  fc:   0ac3            dec     r3
+  fe:   013e            br      0x17c
+ 100:   1dc1 01e0       mov     $0x2e4, r1
+ 104:   0a03            clr     r3
+ 106:   1302            mov     (r4), r2
+ 108:   8bd2            tstb    (r2)+
+ 10a:   0302            beq     0x110
+ 10c:   0a83            inc     r3
+ 10e:   7e44            sob     r1, 0x108
+ 110:   1502            mov     (r4)+, r2
+ 112:   0138            br      0x184
+ 114:   15c2 02cc       mov     $1314, r2
+ 118:   0102            br      0x11e
+ 11a:   15c2 02d0       mov     $1320, r2
+ 11e:   1501            mov     (r4)+, r1
+ 120:   0305            beq     0x12c
+ 122:   0bf7 01be       tst     $0x2e4
+ 126:   0302            beq     0x12c
+ 128:   95d3 0030       movb    $60, (r3)+
+ 12c:   0a00            clr     r0
+ 12e:   09f7 0002       jsr     pc, 0x134
+ 132:   0124            br      0x17c
+ 134:   1066            mov     r1, -(sp)
+ 136:   760a            ashc    (r2), r0
+ 138:   0302            beq     0x13e
+ 13a:   09f7 fff6       jsr     pc, 0x134
+ 13e:   1580            mov     (sp)+, r0
+ 140:   4c80 0002       bic     2(r2), r0
+ 144:   65c0 0030       add     $60, r0
+ 148:   2017 0039       cmp     r0, $71
+ 14c:   0702            ble     0x152
+ 14e:   65c0 0007       add     $7, r0
+ 152:   9013            movb    r0, (r3)+
+ 154:   0087            rts     pc
+ 156:   1dc0 018a       mov     $0x2e4, r0
+ 15a:   1dc2 0184       mov     $0x2e2, r2
+ 15e:   09f7 0094       jsr     pc, 0x1f6
+ 162:   010c            br      0x17c
+ 164:   1dc0 017c       mov     $0x2e4, r0
+ 168:   1dc2 0176       mov     $0x2e2, r2
+ 16c:   09f7 0086       jsr     pc, 0x1f6
+ 170:   0105            br      0x17c
+ 172:   1504            mov     (r4)+, r4
+ 174:   1537 0166       mov     (r4)+, $0x2de
+ 178:   0077 fee6       jmp     0x62
+ 17c:   1182            mov     sp, r2
+ 17e:   65c2 0004       add     $4, r2
+ 182:   e083            sub     r2, r3
+ 184:   1126            mov     r4, -(sp)
+ 186:   15e6 0020       mov     $40, -(sp)
+ 18a:   10c4            mov     r3, r4
+ 18c:   0b03            neg     r3
+ 18e:   6dc3 014a       add     $0x2dc, r3
+ 192:   0706            ble     0x1a0
+ 194:   0bf7 0148       tst     $0x2e0
+ 198:   0203            bne     0x1a0
+ 19a:   09df 0200       jsr     pc, *$1000
+ 19e:   7ec3            sob     r3, 0x19a
+ 1a0:   0bc4            tst     r4
+ 1a2:   0304            beq     0x1ac
+ 1a4:   948e            movb    (r2)+, (sp)
+ 1a6:   09df 0200       jsr     pc, *$1000
+ 1aa:   7f04            sob     r4, 0x1a4
+ 1ac:   0bc3            tst     r3
+ 1ae:   0705            ble     0x1ba
+ 1b0:   15ce 0020       mov     $40, (sp)
+ 1b4:   09df 0200       jsr     pc, *$1000
+ 1b8:   7ec3            sob     r3, 0x1b4
+ 1ba:   0bd6            tst     (sp)+
+ 1bc:   1584            mov     (sp)+, r4
+ 1be:   0077 fea0       jmp     0x62
+ 1c2:   0a37 011c       clr     $0x2e2
+ 1c6:   0a01            clr     r1
+ 1c8:   9fc0 0112       movb    *$0x2de, r0
+ 1cc:   0ab7 010e       inc     $0x2de
+ 1d0:   e5c0 0030       sub     $60, r0
+ 1d4:   2017 fffa       cmp     r0, $-6
+ 1d8:   0202            bne     0x1de
+ 1da:   1500            mov     (r4)+, r0
+ 1dc:   0103            br      0x1e4
+ 1de:   2017 0009       cmp     r0, $11
+ 1e2:   8206            bhi     0x1f0
+ 1e4:   0ab7 00fa       inc     $0x2e2
+ 1e8:   7057 000a       mul     $12, r1
+ 1ec:   6001            add     r0, r1
+ 1ee:   01ec            br      0x1c8
+ 1f0:   65c0 0030       add     $60, r0
+ 1f4:   0083            rts     r3
+ 1f6:   65c4 0008       add     $10, r4
+ 1fa:   95d3 003f       movb    $77, (r3)+
+ 1fe:   0087            rts     pc
+ 200:   1166            mov     r5, -(sp)
+ 202:   1185            mov     sp, r5
+ 204:   1dc0 00e2       mov     $0x2ea, r0
+ 208:   0204            bne     0x212
+ 20a:   09f7 002c       jsr     pc, 0x23a
+ 20e:   1dc0 00d8       mov     $0x2ea, r0
+ 212:   9d50 0004       movb    4(r5), (r0)+
+ 216:   0307            beq     0x226
+ 218:   0ab7 00ce       inc     $0x2ea
+ 21c:   0af7 00c8       dec     $0x2e8
+ 220:   0602            bgt     0x226
+ 222:   09f7 0014       jsr     pc, 0x23a
+ 226:   1d40 0004       mov     4(r5), r0
+ 22a:   1585            mov     (sp)+, r5
+ 22c:   0087            rts     pc
+ 22e:   1166            mov     r5, -(sp)
+ 230:   1185            mov     sp, r5
+ 232:   09f7 0004       jsr     pc, 0x23a
+ 236:   1585            mov     (sp)+, r5
+ 238:   0087            rts     pc
+ 23a:   1dc0 00ac       mov     $0x2ea, r0
+ 23e:   030a            beq     0x254
+ 240:   e5c0 02ec       sub     $1354, r0
+ 244:   1037 0090       mov     r0, $0x2d8
+ 248:   1dc0 009a       mov     $0x2e6, r0
+ 24c:   0201            bne     0x250
+ 24e:   0a80            inc     r0
+ 250:   8900            sys     0
+ 252:   02d4            bne     0x1fc
+ 254:   15f7 02ec 0090  mov     $1354, $0x2ea
+ 25a:   15f7 0200 0088  mov     $1000, $0x2e8
+ 260:   2dd7 0082 0002  cmp     $0x2e6, $2
+ 266:   8203            bhi     0x26e
+ 268:   15f7 0001 007a  mov     $1, $0x2e8
+ 26e:   0087            rts     pc
+ 270:   1166            mov     r5, -(sp)
+ 272:   1185            mov     sp, r5
+ 274:   1d40 0004       mov     4(r5), r0
+ 278:   8901            sys     1
+ 27a:   1140            mov     r5, r0
+ 27c:   1185            mov     sp, r5
+ 27e:   1126            mov     r4, -(sp)
+ 280:   10e6            mov     r3, -(sp)
+ 282:   10a6            mov     r2, -(sp)
+ 284:   0be6            tst     -(sp)
+ 286:   0048            jmp     (r0)
+ 288:   1141            mov     r5, r1
+ 28a:   1844            mov     -(r1), r4
+ 28c:   1843            mov     -(r1), r3
+ 28e:   1842            mov     -(r1), r2
+ 290:   1146            mov     r5, sp
+ 292:   1585            mov     (sp)+, r5
+ 294:   0087            rts     pc

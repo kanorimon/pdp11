@@ -105,7 +105,7 @@ class Register{
 		reg[3] = 0;
 		reg[4] = 0;
 		reg[5] = 0;
-		reg[6] = 65526; //spは最後尾のアドレスを指す
+		reg[6] = 65535; //spは最後尾のアドレスを指す
 		reg[7] = 0;
 	}
 
@@ -582,7 +582,7 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				cc.set(tmp<0, tmp==0, cc.v, cc.c);
+				cc.set((tmp >>> 15)>0, tmp==0, cc.v, cc.c);
 
 				break;
 			case DEC:
@@ -598,23 +598,22 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				cc.set(tmp<0, tmp==0, cc.v, cc.c);
+				cc.set((tmp >>> 15)>0, tmp==0, cc.v, cc.c);
 				
 				break;
 			case TSTB:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
-				cc.set(dstObj.operand<0, dstObj.operand==0, false, false);
+				cc.set((dstObj.operand >>> 15)>0, dstObj.operand==0, false, false);
 
 				break;
 			case TST:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				cc.set(dstObj.operand<0, dstObj.operand==0, false, false);
-
+				cc.set((dstObj.operand >>> 15)>0, dstObj.operand==0, false, false);
+				
 				break;
 			case MOVB:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3),1);
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
-
 
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
@@ -645,7 +644,7 @@ class VirtualAddressSpace{
 					}
 				}
 
-				cc.set(tmp<0, tmp==0, false, cc.c);
+				cc.set((tmp >>> 15)>0, tmp==0, false, cc.c);
 				
 				break;
 			case MOV:
@@ -679,11 +678,7 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
 				tmp = srcObj.operand - dstObj.operand;
 
-				int tmpCmpb = dstObj.operand << 16;
-				tmpCmpb = ~tmpCmpb;
-				tmpCmpb = tmpCmpb >>> 16;
-
-				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~tmpCmpb + 1) < Math.pow(2.0, 16.0));
+				cc.set((tmp >>> 15)>0, tmp==0, tmp>=0x10000, (srcObj.operand + (~(dstObj.operand << 16) >>> 16) + 1) < Math.pow(2.0, 16.0));
 
 				break;
 			case CMP:
@@ -691,11 +686,7 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				tmp = srcObj.operand - dstObj.operand;
 				
-				int tmpCmp = dstObj.operand << 16;
-				tmpCmp = ~tmpCmp;
-				tmpCmp = tmpCmp >>> 16;
-				
-				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + tmpCmp + 1) < Math.pow(2.0, 16.0));
+				cc.set((tmp >>> 15)>0, tmp==0, tmp>=0x10000, (srcObj.operand + (~(dstObj.operand << 16) >>> 16) + 1) < Math.pow(2.0, 16.0));
 
 				break;
 			case ADD:
@@ -703,15 +694,20 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				tmp = srcObj.operand + dstObj.operand;
 				
+				boolean addC = false;
+				if((dstObj.operand >>> 15) == (srcObj.operand >>> 15)){
+					if((dstObj.operand >>> 15) != (tmp >>> 15)){
+						addC = true;
+					}
+				}
+				
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, tmp);
-				}else if(dstObj.flgAddress){
-					setMemory2(dstObj.address, tmp);
 				}else{
 					setMemory2(dstObj.address, tmp);
 				}				
 				
-				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+				cc.set((tmp >>> 15)>0, tmp==0, addC , (srcObj.operand + (~(dstObj.operand << 16) >>> 16) + 1) < Math.pow(2.0, 16.0));
 
 				break;
 			case NEG:
@@ -726,11 +722,11 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}				
 
-				cc.set(tmp<0, tmp==0, tmp>=100000, tmp!=0);
+				cc.set((tmp >>> 15)>0, tmp==0, tmp>=100000, tmp!=0);
 
 				break;
 			case SOB:
-				reg.set(getOctal(opcode,3),getOctal(opcode,3) - 1);
+				reg.set(getOctal(opcode,3),reg.get(getOctal(opcode,3)) - 1);
 				if(reg.get(getOctal(opcode,3)) != 0){
 					reg.set(7,getOffset6(getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
@@ -828,7 +824,7 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+				cc.set((tmp >>> 15)>0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
 	
 				break;
 			case DIV: //後で書く
@@ -841,6 +837,11 @@ class VirtualAddressSpace{
 				
 				reg.set(getOctal(opcode,3), divValue / srcObj.operand);
 				reg.set(getOctal(opcode,3)+1, divValue % srcObj.operand);
+
+				cc.set((reg.get(getOctal(opcode,3)) >>> 15)>0, 
+						reg.get(getOctal(opcode,3))==0, 
+						srcObj.operand==0,
+						srcObj.operand==0);
 				
 				break;
 			case MUL: //後で書く
