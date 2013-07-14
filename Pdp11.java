@@ -560,7 +560,13 @@ class VirtualAddressSpace{
 				reg.set(7, srcObj.address);
 				break;
 			case CLR:
-				setMemory2(getField(getOctal(opcode,4),getOctal(opcode,5)).operand,0);
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, 0);
+				}else{
+					setMemory2(dstObj.address,0);
+				}
+				
 				cc.reset();
 				break;
 			case INC:
@@ -673,15 +679,23 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),1);
 				tmp = srcObj.operand - dstObj.operand;
 
-				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+				int tmpCmpb = dstObj.operand << 16;
+				tmpCmpb = ~tmpCmpb;
+				tmpCmpb = tmpCmpb >>> 16;
+
+				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~tmpCmpb + 1) < Math.pow(2.0, 16.0));
 
 				break;
 			case CMP:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				tmp = srcObj.operand - dstObj.operand;
-
-				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + ~dstObj.operand + 1) < Math.pow(2.0, 16.0));
+				
+				int tmpCmp = dstObj.operand << 16;
+				tmpCmp = ~tmpCmp;
+				tmpCmp = tmpCmp >>> 16;
+				
+				cc.set(tmp<0, tmp==0, tmp>=0x10000, (srcObj.operand + tmpCmp + 1) < Math.pow(2.0, 16.0));
 
 				break;
 			case ADD:
@@ -702,7 +716,7 @@ class VirtualAddressSpace{
 				break;
 			case NEG:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				tmp = ~(dstObj.operand) + 1;
+				tmp = (~(dstObj.operand << 16) >>> 16) + 1;
 				
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, tmp);
@@ -818,6 +832,16 @@ class VirtualAddressSpace{
 	
 				break;
 			case DIV: //後で書く
+				int divR1 = reg.get(getOctal(opcode,3)) << 16;
+				int divR2 = reg.get(getOctal(opcode,3)+1);
+				
+				int divValue = divR1 + divR2;
+				
+				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				
+				reg.set(getOctal(opcode,3), divValue / srcObj.operand);
+				reg.set(getOctal(opcode,3)+1, divValue % srcObj.operand);
+				
 				break;
 			case MUL: //後で書く
 				break;
@@ -1049,18 +1073,12 @@ class VirtualAddressSpace{
 		}
 	}
 
-	//フィールド取得（PC+オフセット*2 8bit）
+	//フィールド取得（PC+オフセット*2 8bit（符号付））
 	FieldDto getOffset(int first,int second,int third){
 		FieldDto operand = new FieldDto();
 		int tmp = (first << 6) + (second << 3) + third;
-		tmp = tmp << 24;
-		tmp = tmp >>> 24;
-		tmp = reg.get(7) + tmp * 2;
-
-		if(first!=0 && first!=4){
-			tmp = tmp << 24;
-			tmp = tmp >>> 24;
-		}
+		byte tmpByte = (byte)tmp;
+		tmp = reg.get(7) + tmpByte * 2;
 		
 		operand.setStr("0x" + String.format("%x",tmp));
 		operand.setAddress(tmp);
@@ -1068,7 +1086,7 @@ class VirtualAddressSpace{
 		return operand;
 	}
 
-	//フィールド取得（PC-オフセット*2 6bit）
+	//フィールド取得（PC-オフセット*2 6bit（符号なし、正の数値））
 	FieldDto getOffset6(int first,int second){
 		FieldDto operand = new FieldDto();
 		int tmp = (first << 3) + second;
@@ -1103,7 +1121,7 @@ class VirtualAddressSpace{
 
 		//ワーク
 		short opcodeShort;
-		int opcodeInt;
+		int tmp;
 
 		switch(second){
 		case 0:
@@ -1125,16 +1143,18 @@ class VirtualAddressSpace{
 				//レジスタ間接
 				//registerにオペランドのアドレスがある。
 				field.setStr("(" + getRegisterName(second) + ")");
-				field.setOperand(getMemory2(reg.get(second)));
-				field.setAddress(reg.get(second));
+				if(exeFlg == 1){
+					field.setOperand(getMemory2(reg.get(second)));
+					field.setAddress(reg.get(second));
+				}
 				break;
 			case 2:
 				//自動インクリメント
 				//registerにオペランドのアドレスがあり、命令実行後にregisterの内容をインクリメントする。
 				field.setStr("(" + getRegisterName(second) + ")+");
-				field.setOperand(getMemory2(reg.get(second)));
-				field.setAddress(reg.get(second));
 				if(exeFlg == 1){
+					field.setOperand(getMemory2(reg.get(second)));
+					field.setAddress(reg.get(second));
 					if(flgByte == 1){
 						reg.add(second,1);
 					}else{
@@ -1146,9 +1166,9 @@ class VirtualAddressSpace{
 				//自動インクリメント間接
 				//registerにオペランドへのポインタのアドレスがあり、命令実行後にregisterの内容を2だけインクリメントする。
 				field.setStr("*(" + getRegisterName(second) + ")+");
-				field.setOperand(getMemory2(getMemory2(reg.get(second))));
-				field.setAddress(getMemory2(reg.get(second)));
 				if(exeFlg == 1){
+					field.setOperand(getMemory2(getMemory2(reg.get(second))));
+					field.setAddress(getMemory2(reg.get(second)));
 					reg.add(second,4);
 				}
 				break;
@@ -1161,36 +1181,48 @@ class VirtualAddressSpace{
 					}else{
 						reg.add(second,-2);
 					}
+					field.setOperand(getMemory2(reg.get(second)));
+					field.setAddress(reg.get(second));
 				}
 				field.setStr("-(" + getRegisterName(second) + ")");
-				field.setOperand(getMemory2(reg.get(second)));
-				field.setAddress(reg.get(second));
 				break;
 			case 5:
 				//自動デクリメント間接
 				//命令実行前にregisterを2だけデクリメントし、それをオペランドへのポインタのアドレスとして使用する。
 				if(exeFlg == 1){
 					reg.add(second,-4);
+					field.setOperand(getMemory2(getMemory2(reg.get(second))));
+					field.setAddress(getMemory2(reg.get(second)));
 				}
 				field.setStr("*-(" + getRegisterName(second) + ")");
-				field.setOperand(getMemory2(getMemory2(reg.get(second))));
-				field.setAddress(getMemory2(reg.get(second)));
 				break;
 			case 6:
 				//インデックス
 				//register+Xがオペランドのアドレス。Xはこの命令に続くワード。
-				opcodeInt = getMem();
-				field.setStr(String.format("%01o",opcodeInt) + "(" + getRegisterName(second) + ")");
-				field.setOperand(getMemory2(reg.get(second) + opcodeInt));
-				field.setAddress(reg.get(second) + opcodeInt);
+				opcodeShort = (short)getMem();
+				if(opcodeShort < 0){
+					field.setStr("-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(second) + ")");
+				}else{
+					field.setStr(String.format("%o",opcodeShort) + "(" + getRegisterName(second) + ")");
+				}
+				if(exeFlg == 1){
+					field.setOperand(getMemory2(reg.get(second) + opcodeShort));
+					field.setAddress(reg.get(second) + opcodeShort);
+				}
 				break;
 			case 7:
 				//インデックス間接
 				//register+Xがオペランドへのポインタのアドレス。Xはこの命令に続くワード。
-				opcodeInt = getMem();
-				field.setStr("*" + String.format("%01o",opcodeInt) + "(" + getRegisterName(second) + ")");
-				field.setOperand(getMemory2(getMemory2(reg.get(second) + opcodeInt)));
-				field.setAddress(getMemory2(reg.get(second) + opcodeInt));
+				opcodeShort = (short)getMem();
+				if(opcodeShort < 0){
+					field.setStr("*-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(second) + ")");
+				}else{
+					field.setStr("*-" + String.format("%o",opcodeShort) + "(" + getRegisterName(second) + ")");
+				}
+				if(exeFlg == 1){
+					field.setOperand(getMemory2(getMemory2(reg.get(second) + opcodeShort)));
+					field.setAddress(getMemory2(reg.get(second) + opcodeShort));
+				}
 				break;
 			}
 			break;
@@ -1202,43 +1234,49 @@ class VirtualAddressSpace{
 				//オペランドは命令内にある。
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
-					field.setStr("$" + "-" + String.format("%01o",~(opcodeShort - 1)));
+					field.setStr("$" + "-" + String.format("%o",~(opcodeShort - 1)));
 				}else{
-					field.setStr("$" + String.format("%01o",opcodeShort));
+					field.setStr("$" + String.format("%o",opcodeShort));
 				}
-				field.setOperand((int)opcodeShort); //ちょっとあやしい？
+				if(exeFlg == 1){
+					field.setOperand((int)opcodeShort); //ちょっとあやしい？
+				}
 				break;
 			case 3:
 				//絶対
 				//オペランドの絶対アドレスが命令内にある。
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
-					field.setStr("$" + "-" + String.format("%01o",~(opcodeShort - 1)));
+					field.setStr("*$" + "-" + String.format("%o",~(opcodeShort - 1)));
 				}else{
-					field.setStr("$" + String.format("%01o",opcodeShort));
+					field.setStr("*$" + String.format("%o",opcodeShort));
 				}
-				field.setOperand((int)opcodeShort); //ちょっとあやしい？
-				field.setAddress((int)opcodeShort);
+				if(exeFlg == 1){
+					field.setOperand((int)opcodeShort); //ちょっとあやしい？
+					field.setAddress((int)opcodeShort);
+				}
 				break;
 			case 6:
 				//相対
 				//命令に続くワードの内容 a を PC+2 に加算したものをアドレスとして使用する。
-				opcodeInt = getMem();
-				int tmp = opcodeInt + reg.get(7);
-				if(tmp >= 0x10000){
-					tmp = tmp - 0x10000;
-				}
+				opcodeShort = (short)getMem();
+				tmp = opcodeShort + reg.get(7);
+				
 				field.setStr("0x" + String.format("%02x",tmp));
-				field.setOperand(getMemory2(tmp));
-				field.setAddress(tmp);
+				if(exeFlg == 1){
+					field.setOperand(getMemory2(tmp));
+					field.setAddress(tmp);
+				}
 				break;
 			case 7:
 				//相対間接
 				//命令に続くワードの内容 a を PC+2 に加算したものをアドレスのアドレスとして使用する。
-				opcodeInt = getMem();
-				field.setStr("$0x" + String.format("%02x",(opcodeInt + reg.get(7))));
-				field.setOperand(getMemory2(opcodeInt + reg.get(7))); //ちょっとあやしい？
-				field.setAddress(getMemory2(opcodeInt + reg.get(7)));
+				opcodeShort = (short)getMem();
+				tmp = opcodeShort + reg.get(7);
+
+				field.setStr("*$0x" + String.format("%02x",(tmp)));
+				field.setOperand(getMemory2(tmp)); //ちょっとあやしい？
+				field.setAddress(getMemory2(tmp));
 				break;
 			}
 			break;
@@ -1264,8 +1302,6 @@ class VirtualAddressSpace{
 		System.out.print(" z=" + cc.z);
 		System.out.print(" v=" + cc.v);
 		System.out.println(" c=" + cc.c);
-
-		System.out.println(" ff5e=" + getMemory2(0xff5e));
 
 		System.out.println("-s-register-end-------------");
 	}
@@ -1302,6 +1338,7 @@ class FieldDto{
 
 	String str;
 	int operand;
+	short operandShort;
 	int address;
 	int register;
 
@@ -1315,6 +1352,7 @@ class FieldDto{
 
 	public void setOperand(int input){
 		operand = input;
+		operandShort = (short)input;
 	}
 
 	public void setStr(String input){
