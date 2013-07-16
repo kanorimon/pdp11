@@ -1,0 +1,638 @@
+
+uzuramon@uzura-MOBILE ~
+$ 7run -m a.out abc def
+ r0   r1   r2   r3   r4   r5   sp  flags pc
+start:
+0000 0000 0000 0000 0000 0000 ffea ---- 0000:f009           setd
+0000 0000 0000 0000 0000 0000 ffea ---- 0002:1180           mov sp, r0
+ffea 0000 0000 0000 0000 0000 ffea -N-- 0004:1226           mov (r0), -(sp) ;[ff
+ea]0003 ;[ffe8]0000
+ffea 0000 0000 0000 0000 0000 ffe8 ---- 0006:0bd0           tst (r0)+ ;[ffea]000
+3
+ffec 0000 0000 0000 0000 0000 ffe8 ---- 0008:1036 0002      mov r0, 2(sp) ;[ffea
+]0003
+ffec 0000 0000 0000 0000 0000 ffe8 -N-- 000c:09f7 0008      jsr pc, 0018 ;[0018]
+0977
+_main:
+ffec 0000 0000 0000 0000 0000 ffe6 -N-- 0018:0977 0246      jsr r5, 0262 ;[0262]
+1140
+csv:
+ffec 0000 0000 0000 0000 001c ffe4 -N-- 0262:1140           mov r5, r0
+001c 0000 0000 0000 0000 001c ffe4 ---- 0264:1185           mov sp, r5
+001c 0000 0000 0000 0000 ffe4 ffe4 -N-- 0266:1126           mov r4, -(sp) ;[ffe2
+]0000
+001c 0000 0000 0000 0000 ffe4 ffe2 Z--- 0268:10e6           mov r3, -(sp) ;[ffe0
+]0000
+001c 0000 0000 0000 0000 ffe4 ffe0 Z--- 026a:10a6           mov r2, -(sp) ;[ffde
+]0000
+001c 0000 0000 0000 0000 ffe4 ffde Z--- 026c:0be6           tst -(sp) ;[ffdc]000
+0
+001c 0000 0000 0000 0000 ffe4 ffdc Z--- 026e:0048           jmp (r0) ;[001c]0be6
+
+001c 0000 0000 0000 0000 ffe4 ffdc Z--- 001c:0be6           tst -(sp) ;[ffda]000
+0
+001c 0000 0000 0000 0000 ffe4 ffda Z--- 001e:15f5 04d2 fff8 mov $4d2, -8(r5) ;[f
+fdc]0000
+001c 0000 0000 0000 0000 ffe4 ffda ---- 0024:1d4e fff8      mov -8(r5), (sp) ;[f
+fdc]04d2 ;[ffda]0000
+001c 0000 0000 0000 0000 ffe4 ffda ---- 0028:15e6 027e      mov $27e, -(sp) ;[ff
+d8]0000
+001c 0000 0000 0000 0000 ffe4 ffd8 ---- 002c:09df 0036      jsr pc, *$0036 ;[003
+6]0977
+_printf:
+001c 0000 0000 0000 0000 ffe4 ffd6 ---- 0036:0977 0228      jsr r5, 0262 ;[0262]
+1140
+csv:
+001c 0000 0000 0000 0000 003a ffd4 ---- 0262:1140           mov r5, r0
+003a 0000 0000 0000 0000 003a ffd4 ---- 0264:1185           mov sp, r5
+003a 0000 0000 0000 0000 ffd4 ffd4 -N-- 0266:1126           mov r4, -(sp) ;[ffd2
+]0000
+003a 0000 0000 0000 0000 ffd4 ffd2 Z--- 0268:10e6           mov r3, -(sp) ;[ffd0
+]0000
+003a 0000 0000 0000 0000 ffd4 ffd0 Z--- 026a:10a6           mov r2, -(sp) ;[ffce
+]0000
+003a 0000 0000 0000 0000 ffd4 ffce Z--- 026c:0be6           tst -(sp) ;[ffcc]000
+0
+003a 0000 0000 0000 0000 ffd4 ffcc Z--- 026e:0048           jmp (r0) ;[003a]e5c6
+
+003a 0000 0000 0000 0000 ffd4 ffcc Z--- 003a:e5c6 007e      sub $7e, sp
+003a 0000 0000 0000 0000 ffd4 ff4e ---V 003e:1d77 0004 027a mov 4(r5), 02be ;[ff
+d8]027e ;[02be]0000
+003a 0000 0000 0000 0000 ffd4 ff4e ---- 0044:1144           mov r5, r4
+003a 0000 0000 0000 ffd4 ffd4 ff4e -N-- 0046:65c4 0006      add $6, r4
+loop:
+003a 0000 0000 0000 ffda ffd4 ff4e ---V 004a:9fc0 0270      movb *02be, r0 ;[027
+e]61
+0061 0000 0000 0000 ffda ffd4 ff4e ---- 004e:0309           beq 0062
+0061 0000 0000 0000 ffda ffd4 ff4e ---- 0050:0ab7 026a      inc 02be ;[02be]027e
+
+0061 0000 0000 0000 ffda ffd4 ff4e ---- 0054:2017 0025      cmp r0, $25
+0061 0000 0000 0000 ffda ffd4 ff4e ---- 0058:0306           beq 0066
+0061 0000 0000 0000 ffda ffd4 ff4e ---- 005a:100e           mov r0, (sp) ;[ff4e]
+0000
+0061 0000 0000 0000 ffda ffd4 ff4e ---- 005c:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+0061 0000 0000 0000 ffda ffd4 ff4c ---- 01e8:1166           mov r5, -(sp) ;[ff4a
+]0000
+0061 0000 0000 0000 ffda ffd4 ff4a -N-- 01ea:1185           mov sp, r5
+0061 0000 0000 0000 ffda ff4a ff4a -N-- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+0000
+0000 0000 0000 0000 ffda ff4a ff4a Z--- 01f0:0204           bne 01fa
+0000 0000 0000 0000 ffda ff4a ff4a Z--- 01f2:09f7 002c      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+0000
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 0226:030a           beq 023c
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]0000
+0000 0000 0000 0000 ffda ff4a ff48 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0000 0000 0000 0000 ffda ff4a ff48 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0000 0000 0000 0000 ffda ff4a ff48 --CV 024e:8203           bhi 0256
+0000 0000 0000 0000 ffda ff4a ff48 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0000 0000 0000 0000 ffda ff4a ff48 --C- 0256:0087           rts pc
+0000 0000 0000 0000 ffda ff4a ff4a --C- 01f6:1dc0 00d0      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 0000 0000 ffda ff4a ff4a --C- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4e]61 ;[02cc]00
+02cd 0000 0000 0000 ffda ff4a ff4a --C- 01fe:0307           beq 020e
+02cd 0000 0000 0000 ffda ff4a ff4a --C- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 0000 0000 ffda ff4a ff4a --C- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 0000 0000 ffda ff4a ff4a Z-C- 0208:0602           bgt 020e
+02cd 0000 0000 0000 ffda ff4a ff4a Z-C- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 0000 0000 ffda ff4a ff48 Z-C- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 0000 0000 ffda ff4a ff48 --C- 0226:030a           beq 023c
+02cd 0000 0000 0000 ffda ff4a ff48 --C- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 0000 0000 ffda ff4a ff48 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0000
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 0234:0201           bne 0238
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 0236:0a80           inc r0
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)a => 1>
+0001 0000 0000 0000 ffda ff4a ff48 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 0000 0000 ffda ff4a ff48 --CV 024e:8203           bhi 0256
+0001 0000 0000 0000 ffda ff4a ff48 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 0000 0000 ffda ff4a ff48 --C- 0256:0087           rts pc
+0001 0000 0000 0000 ffda ff4a ff4a --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4e
+]0061
+0061 0000 0000 0000 ffda ff4a ff4a --C- 0212:1585           mov (sp)+, r5 ;[ff4a
+]ffd4
+0061 0000 0000 0000 ffda ffd4 ff4c -NC- 0214:0087           rts pc
+0061 0000 0000 0000 ffda ffd4 ff4e -NC- 0060:01f4           br 004a
+loop:
+0061 0000 0000 0000 ffda ffd4 ff4e -NC- 004a:9fc0 0270      movb *02be, r0 ;[027
+f]3d
+003d 0000 0000 0000 ffda ffd4 ff4e --C- 004e:0309           beq 0062
+003d 0000 0000 0000 ffda ffd4 ff4e --C- 0050:0ab7 026a      inc 02be ;[02be]027f
+
+003d 0000 0000 0000 ffda ffd4 ff4e --C- 0054:2017 0025      cmp r0, $25
+003d 0000 0000 0000 ffda ffd4 ff4e ---- 0058:0306           beq 0066
+003d 0000 0000 0000 ffda ffd4 ff4e ---- 005a:100e           mov r0, (sp) ;[ff4e]
+0061
+003d 0000 0000 0000 ffda ffd4 ff4e ---- 005c:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+003d 0000 0000 0000 ffda ffd4 ff4c ---- 01e8:1166           mov r5, -(sp) ;[ff4a
+]ffd4
+003d 0000 0000 0000 ffda ffd4 ff4a -N-- 01ea:1185           mov sp, r5
+003d 0000 0000 0000 ffda ff4a ff4a -N-- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 0000 0000 ffda ff4a ff4a ---- 01f0:0204           bne 01fa
+02cc 0000 0000 0000 ffda ff4a ff4a ---- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4e]3d ;[02cc]61
+02cd 0000 0000 0000 ffda ff4a ff4a ---- 01fe:0307           beq 020e
+02cd 0000 0000 0000 ffda ff4a ff4a ---- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 0000 0000 ffda ff4a ff4a ---- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 0000 0000 ffda ff4a ff4a Z--- 0208:0602           bgt 020e
+02cd 0000 0000 0000 ffda ff4a ff4a Z--- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 0000 0000 ffda ff4a ff48 Z--- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 0000 0000 ffda ff4a ff48 ---- 0226:030a           beq 023c
+02cd 0000 0000 0000 ffda ff4a ff48 ---- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 0000 0000 ffda ff4a ff48 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0001
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 0234:0201           bne 0238
+0000 0000 0000 0000 ffda ff4a ff48 Z--- 0236:0a80           inc r0
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)= => 1>
+0001 0000 0000 0000 ffda ff4a ff48 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 0000 0000 ffda ff4a ff48 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 0000 0000 ffda ff4a ff48 --CV 024e:8203           bhi 0256
+0001 0000 0000 0000 ffda ff4a ff48 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 0000 0000 ffda ff4a ff48 --C- 0256:0087           rts pc
+0001 0000 0000 0000 ffda ff4a ff4a --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4e
+]003d
+003d 0000 0000 0000 ffda ff4a ff4a --C- 0212:1585           mov (sp)+, r5 ;[ff4a
+]ffd4
+003d 0000 0000 0000 ffda ffd4 ff4c -NC- 0214:0087           rts pc
+003d 0000 0000 0000 ffda ffd4 ff4e -NC- 0060:01f4           br 004a
+loop:
+003d 0000 0000 0000 ffda ffd4 ff4e -NC- 004a:9fc0 0270      movb *02be, r0 ;[028
+0]25
+0025 0000 0000 0000 ffda ffd4 ff4e --C- 004e:0309           beq 0062
+0025 0000 0000 0000 ffda ffd4 ff4e --C- 0050:0ab7 026a      inc 02be ;[02be]0280
+
+0025 0000 0000 0000 ffda ffd4 ff4e --C- 0054:2017 0025      cmp r0, $25
+0025 0000 0000 0000 ffda ffd4 ff4e Z--- 0058:0306           beq 0066
+0025 0000 0000 0000 ffda ffd4 ff4e Z--- 0066:0a37 0256      clr 02c0 ;[02c0]0000
+
+0025 0000 0000 0000 ffda ffd4 ff4e Z--- 006a:0a37 0256      clr 02c4 ;[02c4]0000
+
+0025 0000 0000 0000 ffda ffd4 ff4e Z--- 006e:afd7 024c 002d cmpb *02be, $2d ;[02
+81]64
+0025 0000 0000 0000 ffda ffd4 ff4e ---- 0074:0204           bne 007e
+0025 0000 0000 0000 ffda ffd4 ff4e ---- 007e:08f7 0128      jsr r3, 01aa ;[01aa]
+0a37
+gnum:
+0025 0000 0000 0082 ffda ffd4 ff4c ---- 01aa:0a37 0114      clr 02c2 ;[02c2]0000
+
+0025 0000 0000 0082 ffda ffd4 ff4c Z--- 01ae:0a01           clr r1
+0025 0000 0000 0082 ffda ffd4 ff4c Z--- 01b0:9fc0 010a      movb *02be, r0 ;[028
+1]64
+0064 0000 0000 0082 ffda ffd4 ff4c ---- 01b4:0ab7 0106      inc 02be ;[02be]0281
+
+0064 0000 0000 0082 ffda ffd4 ff4c ---- 01b8:e5c0 0030      sub $30, r0
+0034 0000 0000 0082 ffda ffd4 ff4c ---- 01bc:2017 fffa      cmp r0, $fffa
+0034 0000 0000 0082 ffda ffd4 ff4c --C- 01c0:0202           bne 01c6
+0034 0000 0000 0082 ffda ffd4 ff4c --C- 01c6:2017 0009      cmp r0, $9
+0034 0000 0000 0082 ffda ffd4 ff4c ---- 01ca:8206           bhi 01d8
+0034 0000 0000 0082 ffda ffd4 ff4c ---- 01d8:65c0 0030      add $30, r0
+0064 0000 0000 0082 ffda ffd4 ff4c ---- 01dc:0083           rts r3
+0064 0000 0000 0000 ffda ffd4 ff4e ---- 0082:1077 0236      mov r1, 02bc ;[02bc]
+0000
+0064 0000 0000 0000 ffda ffd4 ff4e Z--- 0086:0a37 0238      clr 02c2 ;[02c2]0000
+
+0064 0000 0000 0000 ffda ffd4 ff4e Z--- 008a:2017 002e      cmp r0, $2e
+0064 0000 0000 0000 ffda ffd4 ff4e ---- 008e:0204           bne 0098
+0064 0000 0000 0000 ffda ffd4 ff4e ---- 0098:1183           mov sp, r3
+0064 0000 0000 ff4e ffda ffd4 ff4e -N-- 009a:65c3 0004      add $4, r3
+0064 0000 0000 ff52 ffda ffd4 ff4e ---V 009e:15c1 0284      mov $284, r1
+0064 0284 0000 ff52 ffda ffd4 ff4e ---- 00a2:1442           mov (r1)+, r2 ;[0284
+]00ac
+0064 0286 00ac ff52 ffda ffd4 ff4e ---- 00a4:03da           beq 005a
+0064 0286 00ac ff52 ffda ffd4 ff4e ---- 00a6:2011           cmp r0, (r1)+ ;[0286
+]0064
+0064 0288 00ac ff52 ffda ffd4 ff4e Z--- 00a8:02fc           bne 00a2
+0064 0288 00ac ff52 ffda ffd4 ff4e Z--- 00aa:004a           jmp (r2) ;[00ac]1501
+
+decimal:
+0064 0288 00ac ff52 ffda ffd4 ff4e Z--- 00ac:1501           mov (r4)+, r1 ;[ffda
+]04d2
+0064 04d2 00ac ff52 ffdc ffd4 ff4e ---- 00ae:0405           bge 00ba
+0064 04d2 00ac ff52 ffdc ffd4 ff4e ---- 00ba:09f7 0002      jsr pc, 00c0 ;[00c0]
+0a00
+0064 04d2 00ac ff52 ffdc ffd4 ff4c ---- 00c0:0a00           clr r0
+0000 04d2 00ac ff52 ffdc ffd4 ff4c Z--- 00c2:7217 000a      div $a, r0
+007b 0004 00ac ff52 ffdc ffd4 ff4c ---- 00c6:1066           mov r1, -(sp) ;[ff4a
+]ffd4
+007b 0004 00ac ff52 ffdc ffd4 ff4a ---- 00c8:1001           mov r0, r1
+007b 007b 00ac ff52 ffdc ffd4 ff4a ---- 00ca:0302           beq 00d0
+007b 007b 00ac ff52 ffdc ffd4 ff4a ---- 00cc:09f7 fff0      jsr pc, 00c0 ;[00c0]
+0a00
+007b 007b 00ac ff52 ffdc ffd4 ff48 ---- 00c0:0a00           clr r0
+0000 007b 00ac ff52 ffdc ffd4 ff48 Z--- 00c2:7217 000a      div $a, r0
+000c 0003 00ac ff52 ffdc ffd4 ff48 ---- 00c6:1066           mov r1, -(sp) ;[ff46
+]0000
+000c 0003 00ac ff52 ffdc ffd4 ff46 ---- 00c8:1001           mov r0, r1
+000c 000c 00ac ff52 ffdc ffd4 ff46 ---- 00ca:0302           beq 00d0
+000c 000c 00ac ff52 ffdc ffd4 ff46 ---- 00cc:09f7 fff0      jsr pc, 00c0 ;[00c0]
+0a00
+000c 000c 00ac ff52 ffdc ffd4 ff44 ---- 00c0:0a00           clr r0
+0000 000c 00ac ff52 ffdc ffd4 ff44 Z--- 00c2:7217 000a      div $a, r0
+0001 0002 00ac ff52 ffdc ffd4 ff44 ---- 00c6:1066           mov r1, -(sp) ;[ff42
+]0000
+0001 0002 00ac ff52 ffdc ffd4 ff42 ---- 00c8:1001           mov r0, r1
+0001 0001 00ac ff52 ffdc ffd4 ff42 ---- 00ca:0302           beq 00d0
+0001 0001 00ac ff52 ffdc ffd4 ff42 ---- 00cc:09f7 fff0      jsr pc, 00c0 ;[00c0]
+0a00
+0001 0001 00ac ff52 ffdc ffd4 ff40 ---- 00c0:0a00           clr r0
+0000 0001 00ac ff52 ffdc ffd4 ff40 Z--- 00c2:7217 000a      div $a, r0
+0000 0001 00ac ff52 ffdc ffd4 ff40 Z--- 00c6:1066           mov r1, -(sp) ;[ff3e
+]0000
+0000 0001 00ac ff52 ffdc ffd4 ff3e ---- 00c8:1001           mov r0, r1
+0000 0000 00ac ff52 ffdc ffd4 ff3e Z--- 00ca:0302           beq 00d0
+0000 0000 00ac ff52 ffdc ffd4 ff3e Z--- 00d0:1580           mov (sp)+, r0 ;[ff3e
+]0001
+0001 0000 00ac ff52 ffdc ffd4 ff40 ---- 00d2:65c0 0030      add $30, r0
+0031 0000 00ac ff52 ffdc ffd4 ff40 ---- 00d6:9013           movb r0, (r3)+ ;[ff5
+2]00
+0031 0000 00ac ff53 ffdc ffd4 ff40 ---- 00d8:0087           rts pc
+0031 0000 00ac ff53 ffdc ffd4 ff42 ---- 00d0:1580           mov (sp)+, r0 ;[ff42
+]0002
+0002 0000 00ac ff53 ffdc ffd4 ff44 ---- 00d2:65c0 0030      add $30, r0
+0032 0000 00ac ff53 ffdc ffd4 ff44 ---- 00d6:9013           movb r0, (r3)+ ;[ff5
+3]00
+0032 0000 00ac ff54 ffdc ffd4 ff44 ---- 00d8:0087           rts pc
+0032 0000 00ac ff54 ffdc ffd4 ff46 ---- 00d0:1580           mov (sp)+, r0 ;[ff46
+]0003
+0003 0000 00ac ff54 ffdc ffd4 ff48 ---- 00d2:65c0 0030      add $30, r0
+0033 0000 00ac ff54 ffdc ffd4 ff48 ---- 00d6:9013           movb r0, (r3)+ ;[ff5
+4]00
+0033 0000 00ac ff55 ffdc ffd4 ff48 ---- 00d8:0087           rts pc
+0033 0000 00ac ff55 ffdc ffd4 ff4a ---- 00d0:1580           mov (sp)+, r0 ;[ff4a
+]0004
+0004 0000 00ac ff55 ffdc ffd4 ff4c ---- 00d2:65c0 0030      add $30, r0
+0034 0000 00ac ff55 ffdc ffd4 ff4c ---- 00d6:9013           movb r0, (r3)+ ;[ff5
+5]00
+0034 0000 00ac ff56 ffdc ffd4 ff4c ---- 00d8:0087           rts pc
+0034 0000 00ac ff56 ffdc ffd4 ff4e ---- 00be:0152           br 0164
+prbuf:
+0034 0000 00ac ff56 ffdc ffd4 ff4e ---- 0164:1182           mov sp, r2
+0034 0000 ff4e ff56 ffdc ffd4 ff4e -N-- 0166:65c2 0004      add $4, r2
+0034 0000 ff52 ff56 ffdc ffd4 ff4e ---V 016a:e083           sub r2, r3
+prstr:
+0034 0000 ff52 0004 ffdc ffd4 ff4e ---- 016c:1126           mov r4, -(sp) ;[ff4c
+]00be
+0034 0000 ff52 0004 ffdc ffd4 ff4c -N-- 016e:15e6 0020      mov $20, -(sp) ;[ff4
+a]0004
+0034 0000 ff52 0004 ffdc ffd4 ff4a ---- 0172:10c4           mov r3, r4
+0034 0000 ff52 0004 0004 ffd4 ff4a ---- 0174:0b03           neg r3
+0034 0000 ff52 fffc 0004 ffd4 ff4a -NC- 0176:6dc3 0142      add 02bc, r3 ;[02bc]
+0000
+0034 0000 ff52 fffc 0004 ffd4 ff4a ---V 017a:0706           ble 0188
+0034 0000 ff52 fffc 0004 ffd4 ff4a ---V 0188:0bc4           tst r4
+0034 0000 ff52 fffc 0004 ffd4 ff4a ---- 018a:0304           beq 0194
+0034 0000 ff52 fffc 0004 ffd4 ff4a ---- 018c:948e           movb (r2)+, (sp) ;[f
+f52]31 ;[ff4a]20
+0034 0000 ff53 fffc 0004 ffd4 ff4a ---- 018e:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+0034 0000 ff53 fffc 0004 ffd4 ff48 ---- 01e8:1166           mov r5, -(sp) ;[ff46
+]0003
+0034 0000 ff53 fffc 0004 ffd4 ff46 -N-- 01ea:1185           mov sp, r5
+0034 0000 ff53 fffc 0004 ff46 ff46 -N-- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 ff53 fffc 0004 ff46 ff46 ---- 01f0:0204           bne 01fa
+02cc 0000 ff53 fffc 0004 ff46 ff46 ---- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4a]31 ;[02cc]3d
+02cd 0000 ff53 fffc 0004 ff46 ff46 ---- 01fe:0307           beq 020e
+02cd 0000 ff53 fffc 0004 ff46 ff46 ---- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 ff53 fffc 0004 ff46 ff46 ---- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 ff53 fffc 0004 ff46 ff46 Z--- 0208:0602           bgt 020e
+02cd 0000 ff53 fffc 0004 ff46 ff46 Z--- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 ff53 fffc 0004 ff46 ff44 Z--- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 ff53 fffc 0004 ff46 ff44 ---- 0226:030a           beq 023c
+02cd 0000 ff53 fffc 0004 ff46 ff44 ---- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 ff53 fffc 0004 ff46 ff44 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0001
+0001 0000 ff53 fffc 0004 ff46 ff44 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 ff53 fffc 0004 ff46 ff44 Z--- 0234:0201           bne 0238
+0000 0000 ff53 fffc 0004 ff46 ff44 Z--- 0236:0a80           inc r0
+0001 0000 ff53 fffc 0004 ff46 ff44 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)1 => 1>
+0001 0000 ff53 fffc 0004 ff46 ff44 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 ff53 fffc 0004 ff46 ff44 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 ff53 fffc 0004 ff46 ff44 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 ff53 fffc 0004 ff46 ff44 --CV 024e:8203           bhi 0256
+0001 0000 ff53 fffc 0004 ff46 ff44 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 ff53 fffc 0004 ff46 ff44 --C- 0256:0087           rts pc
+0001 0000 ff53 fffc 0004 ff46 ff46 --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4a
+]0031
+0031 0000 ff53 fffc 0004 ff46 ff46 --C- 0212:1585           mov (sp)+, r5 ;[ff46
+]ffd4
+0031 0000 ff53 fffc 0004 ffd4 ff48 -NC- 0214:0087           rts pc
+0031 0000 ff53 fffc 0004 ffd4 ff4a -NC- 0192:7f04           sob r4, 4
+0031 0000 ff53 fffc 0003 ffd4 ff4a -NC- 018c:948e           movb (r2)+, (sp) ;[f
+f53]32 ;[ff4a]31
+0031 0000 ff54 fffc 0003 ffd4 ff4a --C- 018e:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+0031 0000 ff54 fffc 0003 ffd4 ff48 --C- 01e8:1166           mov r5, -(sp) ;[ff46
+]ffd4
+0031 0000 ff54 fffc 0003 ffd4 ff46 -NC- 01ea:1185           mov sp, r5
+0031 0000 ff54 fffc 0003 ff46 ff46 -NC- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 ff54 fffc 0003 ff46 ff46 --C- 01f0:0204           bne 01fa
+02cc 0000 ff54 fffc 0003 ff46 ff46 --C- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4a]32 ;[02cc]31
+02cd 0000 ff54 fffc 0003 ff46 ff46 --C- 01fe:0307           beq 020e
+02cd 0000 ff54 fffc 0003 ff46 ff46 --C- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 ff54 fffc 0003 ff46 ff46 --C- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 ff54 fffc 0003 ff46 ff46 Z-C- 0208:0602           bgt 020e
+02cd 0000 ff54 fffc 0003 ff46 ff46 Z-C- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 ff54 fffc 0003 ff46 ff44 Z-C- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 ff54 fffc 0003 ff46 ff44 --C- 0226:030a           beq 023c
+02cd 0000 ff54 fffc 0003 ff46 ff44 --C- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 ff54 fffc 0003 ff46 ff44 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0001
+0001 0000 ff54 fffc 0003 ff46 ff44 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 ff54 fffc 0003 ff46 ff44 Z--- 0234:0201           bne 0238
+0000 0000 ff54 fffc 0003 ff46 ff44 Z--- 0236:0a80           inc r0
+0001 0000 ff54 fffc 0003 ff46 ff44 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)2 => 1>
+0001 0000 ff54 fffc 0003 ff46 ff44 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 ff54 fffc 0003 ff46 ff44 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 ff54 fffc 0003 ff46 ff44 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 ff54 fffc 0003 ff46 ff44 --CV 024e:8203           bhi 0256
+0001 0000 ff54 fffc 0003 ff46 ff44 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 ff54 fffc 0003 ff46 ff44 --C- 0256:0087           rts pc
+0001 0000 ff54 fffc 0003 ff46 ff46 --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4a
+]0032
+0032 0000 ff54 fffc 0003 ff46 ff46 --C- 0212:1585           mov (sp)+, r5 ;[ff46
+]ffd4
+0032 0000 ff54 fffc 0003 ffd4 ff48 -NC- 0214:0087           rts pc
+0032 0000 ff54 fffc 0003 ffd4 ff4a -NC- 0192:7f04           sob r4, 4
+0032 0000 ff54 fffc 0002 ffd4 ff4a -NC- 018c:948e           movb (r2)+, (sp) ;[f
+f54]33 ;[ff4a]32
+0032 0000 ff55 fffc 0002 ffd4 ff4a --C- 018e:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+0032 0000 ff55 fffc 0002 ffd4 ff48 --C- 01e8:1166           mov r5, -(sp) ;[ff46
+]ffd4
+0032 0000 ff55 fffc 0002 ffd4 ff46 -NC- 01ea:1185           mov sp, r5
+0032 0000 ff55 fffc 0002 ff46 ff46 -NC- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 ff55 fffc 0002 ff46 ff46 --C- 01f0:0204           bne 01fa
+02cc 0000 ff55 fffc 0002 ff46 ff46 --C- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4a]33 ;[02cc]32
+02cd 0000 ff55 fffc 0002 ff46 ff46 --C- 01fe:0307           beq 020e
+02cd 0000 ff55 fffc 0002 ff46 ff46 --C- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 ff55 fffc 0002 ff46 ff46 --C- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 ff55 fffc 0002 ff46 ff46 Z-C- 0208:0602           bgt 020e
+02cd 0000 ff55 fffc 0002 ff46 ff46 Z-C- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 ff55 fffc 0002 ff46 ff44 Z-C- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 ff55 fffc 0002 ff46 ff44 --C- 0226:030a           beq 023c
+02cd 0000 ff55 fffc 0002 ff46 ff44 --C- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 ff55 fffc 0002 ff46 ff44 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0001
+0001 0000 ff55 fffc 0002 ff46 ff44 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 ff55 fffc 0002 ff46 ff44 Z--- 0234:0201           bne 0238
+0000 0000 ff55 fffc 0002 ff46 ff44 Z--- 0236:0a80           inc r0
+0001 0000 ff55 fffc 0002 ff46 ff44 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)3 => 1>
+0001 0000 ff55 fffc 0002 ff46 ff44 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 ff55 fffc 0002 ff46 ff44 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 ff55 fffc 0002 ff46 ff44 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 ff55 fffc 0002 ff46 ff44 --CV 024e:8203           bhi 0256
+0001 0000 ff55 fffc 0002 ff46 ff44 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 ff55 fffc 0002 ff46 ff44 --C- 0256:0087           rts pc
+0001 0000 ff55 fffc 0002 ff46 ff46 --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4a
+]0033
+0033 0000 ff55 fffc 0002 ff46 ff46 --C- 0212:1585           mov (sp)+, r5 ;[ff46
+]ffd4
+0033 0000 ff55 fffc 0002 ffd4 ff48 -NC- 0214:0087           rts pc
+0033 0000 ff55 fffc 0002 ffd4 ff4a -NC- 0192:7f04           sob r4, 4
+0033 0000 ff55 fffc 0001 ffd4 ff4a -NC- 018c:948e           movb (r2)+, (sp) ;[f
+f55]34 ;[ff4a]33
+0033 0000 ff56 fffc 0001 ffd4 ff4a --C- 018e:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+0033 0000 ff56 fffc 0001 ffd4 ff48 --C- 01e8:1166           mov r5, -(sp) ;[ff46
+]ffd4
+0033 0000 ff56 fffc 0001 ffd4 ff46 -NC- 01ea:1185           mov sp, r5
+0033 0000 ff56 fffc 0001 ff46 ff46 -NC- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 ff56 fffc 0001 ff46 ff46 --C- 01f0:0204           bne 01fa
+02cc 0000 ff56 fffc 0001 ff46 ff46 --C- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4a]34 ;[02cc]33
+02cd 0000 ff56 fffc 0001 ff46 ff46 --C- 01fe:0307           beq 020e
+02cd 0000 ff56 fffc 0001 ff46 ff46 --C- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 ff56 fffc 0001 ff46 ff46 --C- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 ff56 fffc 0001 ff46 ff46 Z-C- 0208:0602           bgt 020e
+02cd 0000 ff56 fffc 0001 ff46 ff46 Z-C- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 ff56 fffc 0001 ff46 ff44 Z-C- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 ff56 fffc 0001 ff46 ff44 --C- 0226:030a           beq 023c
+02cd 0000 ff56 fffc 0001 ff46 ff44 --C- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 ff56 fffc 0001 ff46 ff44 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0001
+0001 0000 ff56 fffc 0001 ff46 ff44 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 ff56 fffc 0001 ff46 ff44 Z--- 0234:0201           bne 0238
+0000 0000 ff56 fffc 0001 ff46 ff44 Z--- 0236:0a80           inc r0
+0001 0000 ff56 fffc 0001 ff46 ff44 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)4 => 1>
+0001 0000 ff56 fffc 0001 ff46 ff44 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 ff56 fffc 0001 ff46 ff44 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 ff56 fffc 0001 ff46 ff44 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 ff56 fffc 0001 ff46 ff44 --CV 024e:8203           bhi 0256
+0001 0000 ff56 fffc 0001 ff46 ff44 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 ff56 fffc 0001 ff46 ff44 --C- 0256:0087           rts pc
+0001 0000 ff56 fffc 0001 ff46 ff46 --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4a
+]0034
+0034 0000 ff56 fffc 0001 ff46 ff46 --C- 0212:1585           mov (sp)+, r5 ;[ff46
+]ffd4
+0034 0000 ff56 fffc 0001 ffd4 ff48 -NC- 0214:0087           rts pc
+0034 0000 ff56 fffc 0001 ffd4 ff4a -NC- 0192:7f04           sob r4, 4
+0034 0000 ff56 fffc 0000 ffd4 ff4a -NC- 0194:0bc3           tst r3
+0034 0000 ff56 fffc 0000 ffd4 ff4a -N-- 0196:0705           ble 01a2
+0034 0000 ff56 fffc 0000 ffd4 ff4a -N-- 01a2:0bd6           tst (sp)+ ;[ff4a]003
+4
+0034 0000 ff56 fffc 0000 ffd4 ff4c ---- 01a4:1584           mov (sp)+, r4 ;[ff4c
+]ffdc
+0034 0000 ff56 fffc ffdc ffd4 ff4e -N-- 01a6:0077 fea0      jmp 004a ;[004a]9fc0
+
+loop:
+0034 0000 ff56 fffc ffdc ffd4 ff4e -N-- 004a:9fc0 0270      movb *02be, r0 ;[028
+2]0a
+000a 0000 ff56 fffc ffdc ffd4 ff4e ---- 004e:0309           beq 0062
+000a 0000 ff56 fffc ffdc ffd4 ff4e ---- 0050:0ab7 026a      inc 02be ;[02be]0282
+
+000a 0000 ff56 fffc ffdc ffd4 ff4e ---- 0054:2017 0025      cmp r0, $25
+000a 0000 ff56 fffc ffdc ffd4 ff4e --CV 0058:0306           beq 0066
+000a 0000 ff56 fffc ffdc ffd4 ff4e --CV 005a:100e           mov r0, (sp) ;[ff4e]
+003d
+000a 0000 ff56 fffc ffdc ffd4 ff4e --C- 005c:09df 01e8      jsr pc, *$01e8 ;[01e
+8]1166
+_putchar:
+000a 0000 ff56 fffc ffdc ffd4 ff4c --C- 01e8:1166           mov r5, -(sp) ;[ff4a
+]0034
+000a 0000 ff56 fffc ffdc ffd4 ff4a -NC- 01ea:1185           mov sp, r5
+000a 0000 ff56 fffc ffdc ff4a ff4a -NC- 01ec:1dc0 00da      mov 02ca, r0 ;[02ca]
+02cc
+02cc 0000 ff56 fffc ffdc ff4a ff4a --C- 01f0:0204           bne 01fa
+02cc 0000 ff56 fffc ffdc ff4a ff4a --C- 01fa:9d50 0004      movb 4(r5), (r0)+ ;[
+ff4e]0a ;[02cc]34
+02cd 0000 ff56 fffc ffdc ff4a ff4a --C- 01fe:0307           beq 020e
+02cd 0000 ff56 fffc ffdc ff4a ff4a --C- 0200:0ab7 00c6      inc 02ca ;[02ca]02cc
+
+02cd 0000 ff56 fffc ffdc ff4a ff4a --C- 0204:0af7 00c0      dec 02c8 ;[02c8]0001
+
+02cd 0000 ff56 fffc ffdc ff4a ff4a Z-C- 0208:0602           bgt 020e
+02cd 0000 ff56 fffc ffdc ff4a ff4a Z-C- 020a:09f7 0014      jsr pc, 0222 ;[0222]
+1dc0
+fl:
+02cd 0000 ff56 fffc ffdc ff4a ff48 Z-C- 0222:1dc0 00a4      mov 02ca, r0 ;[02ca]
+02cd
+02cd 0000 ff56 fffc ffdc ff4a ff48 --C- 0226:030a           beq 023c
+02cd 0000 ff56 fffc ffdc ff4a ff48 --C- 0228:e5c0 02cc      sub $2cc, r0
+0001 0000 ff56 fffc ffdc ff4a ff48 ---- 022c:1037 0088      mov r0, 02b8 ;[02b8]
+0001
+0001 0000 ff56 fffc ffdc ff4a ff48 ---- 0230:1dc0 0092      mov 02c6, r0 ;[02c6]
+0000
+0000 0000 ff56 fffc ffdc ff4a ff48 Z--- 0234:0201           bne 0238
+0000 0000 ff56 fffc ffdc ff4a ff48 Z--- 0236:0a80           inc r0
+0001 0000 ff56 fffc ffdc ff4a ff48 ---- 0238:8900           sys 0
+<write(1, 0x02cc, 1)
+ => 1>
+0001 0000 ff56 fffc ffdc ff4a ff48 ---- 023c:15f7 02cc 0088 mov $2cc, 02ca ;[02c
+a]02cd
+0001 0000 ff56 fffc ffdc ff4a ff48 ---- 0242:15f7 0200 0080 mov $200, 02c8 ;[02c
+8]0000
+0001 0000 ff56 fffc ffdc ff4a ff48 ---- 0248:2dd7 007a 0002 cmp 02c6, $2 ;[02c6]
+0000
+0001 0000 ff56 fffc ffdc ff4a ff48 --CV 024e:8203           bhi 0256
+0001 0000 ff56 fffc ffdc ff4a ff48 --CV 0250:15f7 0001 0072 mov $1, 02c8 ;[02c8]
+0200
+0001 0000 ff56 fffc ffdc ff4a ff48 --C- 0256:0087           rts pc
+0001 0000 ff56 fffc ffdc ff4a ff4a --C- 020e:1d40 0004      mov 4(r5), r0 ;[ff4e
+]000a
+000a 0000 ff56 fffc ffdc ff4a ff4a --C- 0212:1585           mov (sp)+, r5 ;[ff4a
+]ffd4
+000a 0000 ff56 fffc ffdc ffd4 ff4c -NC- 0214:0087           rts pc
+000a 0000 ff56 fffc ffdc ffd4 ff4e -NC- 0060:01f4           br 004a
+loop:
+000a 0000 ff56 fffc ffdc ffd4 ff4e -NC- 004a:9fc0 0270      movb *02be, r0 ;[028
+3]00
+0000 0000 ff56 fffc ffdc ffd4 ff4e Z-C- 004e:0309           beq 0062
+0000 0000 ff56 fffc ffdc ffd4 ff4e Z-C- 0062:0077 020a      jmp 0270 ;[0270]1141
+
+cret:
+0000 0000 ff56 fffc ffdc ffd4 ff4e Z-C- 0270:1141           mov r5, r1
+0000 ffd4 ff56 fffc ffdc ffd4 ff4e -NC- 0272:1844           mov -(r1), r4 ;[ffd2
+]0000
+0000 ffd2 ff56 fffc 0000 ffd4 ff4e Z-C- 0274:1843           mov -(r1), r3 ;[ffd0
+]0000
+0000 ffd0 ff56 0000 0000 ffd4 ff4e Z-C- 0276:1842           mov -(r1), r2 ;[ffce
+]0000
+0000 ffce 0000 0000 0000 ffd4 ff4e Z-C- 0278:1146           mov r5, sp
+0000 ffce 0000 0000 0000 ffd4 ffd4 -NC- 027a:1585           mov (sp)+, r5 ;[ffd4
+]ffe4
+0000 ffce 0000 0000 0000 ffe4 ffd6 -NC- 027c:0087           rts pc
+0000 ffce 0000 0000 0000 ffe4 ffd8 -NC- 0030:0bd6           tst (sp)+ ;[ffd8]027
+e
+0000 ffce 0000 0000 0000 ffe4 ffda ---- 0032:0077 023a      jmp 0270 ;[0270]1141
+
+cret:
+0000 ffce 0000 0000 0000 ffe4 ffda ---- 0270:1141           mov r5, r1
+0000 ffe4 0000 0000 0000 ffe4 ffda -N-- 0272:1844           mov -(r1), r4 ;[ffe2
+]0000
+0000 ffe2 0000 0000 0000 ffe4 ffda Z--- 0274:1843           mov -(r1), r3 ;[ffe0
+]0000
+0000 ffe0 0000 0000 0000 ffe4 ffda Z--- 0276:1842           mov -(r1), r2 ;[ffde
+]0000
+0000 ffde 0000 0000 0000 ffe4 ffda Z--- 0278:1146           mov r5, sp
+0000 ffde 0000 0000 0000 ffe4 ffe4 -N-- 027a:1585           mov (sp)+, r5 ;[ffe4
+]0000
+0000 ffde 0000 0000 0000 0000 ffe6 Z--- 027c:0087           rts pc
+0000 ffde 0000 0000 0000 0000 ffe8 Z--- 0010:100e           mov r0, (sp) ;[ffe8]
+0003
+0000 ffde 0000 0000 0000 0000 ffe8 Z--- 0012:09df 0258      jsr pc, *$0258 ;[025
+8]1166
+_exit:
+0000 ffde 0000 0000 0000 0000 ffe6 Z--- 0258:1166           mov r5, -(sp) ;[ffe4
+]0000
+0000 ffde 0000 0000 0000 0000 ffe4 Z--- 025a:1185           mov sp, r5
+0000 ffde 0000 0000 0000 ffe4 ffe4 -N-- 025c:1d40 0004      mov 4(r5), r0 ;[ffe8
+]0000
+0000 ffde 0000 0000 0000 ffe4 ffe4 Z--- 0260:8901           sys 1
+<exit(0)>
+
+uzuramon@uzura-MOBILE ~
+$
