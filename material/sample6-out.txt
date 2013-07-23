@@ -1,0 +1,109 @@
+$ 7run -d a.out
+
+[crt0.o]
+start:
+0000: f009            setd
+0002: 1180            mov sp, r0
+0004: 1226            mov (r0), -(sp)
+0006: 0bd0            tst (r0)+
+0008: 1036 0002       mov r0, 2(sp)
+000c: 09f7 0008       jsr pc, 0018 ; _main
+0010: 100e            mov r0, (sp)
+0012: 09df 00ea       jsr pc, *$00ea ; _exit
+0016: 8901            sys 1
+
+[sample6.]
+_main:
+0018: 0977 00d8       jsr r5, 00f4 ; csv
+001c: 15ce 14e5       mov $14e5, (sp)
+0020: 09df 0028       jsr pc, *$0028 ; _printo
+0024: 0077 00da       jmp 0102 ; cret
+_printo:
+0028: 0977 00c8       jsr r5, 00f4 ; csv
+002c: 0be6            tst -(sp)
+002e: 0bf5 0004       tst 4(r5)
+0032: 0403            bge 003a
+0034: 15ce 0031       mov $31, (sp)
+0038: 0102            br 003e
+003a: 15ce 0030       mov $30, (sp)
+003e: 09df 007a       jsr pc, *$007a ; _putchar
+0042: 0a35 fff8       clr -8(r5)
+0046: 25f5 0005 fff8  cmp $5, -8(r5)
+004c: 0714            ble 0076
+004e: 1d40 0004       mov 4(r5), r0
+0052: 7417 fff4       ash $fff4, r0
+0056: 100e            mov r0, (sp)
+0058: 45ce fff8       bic $fff8, (sp)
+005c: 65ce 0030       add $30, (sp)
+0060: 09df 007a       jsr pc, *$007a ; _putchar
+0064: 1d40 0004       mov 4(r5), r0
+0068: 7417 0003       ash $3, r0
+006c: 1035 0004       mov r0, 4(r5)
+0070: 0ab5 fff8       inc -8(r5)
+0074: 01e8            br 0046
+0076: 0077 0088       jmp 0102 ; cret
+
+[putchr.o]
+_putchar:
+007a: 1166            mov r5, -(sp)
+007c: 1185            mov sp, r5
+007e: 1dc0 009a       mov 011c, r0
+0082: 0204            bne 008c
+0084: 09f7 002c       jsr pc, 00b4 ; fl
+0088: 1dc0 0090       mov 011c, r0
+008c: 9d50 0004       movb 4(r5), (r0)+
+0090: 0307            beq 00a0
+0092: 0ab7 0086       inc 011c
+0096: 0af7 0080       dec 011a
+009a: 0602            bgt 00a0
+009c: 09f7 0014       jsr pc, 00b4 ; fl
+00a0: 1d40 0004       mov 4(r5), r0
+00a4: 1585            mov (sp)+, r5
+00a6: 0087            rts pc
+_flush:
+00a8: 1166            mov r5, -(sp)
+00aa: 1185            mov sp, r5
+00ac: 09f7 0004       jsr pc, 00b4 ; fl
+00b0: 1585            mov (sp)+, r5
+00b2: 0087            rts pc
+fl:
+00b4: 1dc0 0064       mov 011c, r0
+00b8: 030a            beq 00ce
+00ba: e5c0 011e       sub $11e, r0
+00be: 1037 0052       mov r0, 0114
+00c2: 1dc0 0052       mov 0118, r0
+00c6: 0201            bne 00ca
+00c8: 0a80            inc r0
+00ca: 8900            sys 0
+00cc: 0110            br 00ee
+00ce: 15f7 011e 0048  mov $11e, 011c
+00d4: 15f7 0200 0040  mov $200, 011a
+00da: 2dd7 003a 0002  cmp 0118, $2
+00e0: 8203            bhi 00e8
+00e2: 15f7 0001 0032  mov $1, 011a
+00e8: 0087            rts pc
+
+[exit.o]
+_exit:
+00ea: 1166            mov r5, -(sp)
+00ec: 1185            mov sp, r5
+00ee: 1d40 0004       mov 4(r5), r0
+00f2: 8901            sys 1
+
+[csv.o]
+csv:
+00f4: 1140            mov r5, r0
+00f6: 1185            mov sp, r5
+00f8: 1126            mov r4, -(sp)
+00fa: 10e6            mov r3, -(sp)
+00fc: 10a6            mov r2, -(sp)
+00fe: 0be6            tst -(sp)
+0100: 0048            jmp (r0)
+cret:
+0102: 1141            mov r5, r1
+0104: 1844            mov -(r1), r4
+0106: 1843            mov -(r1), r3
+0108: 1842            mov -(r1), r2
+010a: 1146            mov r5, sp
+010c: 1585            mov (sp)+, r5
+010e: 0087            rts pc
