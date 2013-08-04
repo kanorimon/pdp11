@@ -1,0 +1,1454 @@
+   0:   f009            setd     
+   2:   1180            mov      sp, r0
+   4:   1226            mov      (r0), -(sp)
+   6:   0bd0            tst      (r0)+
+   8:   1036 0002       mov      r0, 2(sp)
+   c:   09f7 0008       jsr      pc, 0x18
+  10:   100e            mov      r0, (sp)
+  12:   09df 08ca       jsr      pc, *$4312
+  16:   8901            sys      1
+  18:   0977 08b8       jsr      r5, 0x8d4
+  1c:   e5c6 0006       sub      $6, sp
+  20:   0af5 0004       dec      4(r5)
+  24:   0bf5 0004       tst      4(r5)
+  28:   0734            ble      0x92
+  2a:   1d40 0006       mov      6(r5), r0
+  2e:   a5f8 002d 0002  cmpb     $55, *-2(r0)
+  34:   022e            bne      0x92
+  36:   65f5 0002 0006  add      $2, 6(r5)
+  3c:   65fd 0001 0006  add      $1, *-6(r5)
+  42:   1f40 0006       mov      *-6(r5), r0
+  46:   8bc8            tstb     (r0)
+  48:   0322            beq      0x8e
+  4a:   1f40 0006       mov      *-6(r5), r0
+  4e:   9200            movb     (r0), r0
+  50:   0115            br       0x7c
+  52:   0ab7 099a       inc      0x9f0
+  56:   01f2            br       0x3c
+  58:   0ab7 0992       inc      0x9ee
+  5c:   01ef            br       0x3c
+  5e:   0ab7 0992       inc      0x9f4
+  62:   01ec            br       0x3c
+  64:   0ab7 098a       inc      0x9f2
+  68:   01e9            br       0x3c
+  6a:   15f7 ffff 08b0  mov      $-1, 0x920
+  70:   01e5            br       0x3c
+  72:   0ab7 0980       inc      0x9f6
+  76:   01e2            br       0x3c
+  78:   01e1            br       0x3c
+  7a:   0108            br       0x8c
+  7c:   e5c0 0063       sub      $143, r0
+  80:   2017 0012       cmp      r0, $22
+  84:   82f9            bhi      0x78
+  86:   0cc0            asl      r0
+  88:   0078 0922       jmp      *-4442(r0)
+  8c:   01d7            br       0x3c
+  8e:   0af5 0004       dec      4(r5)
+  92:   0bf5 0004       tst      4(r5)
+  96:   0209            bne      0xaa
+  98:   0a0e            clr      (sp)
+  9a:   15e6 0948       mov      $4510, -(sp)
+  9e:   09df 0648       jsr      pc, *$3110
+  a2:   0bd6            tst      (sp)+
+  a4:   1037 0952       mov      r0, 0x9fa
+  a8:   010b            br       0xc0
+  aa:   0a0e            clr      (sp)
+  ac:   65f5 0002 0006  add      $2, 6(r5)
+  b2:   1f66 0006       mov      *-6(r5), -(sp)
+  b6:   09df 0648       jsr      pc, *$3110
+  ba:   0bd6            tst      (sp)+
+  bc:   1037 093a       mov      r0, 0x9fa
+  c0:   0bf7 0936       tst      0x9fa
+  c4:   0406            bge      0xd2
+  c6:   15ce 094e       mov      $4516, (sp)
+  ca:   09df 03fc       jsr      pc, *$1774
+  ce:   09f7 07f8       jsr      pc, 0x8ca
+  d2:   15ce 0010       mov      $20, (sp)
+  d6:   15e6 09fc       mov      $4774, -(sp)
+  da:   1de6 091c       mov      0x9fa, -(sp)
+  de:   09df 083c       jsr      pc, *$4074
+  e2:   2596            cmp      (sp)+, (sp)+
+  e4:   25f7 0107 0912  cmp      $407, 0x9fc
+  ea:   031a            beq      0x120
+  ec:   25f7 0108 090a  cmp      $410, 0x9fc
+  f2:   0316            beq      0x120
+  f4:   25f7 0109 0902  cmp      $411, 0x9fc
+  fa:   0312            beq      0x120
+  fc:   25f7 0eeb 08fa  cmp      $7353, 0x9fc
+ 102:   030e            beq      0x120
+ 104:   25f7 10eb 08f2  cmp      $10353, 0x9fc
+ 10a:   030a            beq      0x120
+ 10c:   25f7 12eb 08ea  cmp      $11353, 0x9fc
+ 112:   0306            beq      0x120
+ 114:   15ce 0961       mov      $4541, (sp)
+ 118:   09df 03fc       jsr      pc, *$1774
+ 11c:   09f7 07aa       jsr      pc, 0x8ca
+ 120:   15ce 0001       mov      $1, (sp)
+ 124:   1de6 08d6       mov      0x9fe, -(sp)
+ 128:   1de6 08ce       mov      0x9fa, -(sp)
+ 12c:   09df 08a6       jsr      pc, *$4246
+ 130:   2596            cmp      (sp)+, (sp)+
+ 132:   15ce 0001       mov      $1, (sp)
+ 136:   1de6 08c6       mov      0xa00, -(sp)
+ 13a:   1de6 08bc       mov      0x9fa, -(sp)
+ 13e:   09df 08a6       jsr      pc, *$4246
+ 142:   2596            cmp      (sp)+, (sp)+
+ 144:   25f7 0001 08c0  cmp      $1, 0xa0a
+ 14a:   0312            beq      0x170
+ 14c:   15ce 0001       mov      $1, (sp)
+ 150:   1de6 08aa       mov      0x9fe, -(sp)
+ 154:   1de6 08a2       mov      0x9fa, -(sp)
+ 158:   09df 08a6       jsr      pc, *$4246
+ 15c:   2596            cmp      (sp)+, (sp)+
+ 15e:   15ce 0001       mov      $1, (sp)
+ 162:   1de6 089a       mov      0xa00, -(sp)
+ 166:   1de6 0890       mov      0x9fa, -(sp)
+ 16a:   09df 08a6       jsr      pc, *$4246
+ 16e:   2596            cmp      (sp)+, (sp)+
+ 170:   15ce 000c       mov      $14, (sp)
+ 174:   1de6 088c       mov      0xa04, -(sp)
+ 178:   0a26            clr      -(sp)
+ 17a:   09df 08fe       jsr      pc, *$4376
+ 17e:   2596            cmp      (sp)+, (sp)+
+ 180:   1035 fff8       mov      r0, -10(r5)
+ 184:   0bf5 fff8       tst      -10(r5)
+ 188:   0206            bne      0x196
+ 18a:   15ce 096d       mov      $4555, (sp)
+ 18e:   09df 03fc       jsr      pc, *$1774
+ 192:   09f7 0734       jsr      pc, 0x8ca
+ 196:   1d41 fff8       mov      -10(r5), r1
+ 19a:   7057 000c       mul      $14, r1
+ 19e:   104e            mov      r1, (sp)
+ 1a0:   09df 085e       jsr      pc, *$4136
+ 1a4:   1037 0850       mov      r0, 0x9f8
+ 1a8:   1d41 fff8       mov      -10(r5), r1
+ 1ac:   7057 000c       mul      $14, r1
+ 1b0:   104e            mov      r1, (sp)
+ 1b2:   1de6 0842       mov      0x9f8, -(sp)
+ 1b6:   1de6 0840       mov      0x9fa, -(sp)
+ 1ba:   09df 083c       jsr      pc, *$4074
+ 1be:   2596            cmp      (sp)+, (sp)+
+ 1c0:   0bf7 0832       tst      0x9f6
+ 1c4:   020c            bne      0x1de
+ 1c6:   15ce 0302       mov      $1402, (sp)
+ 1ca:   15e6 000c       mov      $14, -(sp)
+ 1ce:   1d66 fff8       mov      -10(r5), -(sp)
+ 1d2:   1de6 0822       mov      0x9f8, -(sp)
+ 1d6:   09df 0666       jsr      pc, *$3146
+ 1da:   65c6 0006       add      $6, sp
+ 1de:   15ce 0001       mov      $1, (sp)
+ 1e2:   09df 0634       jsr      pc, *$3064
+ 1e6:   1037 0834       mov      r0, 0xa1e
+ 1ea:   15ce 0001       mov      $1, (sp)
+ 1ee:   09df 061e       jsr      pc, *$3036
+ 1f2:   0a35 fff6       clr      -12(r5)
+ 1f6:   2d75 fff8 fff6  cmp      -10(r5), -12(r5)
+ 1fc:   0602            bgt      0x202
+ 1fe:   005f 02fa       jmp      *$1372
+ 202:   0bf7 07ee       tst      0x9f4
+ 206:   0308            beq      0x218
+ 208:   1dc0 07ec       mov      0x9f8, r0
+ 20c:   35f0 0020 0008  bit      $40, 10(r0)
+ 212:   0202            bne      0x218
+ 214:   005f 02ec       jmp      *$1354
+ 218:   0bf7 07d2       tst      0x9ee
+ 21c:   031b            beq      0x254
+ 21e:   a5ff 005f 07d4  cmpb     $137, *$0x9f8
+ 224:   0263            bne      0x2ec
+ 226:   0a35 fff4       clr      -14(r5)
+ 22a:   25f5 0007 fff4  cmp      $7, -14(r5)
+ 230:   070d            ble      0x24c
+ 232:   1dc0 07c2       mov      0x9f8, r0
+ 236:   6d40 fff4       add      -14(r5), r0
+ 23a:   1dc1 07ba       mov      0x9f8, r1
+ 23e:   6d41 fff4       add      -14(r5), r1
+ 242:   9c48 0001       movb     1(r1), (r0)
+ 246:   0ab5 fff4       inc      -14(r5)
+ 24a:   01ef            br       0x22a
+ 24c:   1dc0 07a8       mov      0x9f8, r0
+ 250:   8a30 0007       clrb     7(r0)
+ 254:   1dc0 07a0       mov      0x9f8, r0
+ 258:   1c00 0008       mov      10(r0), r0
+ 25c:   45c0 ffe0       bic      $-40, r0
+ 260:   1035 fff4       mov      r0, -14(r5)
+ 264:   25f5 0004 fff4  cmp      $4, -14(r5)
+ 26a:   0403            bge      0x272
+ 26c:   15f5 0001 fff4  mov      $1, -14(r5)
+ 272:   0bf5 fff4       tst      -14(r5)
+ 276:   0208            bne      0x288
+ 278:   1dc0 077c       mov      0x9f8, r0
+ 27c:   0bf0 000a       tst      12(r0)
+ 280:   0303            beq      0x288
+ 282:   15f5 0005 fff4  mov      $5, -14(r5)
+ 288:   0bf7 0766       tst      0x9f2
+ 28c:   0303            beq      0x294
+ 28e:   0bf5 fff4       tst      -14(r5)
+ 292:   022c            bne      0x2ec
+ 294:   0bf7 075a       tst      0x9f2
+ 298:   0222            bne      0x2de
+ 29a:   0bf5 fff4       tst      -14(r5)
+ 29e:   0205            bne      0x2aa
+ 2a0:   15ce 097b       mov      $4573, (sp)
+ 2a4:   09df 03fc       jsr      pc, *$1774
+ 2a8:   0106            br       0x2b6
+ 2aa:   1dc0 074a       mov      0x9f8, r0
+ 2ae:   1c0e 000a       mov      12(r0), (sp)
+ 2b2:   09df 039e       jsr      pc, *$1636
+ 2b6:   1dc0 073e       mov      0x9f8, r0
+ 2ba:   35f0 0020 0008  bit      $40, 10(r0)
+ 2c0:   0303            beq      0x2c8
+ 2c2:   15c0 0986       mov      $4606, r0
+ 2c6:   0102            br       0x2cc
+ 2c8:   15c0 098d       mov      $4615, r0
+ 2cc:   6d40 fff4       add      -14(r5), r0
+ 2d0:   9200            movb     (r0), r0
+ 2d2:   100e            mov      r0, (sp)
+ 2d4:   15e6 0982       mov      $4602, -(sp)
+ 2d8:   09df 03fc       jsr      pc, *$1774
+ 2dc:   0bd6            tst      (sp)+
+ 2de:   1dce 0716       mov      0x9f8, (sp)
+ 2e2:   15e6 0994       mov      $4624, -(sp)
+ 2e6:   09df 03fc       jsr      pc, *$1774
+ 2ea:   0bd6            tst      (sp)+
+ 2ec:   65f7 000c 0706  add      $14, 0x9f8
+ 2f2:   0ab5 fff6       inc      -12(r5)
+ 2f6:   005f 01f6       jmp      *$766
+ 2fa:   09f7 02de       jsr      pc, 0x5dc
+ 2fe:   0077 05e0       jmp      0x8e2
+ 302:   0977 05ce       jsr      r5, 0x8d4
+ 306:   e5c6 0004       sub      $4, sp
+ 30a:   0a35 fff8       clr      -10(r5)
+ 30e:   0bf7 06de       tst      0x9f0
+ 312:   0318            beq      0x344
+ 314:   1d40 0004       mov      4(r5), r0
+ 318:   1d41 0006       mov      6(r5), r1
+ 31c:   2c70 000a 000a  cmp      12(r1), 12(r0)
+ 322:   8604            bcc      0x32c
+ 324:   15f5 0001 fff8  mov      $1, -10(r5)
+ 32a:   0131            br       0x38e
+ 32c:   1d40 0004       mov      4(r5), r0
+ 330:   1d41 0006       mov      6(r5), r1
+ 334:   2c70 000a 000a  cmp      12(r1), 12(r0)
+ 33a:   8304            blos     0x344
+ 33c:   15f5 ffff fff8  mov      $-1, -10(r5)
+ 342:   0125            br       0x38e
+ 344:   0a35 fff6       clr      -12(r5)
+ 348:   25f5 0008 fff6  cmp      $10, -12(r5)
+ 34e:   071f            ble      0x38e
+ 350:   1d40 0004       mov      4(r5), r0
+ 354:   6d40 fff6       add      -12(r5), r0
+ 358:   1d41 0006       mov      6(r5), r1
+ 35c:   6d41 fff6       add      -12(r5), r1
+ 360:   a248            cmpb     (r1), (r0)
+ 362:   0312            beq      0x388
+ 364:   1d40 0004       mov      4(r5), r0
+ 368:   6d40 fff6       add      -12(r5), r0
+ 36c:   1d41 0006       mov      6(r5), r1
+ 370:   6d41 fff6       add      -12(r5), r1
+ 374:   a248            cmpb     (r1), (r0)
+ 376:   0404            bge      0x380
+ 378:   15f5 0001 fff8  mov      $1, -10(r5)
+ 37e:   0103            br       0x386
+ 380:   15f5 ffff fff8  mov      $-1, -10(r5)
+ 386:   0103            br       0x38e
+ 388:   0ab5 fff6       inc      -12(r5)
+ 38c:   01dd            br       0x348
+ 38e:   1d41 fff8       mov      -10(r5), r1
+ 392:   7077 058a       mul      0x920, r1
+ 396:   1040            mov      r1, r0
+ 398:   0100            br       0x39a
+ 39a:   0077 0544       jmp      0x8e2
+ 39e:   0977 0532       jsr      r5, 0x8d4
+ 3a2:   0be6            tst      -(sp)
+ 3a4:   0bf5 0004       tst      4(r5)
+ 3a8:   0403            bge      0x3b0
+ 3aa:   15ce 0031       mov      $61, (sp)
+ 3ae:   0102            br       0x3b4
+ 3b0:   15ce 0030       mov      $60, (sp)
+ 3b4:   15e6 099a       mov      $4632, -(sp)
+ 3b8:   09df 03fc       jsr      pc, *$1774
+ 3bc:   0bd6            tst      (sp)+
+ 3be:   0a35 fff8       clr      -10(r5)
+ 3c2:   25f5 0005 fff8  cmp      $5, -10(r5)
+ 3c8:   0717            ble      0x3f8
+ 3ca:   1d40 0004       mov      4(r5), r0
+ 3ce:   7417 fff4       ash      $-14, r0
+ 3d2:   100e            mov      r0, (sp)
+ 3d4:   45ce fff8       bic      $-10, (sp)
+ 3d8:   65ce 0030       add      $60, (sp)
+ 3dc:   15e6 099d       mov      $4635, -(sp)
+ 3e0:   09df 03fc       jsr      pc, *$1774
+ 3e4:   0bd6            tst      (sp)+
+ 3e6:   1d40 0004       mov      4(r5), r0
+ 3ea:   7417 0003       ash      $3, r0
+ 3ee:   1035 0004       mov      r0, 4(r5)
+ 3f2:   0ab5 fff8       inc      -10(r5)
+ 3f6:   01e5            br       0x3c2
+ 3f8:   0077 04e6       jmp      0x8e2
+ 3fc:   0977 04d4       jsr      r5, 0x8d4
+ 400:   e5c6 007e       sub      $176, sp
+ 404:   1d77 0004 060c  mov      4(r5), 0xa16
+ 40a:   1144            mov      r5, r4
+ 40c:   65c4 0006       add      $6, r4
+ 410:   9fc0 0602       movb     *$0xa16, r0
+ 414:   0309            beq      0x428
+ 416:   0ab7 05fc       inc      0xa16
+ 41a:   2017 0025       cmp      r0, $45
+ 41e:   0306            beq      0x42c
+ 420:   100e            mov      r0, (sp)
+ 422:   09df 05ae       jsr      pc, *$2656
+ 426:   01f4            br       0x410
+ 428:   0077 04b6       jmp      0x8e2
+ 42c:   0a37 05e8       clr      0xa18
+ 430:   0a37 05e8       clr      0xa1c
+ 434:   afd7 05de 002d  cmpb     *$0xa16, $55
+ 43a:   0204            bne      0x444
+ 43c:   0ab7 05d6       inc      0xa16
+ 440:   0ab7 05d4       inc      0xa18
+ 444:   08f7 0128       jsr      r3, 0x570
+ 448:   1077 05c8       mov      r1, 0xa14
+ 44c:   0a37 05ca       clr      0xa1a
+ 450:   2017 002e       cmp      r0, $56
+ 454:   0204            bne      0x45e
+ 456:   08f7 0116       jsr      r3, 0x570
+ 45a:   1077 05be       mov      r1, 0xa1c
+ 45e:   1183            mov      sp, r3
+ 460:   65c3 0004       add      $4, r3
+ 464:   15c1 09a0       mov      $4640, r1
+ 468:   1442            mov      (r1)+, r2
+ 46a:   03da            beq      0x420
+ 46c:   2011            cmp      r0, (r1)+
+ 46e:   02fc            bne      0x468
+ 470:   004a            jmp      (r2)
+ 472:   1501            mov      (r4)+, r1
+ 474:   0405            bge      0x480
+ 476:   0b01            neg      r1
+ 478:   95d3 002d       movb     $55, (r3)+
+ 47c:   0101            br       0x480
+ 47e:   1501            mov      (r4)+, r1
+ 480:   09f7 0002       jsr      pc, 0x486
+ 484:   0152            br       0x52a
+ 486:   0a00            clr      r0
+ 488:   7217 000a       div      $12, r0
+ 48c:   1066            mov      r1, -(sp)
+ 48e:   1001            mov      r0, r1
+ 490:   0302            beq      0x496
+ 492:   09f7 fff0       jsr      pc, 0x486
+ 496:   1580            mov      (sp)+, r0
+ 498:   65c0 0030       add      $60, r0
+ 49c:   9013            movb     r0, (r3)+
+ 49e:   0087            rts      pc
+ 4a0:   9513            movb     (r4)+, (r3)+
+ 4a2:   0201            bne      0x4a6
+ 4a4:   0ac3            dec      r3
+ 4a6:   9513            movb     (r4)+, (r3)+
+ 4a8:   0240            bne      0x52a
+ 4aa:   0ac3            dec      r3
+ 4ac:   013e            br       0x52a
+ 4ae:   1dc1 056a       mov      0xa1c, r1
+ 4b2:   0a03            clr      r3
+ 4b4:   1302            mov      (r4), r2
+ 4b6:   8bd2            tstb     (r2)+
+ 4b8:   0302            beq      0x4be
+ 4ba:   0a83            inc      r3
+ 4bc:   7e44            sob      r1, 0x4b6
+ 4be:   1502            mov      (r4)+, r2
+ 4c0:   0138            br       0x532
+ 4c2:   15c2 09c8       mov      $4710, r2
+ 4c6:   0102            br       0x4cc
+ 4c8:   15c2 09cc       mov      $4714, r2
+ 4cc:   1501            mov      (r4)+, r1
+ 4ce:   0305            beq      0x4da
+ 4d0:   0bf7 0548       tst      0xa1c
+ 4d4:   0302            beq      0x4da
+ 4d6:   95d3 0030       movb     $60, (r3)+
+ 4da:   0a00            clr      r0
+ 4dc:   09f7 0002       jsr      pc, 0x4e2
+ 4e0:   0124            br       0x52a
+ 4e2:   1066            mov      r1, -(sp)
+ 4e4:   760a            ashc     (r2), r0
+ 4e6:   0302            beq      0x4ec
+ 4e8:   09f7 fff6       jsr      pc, 0x4e2
+ 4ec:   1580            mov      (sp)+, r0
+ 4ee:   4c80 0002       bic      2(r2), r0
+ 4f2:   65c0 0030       add      $60, r0
+ 4f6:   2017 0039       cmp      r0, $71
+ 4fa:   0702            ble      0x500
+ 4fc:   65c0 0007       add      $7, r0
+ 500:   9013            movb     r0, (r3)+
+ 502:   0087            rts      pc
+ 504:   1dc0 0514       mov      0xa1c, r0
+ 508:   1dc2 050e       mov      0xa1a, r2
+ 50c:   09f7 0094       jsr      pc, 0x5a4
+ 510:   010c            br       0x52a
+ 512:   1dc0 0506       mov      0xa1c, r0
+ 516:   1dc2 0500       mov      0xa1a, r2
+ 51a:   09f7 0086       jsr      pc, 0x5a4
+ 51e:   0105            br       0x52a
+ 520:   1504            mov      (r4)+, r4
+ 522:   1537 04f0       mov      (r4)+, 0xa16
+ 526:   0077 fee6       jmp      0x410
+ 52a:   1182            mov      sp, r2
+ 52c:   65c2 0004       add      $4, r2
+ 530:   e083            sub      r2, r3
+ 532:   1126            mov      r4, -(sp)
+ 534:   15e6 0020       mov      $40, -(sp)
+ 538:   10c4            mov      r3, r4
+ 53a:   0b03            neg      r3
+ 53c:   6dc3 04d4       add      0xa14, r3
+ 540:   0706            ble      0x54e
+ 542:   0bf7 04d2       tst      0xa18
+ 546:   0203            bne      0x54e
+ 548:   09df 05ae       jsr      pc, *$2656
+ 54c:   7ec3            sob      r3, 0x548
+ 54e:   0bc4            tst      r4
+ 550:   0304            beq      0x55a
+ 552:   948e            movb     (r2)+, (sp)
+ 554:   09df 05ae       jsr      pc, *$2656
+ 558:   7f04            sob      r4, 0x552
+ 55a:   0bc3            tst      r3
+ 55c:   0705            ble      0x568
+ 55e:   15ce 0020       mov      $40, (sp)
+ 562:   09df 05ae       jsr      pc, *$2656
+ 566:   7ec3            sob      r3, 0x562
+ 568:   0bd6            tst      (sp)+
+ 56a:   1584            mov      (sp)+, r4
+ 56c:   0077 fea0       jmp      0x410
+ 570:   0a37 04a6       clr      0xa1a
+ 574:   0a01            clr      r1
+ 576:   9fc0 049c       movb     *$0xa16, r0
+ 57a:   0ab7 0498       inc      0xa16
+ 57e:   e5c0 0030       sub      $60, r0
+ 582:   2017 fffa       cmp      r0, $-6
+ 586:   0202            bne      0x58c
+ 588:   1500            mov      (r4)+, r0
+ 58a:   0103            br       0x592
+ 58c:   2017 0009       cmp      r0, $11
+ 590:   8206            bhi      0x59e
+ 592:   0ab7 0484       inc      0xa1a
+ 596:   7057 000a       mul      $12, r1
+ 59a:   6001            add      r0, r1
+ 59c:   01ec            br       0x576
+ 59e:   65c0 0030       add      $60, r0
+ 5a2:   0083            rts      r3
+ 5a4:   65c4 0008       add      $10, r4
+ 5a8:   95d3 003f       movb     $77, (r3)+
+ 5ac:   0087            rts      pc
+ 5ae:   1166            mov      r5, -(sp)
+ 5b0:   1185            mov      sp, r5
+ 5b2:   1dc0 046c       mov      0xa22, r0
+ 5b6:   0204            bne      0x5c0
+ 5b8:   09f7 002c       jsr      pc, 0x5e8
+ 5bc:   1dc0 0462       mov      0xa22, r0
+ 5c0:   9d50 0004       movb     4(r5), (r0)+
+ 5c4:   0307            beq      0x5d4
+ 5c6:   0ab7 0458       inc      0xa22
+ 5ca:   0af7 0452       dec      0xa20
+ 5ce:   0602            bgt      0x5d4
+ 5d0:   09f7 0014       jsr      pc, 0x5e8
+ 5d4:   1d40 0004       mov      4(r5), r0
+ 5d8:   1585            mov      (sp)+, r5
+ 5da:   0087            rts      pc
+ 5dc:   1166            mov      r5, -(sp)
+ 5de:   1185            mov      sp, r5
+ 5e0:   09f7 0004       jsr      pc, 0x5e8
+ 5e4:   1585            mov      (sp)+, r5
+ 5e6:   0087            rts      pc
+ 5e8:   1dc0 0436       mov      0xa22, r0
+ 5ec:   030a            beq      0x602
+ 5ee:   e5c0 0a24       sub      $5044, r0
+ 5f2:   1037 03de       mov      r0, 0x9d4
+ 5f6:   1dc0 0424       mov      0xa1e, r0
+ 5fa:   0201            bne      0x5fe
+ 5fc:   0a80            inc      r0
+ 5fe:   8900            sys      0
+ 600:   09d0            jsr      pc, (r0)+
+ 602:   15f7 0a24 041a  mov      $5044, 0xa22
+ 608:   15f7 0200 0412  mov      $1000, 0xa20
+ 60e:   2dd7 040c 0002  cmp      0xa1e, $2
+ 614:   8203            bhi      0x61c
+ 616:   15f7 0001 0404  mov      $1, 0xa20
+ 61c:   0087            rts      pc
+ 61e:   1166            mov      r5, -(sp)
+ 620:   1185            mov      sp, r5
+ 622:   1d40 0004       mov      4(r5), r0
+ 626:   8906            sys      6
+ 628:   8602            bcc      0x62e
+ 62a:   0077 02c2       jmp      0x8f0
+ 62e:   0a00            clr      r0
+ 630:   1585            mov      (sp)+, r5
+ 632:   0087            rts      pc
+ 634:   1166            mov      r5, -(sp)
+ 636:   1185            mov      sp, r5
+ 638:   1d40 0004       mov      4(r5), r0
+ 63c:   8929            sys      1
+ 63e:   8602            bcc      0x644
+ 640:   0077 02ac       jmp      0x8f0
+ 644:   1585            mov      (sp)+, r5
+ 646:   0087            rts      pc
+ 648:   1166            mov      r5, -(sp)
+ 64a:   1185            mov      sp, r5
+ 64c:   1d77 0004 0386  mov      4(r5), 0x9d8
+ 652:   1d77 0006 0382  mov      6(r5), 0x9da
+ 658:   8900            sys      0
+ 65a:   09d6            jsr      pc, (sp)+
+ 65c:   8602            bcc      0x662
+ 65e:   0077 028e       jmp      0x8f0
+ 662:   1585            mov      (sp)+, r5
+ 664:   0087            rts      pc
+ 666:   0977 026a       jsr      r5, 0x8d4
+ 66a:   1d77 000a 039c  mov      12(r5), 0xa0c
+ 670:   1d77 0008 0398  mov      10(r5), 0xa0e
+ 676:   1d41 0006       mov      6(r5), r1
+ 67a:   7075 0008       mul      10(r5), r1
+ 67e:   104e            mov      r1, (sp)
+ 680:   6d4e 0004       add      4(r5), (sp)
+ 684:   1d66 0004       mov      4(r5), -(sp)
+ 688:   09df 0692       jsr      pc, *$3222
+ 68c:   0bd6            tst      (sp)+
+ 68e:   0077 0250       jmp      0x8e2
+ 692:   0977 023e       jsr      r5, 0x8d4
+ 696:   e5c6 0008       sub      $10, sp
+ 69a:   1dc2 0370       mov      0xa0e, r2
+ 69e:   1d40 0006       mov      6(r5), r0
+ 6a2:   ed40 0004       sub      4(r5), r0
+ 6a6:   1035 fff4       mov      r0, -14(r5)
+ 6aa:   2080            cmp      r2, r0
+ 6ac:   8702            bcs      0x6b2
+ 6ae:   005f 07e4       jmp      *$3744
+ 6b2:   1081            mov      r2, r1
+ 6b4:   0cc1            asl      r1
+ 6b6:   1066            mov      r1, -(sp)
+ 6b8:   1d41 fff4       mov      -14(r5), r1
+ 6bc:   0dc0            sxt      r0
+ 6be:   7216            div      (sp)+, r0
+ 6c0:   1001            mov      r0, r1
+ 6c2:   7042            mul      r2, r1
+ 6c4:   45c1 8000       bic      $-100000, r1
+ 6c8:   1075 fff4       mov      r1, -14(r5)
+ 6cc:   1d40 0004       mov      4(r5), r0
+ 6d0:   6040            add      r1, r0
+ 6d2:   1035 fff8       mov      r0, -10(r5)
+ 6d6:   1035 fff6       mov      r0, -12(r5)
+ 6da:   1d44 0004       mov      4(r5), r4
+ 6de:   1d43 0006       mov      6(r5), r3
+ 6e2:   e083            sub      r2, r3
+ 6e4:   0115            br       0x710
+ 6e6:   e0b5 fff8       sub      r2, -10(r5)
+ 6ea:   1d4e fff8       mov      -10(r5), (sp)
+ 6ee:   1126            mov      r4, -(sp)
+ 6f0:   09df 07e8       jsr      pc, *$3750
+ 6f4:   0bd6            tst      (sp)+
+ 6f6:   010c            br       0x710
+ 6f8:   1d66 fff8       mov      -10(r5), -(sp)
+ 6fc:   1126            mov      r4, -(sp)
+ 6fe:   09ff 030a       jsr      pc, *$0xa0c
+ 702:   2596            cmp      (sp)+, (sp)+
+ 704:   1035 fff2       mov      r0, -16(r5)
+ 708:   03ee            beq      0x6e6
+ 70a:   0bc0            tst      r0
+ 70c:   0432            bge      0x772
+ 70e:   6084            add      r2, r4
+ 710:   2d44 fff8       cmp      -10(r5), r4
+ 714:   82f1            bhi      0x6f8
+ 716:   012d            br       0x772
+ 718:   10ce            mov      r3, (sp)
+ 71a:   60b5 fff6       add      r2, -12(r5)
+ 71e:   1d66 fff6       mov      -12(r5), -(sp)
+ 722:   09df 07e8       jsr      pc, *$3750
+ 726:   0bd6            tst      (sp)+
+ 728:   0124            br       0x772
+ 72a:   10ce            mov      r3, (sp)
+ 72c:   60b5 fff6       add      r2, -12(r5)
+ 730:   1d66 fff6       mov      -12(r5), -(sp)
+ 734:   1126            mov      r4, -(sp)
+ 736:   09df 080c       jsr      pc, *$4014
+ 73a:   2596            cmp      (sp)+, (sp)+
+ 73c:   60b5 fff8       add      r2, -10(r5)
+ 740:   1d44 fff8       mov      -10(r5), r4
+ 744:   0116            br       0x772
+ 746:   10e6            mov      r3, -(sp)
+ 748:   1d66 fff6       mov      -12(r5), -(sp)
+ 74c:   09ff 02bc       jsr      pc, *$0xa0c
+ 750:   2596            cmp      (sp)+, (sp)+
+ 752:   1035 fff2       mov      r0, -16(r5)
+ 756:   03e0            beq      0x718
+ 758:   0bc0            tst      r0
+ 75a:   070a            ble      0x770
+ 75c:   2d44 fff8       cmp      -10(r5), r4
+ 760:   03e4            beq      0x72a
+ 762:   10ce            mov      r3, (sp)
+ 764:   1126            mov      r4, -(sp)
+ 766:   09df 07e8       jsr      pc, *$3750
+ 76a:   0bd6            tst      (sp)+
+ 76c:   e083            sub      r2, r3
+ 76e:   01cf            br       0x70e
+ 770:   e083            sub      r2, r3
+ 772:   2d43 fff6       cmp      -12(r5), r3
+ 776:   87e7            bcs      0x746
+ 778:   2d44 fff8       cmp      -10(r5), r4
+ 77c:   0225            bne      0x7c8
+ 77e:   1d40 fff8       mov      -10(r5), r0
+ 782:   ed40 0004       sub      4(r5), r0
+ 786:   1d41 0006       mov      6(r5), r1
+ 78a:   ed41 fff6       sub      -12(r5), r1
+ 78e:   2040            cmp      r1, r0
+ 790:   060d            bgt      0x7ac
+ 792:   1d4e 0006       mov      6(r5), (sp)
+ 796:   1d66 fff6       mov      -12(r5), -(sp)
+ 79a:   608e            add      r2, (sp)
+ 79c:   09df 0692       jsr      pc, *$3222
+ 7a0:   0bd6            tst      (sp)+
+ 7a2:   1d75 fff8 0006  mov      -10(r5), 6(r5)
+ 7a8:   005f 069e       jmp      *$3236
+ 7ac:   1d4e fff8       mov      -10(r5), (sp)
+ 7b0:   1d66 0004       mov      4(r5), -(sp)
+ 7b4:   09df 0692       jsr      pc, *$3222
+ 7b8:   0bd6            tst      (sp)+
+ 7ba:   1d40 fff6       mov      -12(r5), r0
+ 7be:   6080            add      r2, r0
+ 7c0:   1035 0004       mov      r0, 4(r5)
+ 7c4:   005f 069e       jmp      *$3236
+ 7c8:   110e            mov      r4, (sp)
+ 7ca:   e0b5 fff8       sub      r2, -10(r5)
+ 7ce:   1d66 fff8       mov      -10(r5), -(sp)
+ 7d2:   10e6            mov      r3, -(sp)
+ 7d4:   09df 080c       jsr      pc, *$4014
+ 7d8:   2596            cmp      (sp)+, (sp)+
+ 7da:   e0b5 fff6       sub      r2, -12(r5)
+ 7de:   1d43 fff6       mov      -12(r5), r3
+ 7e2:   0196            br       0x710
+ 7e4:   0077 00fa       jmp      0x8e2
+ 7e8:   0977 00e8       jsr      r5, 0x8d4
+ 7ec:   0be6            tst      -(sp)
+ 7ee:   1df5 021c fff8  mov      0xa0e, -10(r5)
+ 7f4:   1d44 0004       mov      4(r5), r4
+ 7f8:   1d43 0006       mov      6(r5), r3
+ 7fc:   9302            movb     (r4), r2
+ 7fe:   92d4            movb     (r3), (r4)+
+ 800:   9093            movb     r2, (r3)+
+ 802:   0af5 fff8       dec      -10(r5)
+ 806:   02fa            bne      0x7fc
+ 808:   0077 00d6       jmp      0x8e2
+ 80c:   0977 00c4       jsr      r5, 0x8d4
+ 810:   e5c6 0004       sub      $4, sp
+ 814:   1df5 01f6 fff6  mov      0xa0e, -12(r5)
+ 81a:   1d44 0004       mov      4(r5), r4
+ 81e:   1d43 0006       mov      6(r5), r3
+ 822:   1d42 0008       mov      10(r5), r2
+ 826:   9335 fff8       movb     (r4), -10(r5)
+ 82a:   9294            movb     (r2), (r4)+
+ 82c:   92d2            movb     (r3), (r2)+
+ 82e:   9d53 fff8       movb     -10(r5), (r3)+
+ 832:   0af5 fff6       dec      -12(r5)
+ 836:   02f7            bne      0x826
+ 838:   0077 00a6       jmp      0x8e2
+ 83c:   1166            mov      r5, -(sp)
+ 83e:   1185            mov      sp, r5
+ 840:   1d40 0004       mov      4(r5), r0
+ 844:   1d77 0006 0194  mov      6(r5), 0x9de
+ 84a:   1d77 0008 0190  mov      10(r5), 0x9e0
+ 850:   8900            sys      0
+ 852:   09dc            jsr      pc, *(r4)+
+ 854:   8602            bcc      0x85a
+ 856:   0077 0096       jmp      0x8f0
+ 85a:   1585            mov      (sp)+, r5
+ 85c:   0087            rts      pc
+ 85e:   1166            mov      r5, -(sp)
+ 860:   1185            mov      sp, r5
+ 862:   1df7 0180 017c  mov      0x9e6, 0x9e4
+ 868:   6d77 0004 0176  add      4(r5), 0x9e4
+ 86e:   8900            sys      0
+ 870:   09e2            jsr      pc, -(r2)
+ 872:   8602            bcc      0x878
+ 874:   0077 0078       jmp      0x8f0
+ 878:   1dc0 016a       mov      0x9e6, r0
+ 87c:   6d77 0004 0164  add      4(r5), 0x9e6
+ 882:   1585            mov      (sp)+, r5
+ 884:   0087            rts      pc
+ 886:   1166            mov      r5, -(sp)
+ 888:   1185            mov      sp, r5
+ 88a:   1d77 0004 0154  mov      4(r5), 0x9e4
+ 890:   8900            sys      0
+ 892:   09e2            jsr      pc, -(r2)
+ 894:   8602            bcc      0x89a
+ 896:   0077 0056       jmp      0x8f0
+ 89a:   1d77 0004 0146  mov      4(r5), 0x9e6
+ 8a0:   0a00            clr      r0
+ 8a2:   1585            mov      (sp)+, r5
+ 8a4:   0087            rts      pc
+ 8a6:   1166            mov      r5, -(sp)
+ 8a8:   1185            mov      sp, r5
+ 8aa:   1d40 0004       mov      4(r5), r0
+ 8ae:   1d77 0006 0136  mov      6(r5), 0x9ea
+ 8b4:   1d77 0008 0132  mov      10(r5), 0x9ec
+ 8ba:   8900            sys      0
+ 8bc:   09e8            jsr      pc, *-(r0)
+ 8be:   8602            bcc      0x8c4
+ 8c0:   0077 002c       jmp      0x8f0
+ 8c4:   0a00            clr      r0
+ 8c6:   1585            mov      (sp)+, r5
+ 8c8:   0087            rts      pc
+ 8ca:   1166            mov      r5, -(sp)
+ 8cc:   1185            mov      sp, r5
+ 8ce:   1d40 0004       mov      4(r5), r0
+ 8d2:   8901            sys      1
+ 8d4:   1140            mov      r5, r0
+ 8d6:   1185            mov      sp, r5
+ 8d8:   1126            mov      r4, -(sp)
+ 8da:   10e6            mov      r3, -(sp)
+ 8dc:   10a6            mov      r2, -(sp)
+ 8de:   0be6            tst      -(sp)
+ 8e0:   0048            jmp      (r0)
+ 8e2:   1141            mov      r5, r1
+ 8e4:   1844            mov      -(r1), r4
+ 8e6:   1843            mov      -(r1), r3
+ 8e8:   1842            mov      -(r1), r2
+ 8ea:   1146            mov      r5, sp
+ 8ec:   1585            mov      (sp)+, r5
+ 8ee:   0087            rts      pc
+ 8f0:   1037 011c       mov      r0, 0xa10
+ 8f4:   15c0 ffff       mov      $-1, r0
+ 8f8:   1146            mov      r5, sp
+ 8fa:   1585            mov      (sp)+, r5
+ 8fc:   0087            rts      pc
+ 8fe:   1d80 0002       mov      2(sp), r0
+ 902:   1d81 0004       mov      4(sp), r1
+ 906:   7236 0006       div      6(sp), r0
+ 90a:   1077 0316       mov      r1, 0xc24
+ 90e:   0087            rts      pc
+ 910:   1d80 0002       mov      2(sp), r0
+ 914:   1d81 0004       mov      4(sp), r1
+ 918:   7236 0006       div      6(sp), r0
+ 91c:   1040            mov      r1, r0
+ 91e:   0087            rts      pc
+
+ 0000 0000 0000 0000 0000 0000 ffe0 0000 ---- f009 
+ 0000 0000 0000 0000 0000 0000 ffe0 0002 ---- 1180 
+ ffe0 0000 0000 0000 0000 0000 ffe0 0004 n--- 1226 
+ ffe0 0000 0000 0000 0000 0000 ffde 0006 ---- 0bd0 
+ ffe2 0000 0000 0000 0000 0000 ffde 0008 ---- 1036 0002 
+ ffe2 0000 0000 0000 0000 0000 ffde 000c n--- 09f7 0008 
+ ffe2 0000 0000 0000 0000 0000 ffdc 0018 n--- 0977 08b8 
+ ffe2 0000 0000 0000 0000 001c ffda 08d4 n--- 1140 
+ 001c 0000 0000 0000 0000 001c ffda 08d6 ---- 1185 
+ 001c 0000 0000 0000 0000 ffda ffda 08d8 n--- 1126 
+ 001c 0000 0000 0000 0000 ffda ffd8 08da -z-- 10e6 
+ 001c 0000 0000 0000 0000 ffda ffd6 08dc -z-- 10a6 
+ 001c 0000 0000 0000 0000 ffda ffd4 08de -z-- 0be6 
+ 001c 0000 0000 0000 0000 ffda ffd2 08e0 -z-- 0048 
+ 001c 0000 0000 0000 0000 ffda ffd2 001c -z-- e5c6 0006 
+ 001c 0000 0000 0000 0000 ffda ffcc 0020 n--c 0af5 0004 
+ 001c 0000 0000 0000 0000 ffda ffcc 0024 ---c 0bf5 0004 
+ 001c 0000 0000 0000 0000 ffda ffcc 0028 ---- 0734 
+ 001c 0000 0000 0000 0000 ffda ffcc 002a ---- 1d40 0006 
+ ffe2 0000 0000 0000 0000 ffda ffcc 002e n--- a5f8 002d 0002 
+ ffe2 0000 0000 0000 0000 ffda ffcc 0034 --vc 022e 
+ ffe2 0000 0000 0000 0000 ffda ffcc 0092 --vc 0bf5 0004 
+ ffe2 0000 0000 0000 0000 ffda ffcc 0096 ---- 0209 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00aa ---- 0a0e 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00ac ---- 65f5 0002 0006 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00b2 n--- 1f66 0006 
+ ffe2 0000 0000 0000 0000 ffda ffca 00b6 n--- 09df 0648 
+ ffe2 0000 0000 0000 0000 ffda ffc8 0648 n--- 1166 
+ ffe2 0000 0000 0000 0000 ffda ffc6 064a n--- 1185 
+ ffe2 0000 0000 0000 0000 ffc6 ffc6 064c n--- 1d77 0004 0386 
+ ffe2 0000 0000 0000 0000 ffc6 ffc6 0652 n--- 1d77 0006 0382 
+ ffe2 0000 0000 0000 0000 ffc6 ffc6 0658 -z-- 8900 09d6 
+ ffe2 0000 0000 0000 0000 ffc6 ffc6 09d6 -z-- 8905 ffed 0000 open:29299
+
+ ffe2 0000 0000 0000 0000 ffc6 ffc6 065c -z-- 8602 
+ ffe2 0000 0000 0000 0000 ffc6 ffc6 0662 -z-- 1585 
+ ffe2 0000 0000 0000 0000 ffda ffc8 0664 n--- 0087 
+ ffe2 0000 0000 0000 0000 ffda ffca 00ba n--- 0bd6 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00bc n--- 1037 093a 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00c0 n--- 0bf7 0936 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00c4 n--- 0406 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00c6 n--- 15ce 094e 
+ ffe2 0000 0000 0000 0000 ffda ffcc 00ca ---- 09df 03fc 
+ ffe2 0000 0000 0000 0000 ffda ffca 03fc ---- 0977 04d4 
+ ffe2 0000 0000 0000 0000 0400 ffc8 08d4 ---- 1140 
+ 0400 0000 0000 0000 0000 0400 ffc8 08d6 ---- 1185 
+ 0400 0000 0000 0000 0000 ffc8 ffc8 08d8 n--- 1126 
+ 0400 0000 0000 0000 0000 ffc8 ffc6 08da -z-- 10e6 
+ 0400 0000 0000 0000 0000 ffc8 ffc4 08dc -z-- 10a6 
+ 0400 0000 0000 0000 0000 ffc8 ffc2 08de -z-- 0be6 
+ 0400 0000 0000 0000 0000 ffc8 ffc0 08e0 -z-- 0048 
+ 0400 0000 0000 0000 0000 ffc8 ffc0 0400 -z-- e5c6 007e 
+ 0400 0000 0000 0000 0000 ffc8 ff42 0404 n--c 1d77 0004 060c 
+ 0400 0000 0000 0000 0000 ffc8 ff42 040a ---c 1144 
+ 0400 0000 0000 0000 ffc8 ffc8 ff42 040c n--c 65c4 0006 
+ 0400 0000 0000 0000 ffce ffc8 ff42 0410 n--- 9fc0 0602 
+ 0063 0000 0000 0000 ffce ffc8 ff42 0414 ---- 0309 
+ 0063 0000 0000 0000 ffce ffc8 ff42 0416 ---- 0ab7 05fc 
+ 0063 0000 0000 0000 ffce ffc8 ff42 041a ---- 2017 0025 
+ 0063 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0063 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0063 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0063 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0063 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0063 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0000 0000 0000 0000 ffce ff3e ff3e 05b6 -z-- 0204 
+ 0000 0000 0000 0000 ffce ff3e ff3e 05b8 -z-- 09f7 002c 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05ec -z-- 030a 
+ 0000 0000 0000 0000 ffce ff3e ff3c 0602 -z-- 15f7 0a24 041a 
+ 0000 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0000 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0000 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0000 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0000 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0000 0000 0000 0000 ffce ff3e ff3e 05bc ---c 1dc0 0462 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---c 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---c 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---c 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---c 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-c 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-c 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-c 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---c 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---c e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 c
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0063 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0063 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0063 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0063 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0061 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0061 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0061 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0061 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0061 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0061 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0061 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0061 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0061 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 a
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0061 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0061 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0061 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0061 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 006e 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 n
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 006e 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 n
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 006f 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 006f 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 006f 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 006f 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 006f 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 o
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 006f 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 006f 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0074 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0074 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0074 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0074 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0074 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 t
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0074 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0074 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0020 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0020 0000 0000 0000 ffce ffc8 ff42 041e --vc 0306 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0420 --vc 100e 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0422 ---c 09df 05ae 
+ 0020 0000 0000 0000 ffce ffc8 ff40 05ae ---c 1166 
+ 0020 0000 0000 0000 ffce ffc8 ff3e 05b0 n--c 1185 
+ 0020 0000 0000 0000 ffce ff3e ff3e 05b2 n--c 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---c 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---c 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---c 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---c 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---c 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-c 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-c 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-c 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---c 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---c e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001  
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0020 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0020 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 006f 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 006f 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 006f 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 006f 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 006f 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 o
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 006f 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 006f 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 006f 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0070 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0070 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0070 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0070 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0070 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 p
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0070 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0070 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0065 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0065 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0065 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0065 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0065 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0065 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0065 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0065 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0065 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 e
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0065 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0065 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0065 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0065 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 006e 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 n
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0020 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0020 0000 0000 0000 ffce ffc8 ff42 041e --vc 0306 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0420 --vc 100e 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0422 ---c 09df 05ae 
+ 0020 0000 0000 0000 ffce ffc8 ff40 05ae ---c 1166 
+ 0020 0000 0000 0000 ffce ffc8 ff3e 05b0 n--c 1185 
+ 0020 0000 0000 0000 ffce ff3e ff3e 05b2 n--c 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---c 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---c 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---c 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---c 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---c 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-c 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-c 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-c 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---c 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---c e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001  
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0020 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0020 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0020 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0069 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0069 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0069 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0069 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0069 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0069 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0069 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0069 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0069 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 i
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0069 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0069 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0069 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0069 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 006e 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 006e 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 n
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 006e 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 006e 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 006e 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0070 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0070 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0070 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0070 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0070 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 p
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0070 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0070 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0070 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0075 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0075 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0075 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0075 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0075 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0075 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0075 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0075 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0075 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 u
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0075 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0075 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0075 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0075 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 0074 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 0074 0000 0000 0000 ffce ffc8 ff42 041e ---- 0306 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0420 ---- 100e 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0422 ---- 09df 05ae 
+ 0074 0000 0000 0000 ffce ffc8 ff40 05ae ---- 1166 
+ 0074 0000 0000 0000 ffce ffc8 ff3e 05b0 n--- 1185 
+ 0074 0000 0000 0000 ffce ff3e ff3e 05b2 n--- 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---- 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---- 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---- 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---- 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---- 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-- 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-- 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-- 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---- 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---- e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 t
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 0074 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 0074 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 0074 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 000a 0000 0000 0000 ffce ffc8 ff42 0414 ---c 0309 
+ 000a 0000 0000 0000 ffce ffc8 ff42 0416 ---c 0ab7 05fc 
+ 000a 0000 0000 0000 ffce ffc8 ff42 041a ---c 2017 0025 
+ 000a 0000 0000 0000 ffce ffc8 ff42 041e --vc 0306 
+ 000a 0000 0000 0000 ffce ffc8 ff42 0420 --vc 100e 
+ 000a 0000 0000 0000 ffce ffc8 ff42 0422 ---c 09df 05ae 
+ 000a 0000 0000 0000 ffce ffc8 ff40 05ae ---c 1166 
+ 000a 0000 0000 0000 ffce ffc8 ff3e 05b0 n--c 1185 
+ 000a 0000 0000 0000 ffce ff3e ff3e 05b2 n--c 1dc0 046c 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05b6 ---c 0204 
+ 0a24 0000 0000 0000 ffce ff3e ff3e 05c0 ---c 9d50 0004 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c4 ---c 0307 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05c6 ---c 0ab7 0458 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ca ---c 0af7 0452 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05ce -z-c 0602 
+ 0a25 0000 0000 0000 ffce ff3e ff3e 05d0 -z-c 09f7 0014 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05e8 -z-c 1dc0 0436 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ec ---c 030a 
+ 0a25 0000 0000 0000 ffce ff3e ff3c 05ee ---c e5c0 0a24 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f2 ---- 1037 03de 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05f6 ---- 1dc0 0424 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fa -z-- 0201 
+ 0000 0000 0000 0000 ffce ff3e ff3c 05fc -z-- 0a80 
+ 0001 0000 0000 0000 ffce ff3e ff3c 05fe ---- 8900 09d0 
+ 0001 0000 0000 0000 ffce ff3e ff3c 09d0 ---- 8904 0a24 0001 
+
+ 0001 0000 0000 0000 ffce ff3e ff3c 0602 ---- 15f7 0a24 041a 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0608 ---- 15f7 0200 0412 
+ 0001 0000 0000 0000 ffce ff3e ff3c 060e ---- 2dd7 040c 0002 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0614 --vc 8203 
+ 0001 0000 0000 0000 ffce ff3e ff3c 0616 --vc 15f7 0001 0404 
+ 0001 0000 0000 0000 ffce ff3e ff3c 061c ---c 0087 
+ 0001 0000 0000 0000 ffce ff3e ff3e 05d4 ---c 1d40 0004 
+ 000a 0000 0000 0000 ffce ff3e ff3e 05d8 ---c 1585 
+ 000a 0000 0000 0000 ffce ffc8 ff40 05da n--c 0087 
+ 000a 0000 0000 0000 ffce ffc8 ff42 0426 n--c 01f4 
+ 000a 0000 0000 0000 ffce ffc8 ff42 0410 n--c 9fc0 0602 
+ 0000 0000 0000 0000 ffce ffc8 ff42 0414 -z-c 0309 
+ 0000 0000 0000 0000 ffce ffc8 ff42 0428 -z-c 0077 04b6 
+ 0000 0000 0000 0000 ffce ffc8 ff42 08e2 -z-c 1141 
+ 0000 ffc8 0000 0000 ffce ffc8 ff42 08e4 n--c 1844 
+ 0000 ffc6 0000 0000 0000 ffc8 ff42 08e6 -z-c 1843 
+ 0000 ffc4 0000 0000 0000 ffc8 ff42 08e8 -z-c 1842 
+ 0000 ffc2 0000 0000 0000 ffc8 ff42 08ea -z-c 1146 
+ 0000 ffc2 0000 0000 0000 ffc8 ffc8 08ec n--c 1585 
+ 0000 ffc2 0000 0000 0000 ffda ffca 08ee n--c 0087 
+ 0000 ffc2 0000 0000 0000 ffda ffcc 00ce n--c 09f7 07f8 
+ 0000 ffc2 0000 0000 0000 ffda ffca 08ca n--c 1166 
+ 0000 ffc2 0000 0000 0000 ffda ffc8 08cc n--c 1185 
+ 0000 ffc2 0000 0000 0000 ffc8 ffc8 08ce n--c 1d40 0004 
+ 094e ffc2 0000 0000 0000 ffc8 ffc8 08d2 ---c 8901 

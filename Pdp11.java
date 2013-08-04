@@ -292,6 +292,11 @@ class VirtualAddressSpace{
 				srcOperand = "";
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case CLRB:
+				mnemonic = "clrb";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case INC:
 				mnemonic = "inc";
 				srcOperand = "";
@@ -332,6 +337,11 @@ class VirtualAddressSpace{
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case BIT:
+				mnemonic = "bit";
+				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case ADD:
 				mnemonic = "add";
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
@@ -346,6 +356,11 @@ class VirtualAddressSpace{
 				mnemonic = "asl";
 				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				dstOperand = "";
+				break;
+			case SXT:
+				mnemonic = "sxt";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case SOB:
 				mnemonic = "sob";
@@ -396,6 +411,16 @@ class VirtualAddressSpace{
 				mnemonic = "bic";
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case BLOS:
+				mnemonic = "blos";
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = "";
+				break;
+			case BCS:
+				mnemonic = "bcs";
+				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = "";
 				break;
 			case SYS:	
 				mnemonic = "sys";
@@ -572,6 +597,17 @@ class VirtualAddressSpace{
 				cc.reset();
 				
 				break;
+			case CLRB: //バイト命令とは？
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, 0);
+				}else{
+					setMemory2(dstObj.address,0);
+				}
+				
+				cc.reset();
+				
+				break;
 			case INC:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				if(dstObj.flgRegister){
@@ -702,6 +738,39 @@ class VirtualAddressSpace{
 						getSubBorrow(srcObj.operand, dstObj.operand, tmp));
 
 				break;
+			case BIT:
+				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				tmp = srcObj.operand & dstObj.operand;
+				
+				cc.set(false, //後で書く 
+						tmp==0, 
+						false, 
+						cc.c);
+
+				break;
+			case SXT:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				if(cc.n == true){
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, 0xffff);
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, 0xffff);
+					}
+				}else{
+					if(dstObj.flgRegister){
+						reg.set(dstObj.register, 0);
+					}else if(dstObj.flgAddress){
+						setMemory2(dstObj.address, 0);
+					}
+				}
+				
+				cc.set(false,
+						!cc.n, 
+						false, 
+						cc.c);
+
+				break;
 			case ADD:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
@@ -809,6 +878,16 @@ class VirtualAddressSpace{
 					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
 				break;
+			case BLOS:
+				if(cc.c == true || cc.z == true){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				}
+				break;
+			case BCS:
+				if(cc.c == true){
+					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				}
+				break;
 			case BIC:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
@@ -822,10 +901,14 @@ class VirtualAddressSpace{
 				}
 
 				cc.set(tmp>0xFF, tmp==0, false, cc.c);
-	
+
 				break;
-			case SYS:	
-				switch(getOctal(opcode,5)){
+			case SYS:
+				
+				int textMemNum;
+				int operand2;
+
+				switch(getDex(getOctal(opcode,4),getOctal(opcode,5))){
 				case 0:
 					int sub = getMem();
 					tmp = reg.get(7);
@@ -838,13 +921,23 @@ class VirtualAddressSpace{
 					System.exit(0);
 					break;
 				case 4:
-					int textMemNum = getMem();
-					int operand2 = getMem();
+					textMemNum = getMem();
+					operand2 = getMem();
 
 					for(int i=0;i<operand2;i++){
 						printChar(getMemory1(textMemNum));
 						textMemNum++;
 					}
+					break;
+				case 5:
+					textMemNum = getMem();
+					operand2 = getMem();
+					
+					//stringbufferでファイル名作ってopenする
+					
+					System.out.println("open:" + getMemory2(textMemNum));
+					break;
+				case 41:
 					break;
 				}
 				break;
@@ -975,6 +1068,11 @@ class VirtualAddressSpace{
 			}
 		}
 		return subC;
+	}
+	
+	//8進数から10進数に変換
+	int getDex(int first,int second){
+		return Integer.parseInt(Integer.toString(first * 10 + second), 8);
 	}
 		
 	//レジスタ名称取得
@@ -1319,6 +1417,9 @@ class VirtualAddressSpace{
 					case 3:
 						mnemonic = Mnemonic.ASL;
 						break;
+					case 7:
+						mnemonic = Mnemonic.SXT;
+						break;
 					}
 					break;
 				}
@@ -1328,6 +1429,9 @@ class VirtualAddressSpace{
 				break;
 			case 2:
 				mnemonic = Mnemonic.CMP;
+				break;
+			case 3:
+				mnemonic = Mnemonic.BIT;
 				break;
 			case 4:
 				mnemonic = Mnemonic.BIC;
@@ -1363,7 +1467,16 @@ class VirtualAddressSpace{
 				case 1:
 					switch(getOctal(opcode,3)){
 					case 0:
+					case 1:
+					case 2:
+					case 3:
 						mnemonic = Mnemonic.BHI;
+						break;
+					case 4:
+					case 5:
+					case 6:
+					case 7:
+						mnemonic = Mnemonic.BLOS;
 						break;
 					}
 					break;
@@ -1372,21 +1485,26 @@ class VirtualAddressSpace{
 					case 0:
 						mnemonic = Mnemonic.BCC;
 						break;
+					case 4:
+					case 5:
+					case 6:
+					case 7:
+						mnemonic = Mnemonic.BCS;
+						break;
 					}
 					break;
 				case 4:
 					switch(getOctal(opcode,3)){
 					case 4:	
-						switch(getOctal(opcode,4)){
-						case 0:	
-							mnemonic = Mnemonic.SYS;
-							break;
-						}
+						mnemonic = Mnemonic.SYS;
 						break;
 					}
 					break;
 				case 5:
 					switch(getOctal(opcode,3)){
+					case 0:
+						mnemonic = Mnemonic.CLRB;
+						break;
 					case 7:
 						mnemonic = Mnemonic.TSTB;
 						break;
@@ -1473,9 +1591,9 @@ class VirtualAddressSpace{
  * ニーモニックENUM
  */
 enum Mnemonic { 
-	RTT, RTS, JMP, JSR, CLR, TST, TSTB, MOV, MOVB, CMP, CMPB,
-	INC, DEC, SUB, ADD, SOB,
-	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE,
+	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT,
+	INC, DEC, SUB, ADD, SOB, SXT,
+	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE, BLOS, BCS,
 	NEG, ASL,
 	DIV, ASH, ASHC, MUL,
 	SETD, SYS, WORD
