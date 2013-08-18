@@ -1,5 +1,7 @@
 package pdp11;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -121,6 +123,12 @@ class VirtualAddressSpace{
 
 	//レジスタ
 	Register reg;
+	
+	//ファイルディスクリプタ
+	FileDescriptor fd;
+
+	//ファイルオフセット
+	int fileOffset;
 
 	//コンディションコード
 	ConditionCode cc;
@@ -180,6 +188,9 @@ class VirtualAddressSpace{
 		//レジスタ初期化
 		reg = new Register();
 
+		//ファイルディスクリプタ初期化
+		fd = new FileDescriptor();
+		
 		//コンディションコード初期化
 		cc = new ConditionCode();
 	}
@@ -200,6 +211,12 @@ class VirtualAddressSpace{
 		mem[add+1] = (byte)(src >> 8);
 	}
 
+	//1バイト単位で指定箇所のメモリを更新
+	void setMemory1(int add,int src){
+		mem[add] = (byte)src;
+	}
+
+	
 	//8進数に変換した命令の任意の箇所を取得
 	int getOctal(int dec,int index){
 		int val = Integer.parseInt(String.format("%06o",dec).substring(index, index+1));
@@ -210,7 +227,7 @@ class VirtualAddressSpace{
 	void printChar(int dec){
 		System.out.print((char)Integer.parseInt(String.format("%02x",dec),16));
 	}
-	
+
 	//メモリ上のデータを取得して、PC+2する
 	int getMem(){
 		int opcode = getMemory2(reg.get(7));
@@ -905,8 +922,8 @@ class VirtualAddressSpace{
 				break;
 			case SYS:
 				
-				int textMemNum;
-				int operand2;
+				int val1;
+				int val2;
 
 				switch(getDex(getOctal(opcode,4),getOctal(opcode,5))){
 				case 0:
@@ -920,22 +937,85 @@ class VirtualAddressSpace{
 				case 1:
 					System.exit(0);
 					break;
+				case 3:
+					val1 = getMem(); //読み込み位置
+					val2 = getMem();  //
+					System.out.println("read:" + reg.get(0));
+									
+					FileInputStream fread = (FileInputStream)fd.get(reg.get(0));
+				
+					try {
+						fread.skip(fileOffset);
+						fread.read(mem,val1,val2);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					fileOffset = fileOffset + val2;
+					
+					reg.set(0,val2);
+					
+					break;
 				case 4:
-					textMemNum = getMem();
-					operand2 = getMem();
+					val1 = getMem();
+					val2 = getMem();
 
-					for(int i=0;i<operand2;i++){
-						printChar(getMemory1(textMemNum));
-						textMemNum++;
+					for(int i=0;i<val2;i++){
+						printChar(getMemory1(val1));
+						val1++;
 					}
 					break;
 				case 5:
-					textMemNum = getMem();
-					operand2 = getMem();
+					val1 = getMem();
+					StringBuffer str = new StringBuffer(""); 
 					
-					//stringbufferでファイル名作ってopenする
+					while(true){
+						if(getMemory1(val1)!=0){
+							str.append((char)getMemory1(val1));
+							val1 = val1 + 1;
+						}else{
+							break;
+						}
+					}
 					
-					System.out.println("open:" + getMemory2(textMemNum));
+					//デバッグ用
+					System.out.println("open:" + str);
+					
+					//ファイルディスクリプタに設定
+					FileInputStream fi = null;
+					try {
+						fi = new FileInputStream(str.toString());
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					fileOffset = 0;
+
+					reg.set(0,fd.open(fd.search(),fi));
+					
+					break;
+				case 19:
+					val1 = getMem();
+					val2 = getMem();
+					
+					System.out.println("lseek:" + reg.get(0));
+					
+					switch(val2){
+					case 0:
+						fileOffset = val1;
+						break;
+					case 1:
+						fileOffset = fileOffset + val1;
+						break;
+					case 2:
+						//あとで書く
+						break;
+					}
+					
+					reg.set(0, fileOffset);
+
 					break;
 				case 41:
 					break;
@@ -1690,6 +1770,43 @@ class Register{
 	int get(int regNo){
 		return reg[regNo];
 	}
+}
+
+/*
+ * ファイルディスクリプタクラス
+ */
+class FileDescriptor{
+	Object inode[];
+	
+	//コンストラクタ（初期化）
+	FileDescriptor(){
+		inode = new Object[16];
+		open(0,System.in);
+		open(1,System.out);
+		open(2,System.err);
+	}
+	
+	//open
+	int open(int no,Object in){
+		inode[no] = in;
+		return no;
+	}
+	
+	//get
+	Object get(int no){
+		return inode[no];
+	}
+	
+	//search
+	int search(){
+		for(int i=0;i<16;i++){
+			if(inode[i]==null){
+				return i;
+			}
+		}
+		return 16;
+	}
+	
 }
 
 /*
