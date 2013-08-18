@@ -127,9 +127,6 @@ class VirtualAddressSpace{
 	//ファイルディスクリプタ
 	FileDescriptor fd;
 
-	//ファイルオフセット
-	int fileOffset;
-
 	//コンディションコード
 	ConditionCode cc;
 
@@ -737,6 +734,9 @@ class VirtualAddressSpace{
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3), true);
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
 				tmp = srcObj.operand - dstObj.operand;
+				
+				System.out.println("src=" + srcObj.operand);
+				System.out.println("dst=" + dstObj.operand);
 
 				cc.set((tmp >> 15)>0, 
 						tmp==0, 
@@ -926,7 +926,7 @@ class VirtualAddressSpace{
 				int val2;
 
 				switch(getDex(getOctal(opcode,4),getOctal(opcode,5))){
-				case 0:
+				case 0: //systemcall
 					int sub = getMem();
 					tmp = reg.get(7);
 					execute(sub, sub+1);
@@ -934,10 +934,10 @@ class VirtualAddressSpace{
 					reg.set(7, tmp);
 
 					break;
-				case 1:
+				case 1: //exit
 					System.exit(0);
 					break;
-				case 3:
+				case 3: //read
 					val1 = getMem(); //読み込み位置
 					val2 = getMem();  //
 					System.out.println("read:" + reg.get(0));
@@ -945,19 +945,19 @@ class VirtualAddressSpace{
 					FileInputStream fread = (FileInputStream)fd.get(reg.get(0));
 				
 					try {
-						fread.skip(fileOffset);
+						fread.skip(fd.getOffset(reg.get(0)));
 						fread.read(mem,val1,val2);
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					
-					fileOffset = fileOffset + val2;
+					fd.setOffset(reg.get(0),val2);
 					
 					reg.set(0,val2);
 					
 					break;
-				case 4:
+				case 4: //write
 					val1 = getMem();
 					val2 = getMem();
 
@@ -966,7 +966,7 @@ class VirtualAddressSpace{
 						val1++;
 					}
 					break;
-				case 5:
+				case 5: //open
 					val1 = getMem();
 					StringBuffer str = new StringBuffer(""); 
 					
@@ -990,13 +990,16 @@ class VirtualAddressSpace{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-					fileOffset = 0;
 
 					reg.set(0,fd.open(fd.search(),fi));
 					
 					break;
-				case 19:
+					
+				case 17: //brk
+					System.out.println("brk:");
+					
+					break;
+				case 19: //lseek
 					val1 = getMem();
 					val2 = getMem();
 					
@@ -1004,17 +1007,19 @@ class VirtualAddressSpace{
 					
 					switch(val2){
 					case 0:
-						fileOffset = val1;
+						fd.clearOffset(reg.get(0));
+						fd.setOffset(reg.get(0), val1);
 						break;
 					case 1:
-						fileOffset = fileOffset + val1;
+						fd.setOffset(reg.get(0), val1);
 						break;
 					case 2:
 						//あとで書く
 						break;
 					}
 					
-					reg.set(0, fileOffset);
+					reg.set(0, fd.getOffset(reg.get(0)));
+					cc.reset();
 
 					break;
 				case 41:
@@ -1039,7 +1044,6 @@ class VirtualAddressSpace{
 				
 				break;
 			case MUL: //後で書く
-				/*
 				int mulR = reg.get(getOctal(opcode,3));
 				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				
@@ -1053,7 +1057,6 @@ class VirtualAddressSpace{
 						mulR * srcObj.operand==0, 
 						false,
 						false);
-				*/
 				break;
 			case ASH: 
 				int ashReg = reg.get(getOctal(opcode,3));
@@ -1777,10 +1780,12 @@ class Register{
  */
 class FileDescriptor{
 	Object inode[];
+	int offset[];
 	
 	//コンストラクタ（初期化）
 	FileDescriptor(){
 		inode = new Object[16];
+		offset = new int[16];
 		open(0,System.in);
 		open(1,System.out);
 		open(2,System.err);
@@ -1789,6 +1794,7 @@ class FileDescriptor{
 	//open
 	int open(int no,Object in){
 		inode[no] = in;
+		offset[no] = 0;
 		return no;
 	}
 	
@@ -1796,6 +1802,22 @@ class FileDescriptor{
 	Object get(int no){
 		return inode[no];
 	}
+	
+	//getOffset
+	int getOffset(int no){
+		return offset[no];
+	}
+
+	//setOffset
+	void setOffset(int no,int val){
+		offset[no] = offset[no] + val;
+	}
+
+	//clearOffset
+	void clearOffset(int no){
+		offset[no] = 0;
+	}
+
 	
 	//search
 	int search(){
