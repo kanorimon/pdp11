@@ -754,7 +754,7 @@ class VirtualAddressSpace{
 					}
 				}
 
-				cc.set((tmp << 1 >>> 16)>0, tmp==0, false, cc.c);
+				cc.set((tmp << 1 >>> 16)>0, tmp << 24 >>> 24 ==0, false, cc.c);
 				
 				break;
 			case MOV:
@@ -798,9 +798,9 @@ class VirtualAddressSpace{
 			case CMP:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				tmp = (srcObj.operand << 16 >>>16) - (dstObj.operand << 16 >>> 16);
+				tmp = (srcObj.operand << 16 >>> 16) - (dstObj.operand << 16 >>> 16);
 				
-				cc.set((tmp << 1 >>> 16)>0, 
+				cc.set((tmp << 16 >>> 31)>0, 
 						tmp==0, 
 						getSubOverflow(srcObj.operand, dstObj.operand, tmp), 
 						getSubBorrow(srcObj.operand, dstObj.operand, tmp));
@@ -1279,9 +1279,11 @@ class VirtualAddressSpace{
 			case ASHC: //後で書く
 				int ashcReg1 = reg.get(getOctal(opcode,3));
 				int ashcReg2 = reg.get(getOctal(opcode,3) + 1);
-				int ashcTmp = ashcReg1 << 16 + (ashcReg2 << 16 >>> 16);
+				int ashcTmp = (ashcReg1 << 16) + (ashcReg2 << 16 >>> 16);
+				
 				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				int ashcInt = srcObj.operand << 26 >> 26;
+			
 				if(ashcInt < 0){
 					tmp = ashcTmp >> Math.abs(ashcInt);
 					reg.set(getOctal(opcode,3), ashcTmp >> Math.abs(ashcInt) >>> 16);
@@ -1294,7 +1296,7 @@ class VirtualAddressSpace{
 				
 				cc.set(tmp>0,  //要調査
 						tmp==0, 
-						((ashcTmp << 16 ) >>> 31) != ((tmp << 16) >>> 31), //要調査
+						(ashcTmp >>> 31) != (tmp  >>> 31), //要調査
 						false); //後で書く
 				
 				break;
@@ -1303,7 +1305,6 @@ class VirtualAddressSpace{
 			case WORD:
 				break;
 			}
-
 		}
 	}
 	
@@ -1345,8 +1346,8 @@ class VirtualAddressSpace{
 	//減算オーバーフロー判定
 	boolean getSubOverflow(int src, int dst, int val){
 		boolean subV = false;
-		if((dst << 1 >>> 16) != (src << 1 >>> 16)){
-			if((src << 1 >>> 16) == (val << 1 >>> 16)){
+		if((dst << 16 >>> 31) != (src << 16 >>> 31)){
+			if((dst << 16 >>> 31) == (val << 16 >>> 31)){
 				subV = true;
 			}
 		}
