@@ -129,6 +129,9 @@ class VirtualAddressSpace{
 
 	//コンディションコード
 	ConditionCode cc;
+	
+	//シグナル
+	Signal signal;
 
 	//出力用ユーティリティ
 	int strnum;
@@ -190,6 +193,9 @@ class VirtualAddressSpace{
 		
 		//コンディションコード初期化
 		cc = new ConditionCode();
+		
+		//シグナル初期化
+		signal = new Signal();
 	}
 
 	//2バイト単位でリトルエンディアンを反転して10進数で取得
@@ -323,6 +329,11 @@ class VirtualAddressSpace{
 				break;
 			case DEC:
 				mnemonic = "dec";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case ROR:
+				mnemonic = "ror";
 				srcOperand = "";
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
@@ -543,6 +554,9 @@ class VirtualAddressSpace{
 
 		//コンディションコード初期化
 		cc.reset();
+		
+		//シグナル初期化
+		signal.reset();
 
 		//引数設定
 		ArrayList<Integer> valAddress = new ArrayList<Integer> ();
@@ -576,13 +590,19 @@ class VirtualAddressSpace{
 
 	//インタプリタ
 	public void execute(int start, int end){
+		execute(start, end, false);
+	}
+
+	//インタプリタ
+	public void execute(int start, int end, boolean endFlg){
 
 		//実行モードオン
 		exeFlg = true;
 		
 		//PCを初期化
-		reg.set(7,start);	
+		reg.set(7,start);
 
+		if(!endFlg) end = 65536;
 		for(reg.set(7,start);reg.get(7)<end;){
 
 			//レジスタ・フラグ出力
@@ -631,6 +651,27 @@ class VirtualAddressSpace{
 				pushStack(reg.get(getOctal(opcode,3)));
 				reg.set(getOctal(opcode,3),reg.get(7));
 				reg.set(7, dstObj.address);
+
+				cc.set(cc.n, cc.z, cc.v, cc.c);
+
+				break;
+			case ROR:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				int rortmp = 0;
+				if(cc.c) rortmp = 1;
+				if(dstObj.operand << 31 >>> 31 == 1) cc.c = true;
+				if(dstObj.operand << 31 >>> 31 == 0) cc.c = false;
+				
+				if(dstObj.flgRegister){
+					tmp = (rortmp << 15) + (reg.get(dstObj.register) >> 1);
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					tmp =  (rortmp << 15) + (getMemory2(dstObj.address) >> 1);
+					setMemory2(dstObj.address, tmp);
+				}else{
+					tmp =  (rortmp << 15) + (dstObj.operand >> 1);
+					setMemory2(dstObj.address, tmp);
+				}
 
 				cc.set(cc.n, cc.z, cc.v, cc.c);
 
@@ -1083,12 +1124,13 @@ class VirtualAddressSpace{
 				case 0: //systemcall
 					int sub = getMem();
 					tmp = reg.get(7);
-					execute(sub, sub+1);
+					execute(sub, sub+1, true);
 
 					reg.set(7, tmp);
 
 					break;
 				case 1: //exit
+					if(dbgFlg) System.out.println("\n exit:");
 					System.exit(0);
 					break;
 				case 3: //read
@@ -1153,7 +1195,7 @@ class VirtualAddressSpace{
 
 					//ファイルディスクリプタに設定
 					reg.set(0,fd.open(fd.search(), openFile.toPath()));
-					
+
 					break;
 				case 6: //close
 					//デバッグ用
@@ -1183,6 +1225,11 @@ class VirtualAddressSpace{
 				case 17: //brk
 					//デバッグ用
 					if(dbgFlg) System.out.print("\n brk:");
+					
+					break;
+				case 18: //stat
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n stat:");
 					
 					break;
 				case 19: //lseek
@@ -1215,6 +1262,17 @@ class VirtualAddressSpace{
 					if(dbgFlg) System.out.print("\n dup:" + reg.get(0));
 					
 					reg.set(0,fd.copy(fd.search(), reg.get(0)));
+
+					break;
+				case 48: //signal
+					val1 = getMem(); //シークサイズ
+					val2 = getMem(); //モード
+
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n signal:" + reg.get(0) + "," + val1 + "," + val2);
+
+					signal.set(val1, val2);
+					reg.set(0,65);
 
 					break;
 				}
@@ -1456,6 +1514,7 @@ class VirtualAddressSpace{
 
 		//ワーク
 		short opcodeShort;
+		int opcodeInt;
 		int tmp;
 
 		switch(regNo){
@@ -1677,8 +1736,9 @@ class VirtualAddressSpace{
 			case 7:
 				//相対間接
 				//命令に続くワードの内容 a を PC+2 に加算したものをアドレスのアドレスとして使用する。
-				opcodeShort = (short)getMem();
-				tmp = opcodeShort + reg.get(7);
+				opcodeInt = (int)getMem() << 16 >>> 16;
+				
+				tmp = opcodeInt + reg.get(7);
 
 				field.setStr("*$0x" + String.format("%02x",(tmp)));
 				field.setOperand(getMemory2(tmp)); //未検証
@@ -1802,6 +1862,9 @@ class VirtualAddressSpace{
 					break;
 				case 6:
 					switch(getOctal(opcode,3)){
+					case 0:
+						mnemonic = Mnemonic.ROR;
+						break;
 					case 3:
 						mnemonic = Mnemonic.ASL;
 						break;
@@ -2000,7 +2063,7 @@ class VirtualAddressSpace{
  */
 enum Mnemonic { 
 	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT, BITB, BISB, BIS,
-	INC, DEC, SUB, ADD, SOB, SXT, INCB,
+	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR,
 	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE, BLOS, BCS, BLT, BICB,
 	NEG, ASL,
 	DIV, ASH, ASHC, MUL,
@@ -2053,6 +2116,32 @@ class FieldDto{
 		flgAddress = input.flgAddress;
 		flgRegister = input.flgRegister;
 	}
+}
+
+/*
+ * シグナル
+ */
+class Signal{
+	
+	//シグナル
+	int[] signal;
+	
+	//コンストラクタ（初期化）
+	Signal(){
+		signal = new int[14];
+		reset();
+	}
+	
+	void reset(){
+		for(int i=0;i<signal.length;i++){
+			signal[i] = 0;
+		}
+	}
+	
+	void set(int num, int pointer){
+		signal[num] = pointer;
+	}
+	
 }
 
 /*
