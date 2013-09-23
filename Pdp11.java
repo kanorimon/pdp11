@@ -302,6 +302,11 @@ class VirtualAddressSpace{
 				srcOperand = getRegisterName(getOctal(opcode,5));
 				dstOperand = "";
 				break;
+			case SWAB:
+				mnemonic = "swab";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case JSR:
 				mnemonic = "jsr";
 				srcOperand = getRegisterName(getOctal(opcode,3));
@@ -329,6 +334,11 @@ class VirtualAddressSpace{
 				break;
 			case DEC:
 				mnemonic = "dec";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case DECB:
+				mnemonic = "decb";
 				srcOperand = "";
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
@@ -646,6 +656,22 @@ class VirtualAddressSpace{
 				cc.set(cc.n, cc.z, cc.v, cc.c);
 
 				break;
+			case SWAB:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				
+				tmp = (dstObj.operand << 16 >>> 24 ) + (dstObj.operand << 24 >>> 16);
+
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					setMemory2(dstObj.address, tmp);
+				}
+
+				cc.set((tmp << 24 >>> 31)>0, tmp << 24 >>> 24 == 0, false, false);
+
+				cc.set(cc.n, cc.z, cc.v, cc.c);
+
+				break;
 			case JSR:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				pushStack(reg.get(getOctal(opcode,3)));
@@ -746,6 +772,22 @@ class VirtualAddressSpace{
 				cc.set((tmp << 1 >>> 16)>0, tmp==0, cc.v, cc.c);
 				
 				break;
+			case DECB:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				if(dstObj.flgRegister){
+					tmp = reg.get(dstObj.register) - 1;
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					tmp = getMemory2(dstObj.address) - 1;
+					setMemory2(dstObj.address, tmp);
+				}else{
+					tmp = dstObj.operand - 1;
+					setMemory2(dstObj.address, tmp);
+				}
+
+				cc.set((tmp << 1 >>> 16)>0, tmp==0, cc.v, cc.c);
+				
+				break;
 			case TSTB:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
 				cc.set((dstObj.operand << 1 >>> 15)>0, (dstObj.operand << 24 >>> 24)==0, false, false);
@@ -759,7 +801,7 @@ class VirtualAddressSpace{
 			case MOVB:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3), true);
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
-
+				
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
 						//モード0の場合、符号拡張を行う
@@ -773,11 +815,11 @@ class VirtualAddressSpace{
 				}else if(srcObj.flgAddress){
 					if(dstObj.flgRegister){
 						//モード0の場合、符号拡張を行う
-						tmp = getMemory2(srcObj.address) << 24;
+						tmp = getMemory1(srcObj.address) << 24;
 						tmp = tmp >> 24;
 						reg.set(dstObj.register, tmp);
 					}else if(dstObj.flgAddress){
-						tmp = getMemory2(srcObj.address);
+						tmp = getMemory1(srcObj.address);
 						setMemory1(dstObj.address, tmp);
 					}
 				}else{
@@ -792,7 +834,7 @@ class VirtualAddressSpace{
 					}
 				}
 
-				cc.set((tmp << 1 >>> 16)>0, tmp << 24 >>> 24 ==0, false, cc.c);
+				cc.set((tmp << 1 >>> 16)>0, tmp==0, false, cc.c);
 				
 				break;
 			case MOV:
@@ -1153,6 +1195,8 @@ class VirtualAddressSpace{
 						reg.set(0,fd.getOffset(reg.get(0)));
 					}
 					
+					cc.set(cc.n, cc.z, cc.v, false);
+					
 					break;
 				case 4: //write
 					val1 = getMem(); //書き込み元データ位置
@@ -1207,7 +1251,9 @@ class VirtualAddressSpace{
 				case 8: //create
 
 					File createFile = getFile(getMem(),"creat");
-					
+					System.out.print(" ,");
+					getMem();
+
 					if (createFile.exists()){
 						createFile.delete();
 					}
@@ -1218,8 +1264,62 @@ class VirtualAddressSpace{
 						e.printStackTrace();
 					}
 
+					//とりあえずエラーが発生しない体
+					cc.set(cc.n, cc.z, cc.v, false);
+
 					//ファイルディスクリプタに設定
 					reg.set(0,fd.open(fd.search(), createFile.toPath()));
+					
+					break;
+				case 10: //unlink
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n unlink:");
+
+					int unlinkTmp = getMem();
+					StringBuffer unlinkstr = new StringBuffer(""); 
+					
+					while(true){
+						if(getMemory1(unlinkTmp)!=0){
+							unlinkstr.append((char)getMemory1(unlinkTmp));
+							unlinkTmp = unlinkTmp + 1;
+						}else{
+							break;
+						}
+					}
+
+					System.out.print(":" + unlinkstr);
+					
+					reg.set(0, 0);
+					
+					//とりあえずエラーが発生しない体
+					cc.set(cc.n, cc.z, cc.v, false);
+					
+					break;
+				case 11: //exec
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n exec:");
+					System.out.print(" ");
+					int execTmp = getMem();
+					StringBuffer str = new StringBuffer(""); 
+					
+					while(true){
+						if(getMemory1(execTmp)!=0){
+							str.append((char)getMemory1(execTmp));
+							execTmp = execTmp + 1;
+						}else{
+							break;
+						}
+					}
+
+					System.out.print(":" + str);
+
+					System.out.print(" ");
+					int execTmp2 = getMem();
+					System.out.print(" " + getMemory2(execTmp2));
+
+					//とりあえずエラーにしておく仕様
+					cc.set(cc.n, cc.z, cc.v, true);
+					
 					
 					break;
 				case 17: //brk
@@ -1228,8 +1328,16 @@ class VirtualAddressSpace{
 					
 					break;
 				case 18: //stat
-					//デバッグ用
-					if(dbgFlg) System.out.print("\n stat:");
+					File statFile = getFile(getMem(),"stat");
+					
+					System.out.print(" ,");
+					getMem();
+					
+					if(statFile.isFile()){
+						
+					}else{
+						cc.set(cc.n, cc.z, cc.v, true);
+					}
 					
 					break;
 				case 19: //lseek
@@ -1369,18 +1477,22 @@ class VirtualAddressSpace{
 		
 		while(true){
 			if(getMemory1(val)!=0){
-				str.append((char)getMemory1(val));
+				if(getMemory1(val)!='/'){
+					str.append((char)getMemory1(val));
+				}
 				val = val + 1;
 			}else{
 				break;
 			}
 		}
 		
+		String tmp = str.toString();
+		
 		//デバッグ用
-		if(dbgFlg) System.out.print("\n " + debugName + ":" + str);
+		if(dbgFlg) System.out.print("\n " + debugName + ":" + tmp);
 		
 		//ファイル名設定
-		File file = new File(str.toString());
+		File file = new File(tmp);
 		
 		return file;
 		
@@ -1782,6 +1894,9 @@ class VirtualAddressSpace{
 							break;
 						}
 						break;
+					case 3:
+						mnemonic = Mnemonic.SWAB;
+						break;
 					case 4:
 					case 5:
 					case 6:
@@ -1962,6 +2077,9 @@ class VirtualAddressSpace{
 					case 2:
 						mnemonic = Mnemonic.INCB;
 						break;
+					case 3:
+						mnemonic = Mnemonic.DECB;
+						break;
 					case 7:
 						mnemonic = Mnemonic.TSTB;
 						break;
@@ -2063,7 +2181,7 @@ class VirtualAddressSpace{
  */
 enum Mnemonic { 
 	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT, BITB, BISB, BIS,
-	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR,
+	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR, DECB, SWAB,
 	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE, BLOS, BCS, BLT, BICB,
 	NEG, ASL,
 	DIV, ASH, ASHC, MUL,
@@ -2180,7 +2298,11 @@ class Register{
 
 	//レジスタに加算
 	void add(int regNo,int val){
-		reg[regNo] = reg[regNo] + val;
+		if(reg[regNo]+val > 0xffff){
+			reg[regNo] = (reg[regNo]+val) << 16 >>> 16;
+		}else{
+			reg[regNo] = reg[regNo] + val;
+		}
 	}
 
 	//レジスタを取得
