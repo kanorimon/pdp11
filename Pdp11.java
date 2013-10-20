@@ -353,6 +353,11 @@ class VirtualAddressSpace{
 				srcOperand = "";
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case ROL:
+				mnemonic = "rol";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case TSTB:
 				mnemonic = "tstb";
 				srcOperand = "";
@@ -733,6 +738,27 @@ class VirtualAddressSpace{
 				cc.set(cc.n, cc.z, cc.v, cc.c);
 
 				break;
+			case ROL:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				int roltmp = 0;
+				if(cc.c) roltmp = 1;
+				if(dstObj.operand << 16 >>> 31 == 1) cc.c = true;
+				if(dstObj.operand << 16 >>> 31 == 0) cc.c = false;
+				
+				if(dstObj.flgRegister){
+					tmp = (reg.get(dstObj.register) << 1) + roltmp;
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					tmp =  (getMemory2(dstObj.address) << 1) + roltmp;
+					setMemory2(dstObj.address, tmp);
+				}else{
+					tmp = (dstObj.operand >> 1) + roltmp;
+					setMemory2(dstObj.address, tmp);
+				}
+
+				cc.set(cc.n, cc.z, cc.v, cc.c);
+
+				break;
 			case CLR:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				if(dstObj.flgRegister){
@@ -799,8 +825,6 @@ class VirtualAddressSpace{
 					tmp = dstObj.operand - 1;
 					setMemory2(dstObj.address, tmp);
 				}
-				
-				System.out.println(" tmp=" + tmp);
 
 				cc.set((tmp << 1 >>> 16)>0, tmp==0, cc.v, cc.c);
 				
@@ -1183,13 +1207,11 @@ class VirtualAddressSpace{
 				if(cc.n == true){
 					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
-				System.out.println("in BMI");
 				break;
 			case BPL:
 				if(cc.n == false){
 					reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
 				}
-				System.out.println("in BMI");
 				break;
 			case BIC:
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
@@ -1300,8 +1322,6 @@ class VirtualAddressSpace{
 					break;
 				case 5: //open
 					File openFile = getFile(getMem(),"open");
-
-					//ファイルディスクリプタに設定
 					reg.set(0,fd.open(fd.search(), openFile.toPath()));
 
 					break;
@@ -1363,6 +1383,7 @@ class VirtualAddressSpace{
 					//デバッグ用
 					if(dbgFlg) System.out.print("\n exec:");
 
+					System.exit(0);
 					String execTmp1 =getFileName(getMem());
 					if(dbgFlg) System.out.print(" ");
 					int argsIndex = getMem();
@@ -1376,15 +1397,17 @@ class VirtualAddressSpace{
 						argsIndex += 2;
 					}
 					
+					
 					//ファイル名設定
 					File file = new File(execTmp1);
 					Path fileName = file.toPath();
-					
+						
 					//引数設定
 					int argSize = 0;
 					ArrayList<byte[]> arg = new ArrayList<byte[]>();
 					Stack<Byte> argStack = new Stack<Byte>();
-					for(int j=1;j<execArgs.size();j++){
+
+					for(int j=0;j<execArgs.size();j++){
 						argSize = argSize + execArgs.get(j).length() + 1;
 						for(int k=0;k<execArgs.get(j).length();k++){
 							argStack.push((byte)execArgs.get(j).charAt(k));
@@ -1427,8 +1450,18 @@ class VirtualAddressSpace{
 					}
 
 					//とりあえずエラーにしておく仕様
-					cc.set(cc.n, cc.z, cc.v, true);
+					cc.set(cc.n, cc.z, cc.v, false);
 
+					break;
+				case 15: //chmod
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n chmod:");
+					int chmodIndex = getMem();
+					if(dbgFlg) System.out.print(" " + getFileName(chmodIndex) + " ");
+					int chmodIndex2 = getMem();
+					if(dbgFlg) System.out.print(" " + chmodIndex2);
+					reg.set(0, 0);
+					
 					break;
 				case 17: //brk
 					//デバッグ用
@@ -1608,7 +1641,7 @@ class VirtualAddressSpace{
 			}
 		}
 		
-		if(str.charAt(0) == '/'){
+		if(str.charAt(0) == '/' && str.charAt(1) != 'h'){
 			str.insert(0, "/home/zer0/v6root");
 		}
 
@@ -2107,6 +2140,9 @@ class VirtualAddressSpace{
 					case 0:
 						mnemonic = Mnemonic.ROR;
 						break;
+					case 1:
+						mnemonic = Mnemonic.ROL;
+						break;
 					case 2:
 						mnemonic = Mnemonic.ASR;
 						break;
@@ -2284,6 +2320,9 @@ class VirtualAddressSpace{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
+		System.out.print(" " + getMemory2(0xff88) );
+		System.out.print(" ");
+
 		if(cc.z){
 			System.out.print("Z");
 		}else{
@@ -2335,7 +2374,7 @@ class VirtualAddressSpace{
  */
 enum Mnemonic { 
 	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT, BITB, BISB, BIS,
-	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR, DECB, SWAB,
+	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR, DECB, SWAB, ROL,
 	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE, BLOS, BCS, BLT, BICB, BVS, BMI, BPL,
 	NEG, ASL, ASR,
 	DIV, ASH, ASHC, MUL,
