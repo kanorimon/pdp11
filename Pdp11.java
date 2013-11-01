@@ -348,6 +348,11 @@ class VirtualAddressSpace{
 				srcOperand = "";
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case ADC:
+				mnemonic = "adc";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case ROR:
 				mnemonic = "ror";
 				srcOperand = "";
@@ -815,6 +820,8 @@ class VirtualAddressSpace{
 				break;
 			case DEC:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				
+				//System.out.print(" bef=" + dstObj.operand);
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) - 1;
 					reg.set(dstObj.register, tmp);
@@ -826,7 +833,9 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				cc.set((tmp << 1 >>> 16)>0, tmp==0, cc.v, cc.c);
+				//System.out.print(" af=" + tmp);
+
+				cc.set((tmp << 16 >>> 31)>0, tmp==0, cc.v, cc.c);
 				
 				break;
 			case DECB:
@@ -843,6 +852,30 @@ class VirtualAddressSpace{
 				}
 
 				cc.set((tmp << 1 >>> 16)>0, tmp==0, cc.v, cc.c);
+				
+				break;
+			case ADC:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				
+				int adctmp = 0;
+				if(cc.c) adctmp = 1;
+				
+				int adctmp2 = 0;
+				if(dstObj.flgRegister){
+					adctmp2 = reg.get(dstObj.register);
+					tmp = reg.get(dstObj.register) + adctmp;
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					adctmp2 = getMemory2(dstObj.address);
+					tmp = getMemory2(dstObj.address) + adctmp;
+					setMemory2(dstObj.address, tmp);
+				}else{
+					adctmp2 = dstObj.operand;
+					tmp = dstObj.operand + adctmp;
+					setMemory2(dstObj.address, tmp);
+				}
+
+				cc.set((tmp << 16 >>> 31)>0, tmp==0, ((adctmp2 == 077777) && adctmp == 1), ((adctmp2 == -1) && adctmp == 1));
 				
 				break;
 			case TSTB:
@@ -972,6 +1005,8 @@ class VirtualAddressSpace{
 
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
+						//System.out.print(" src=" + reg.get(srcObj.register));
+						//System.out.print(" dst=" + reg.get(dstObj.register));
 						tmp = reg.get(srcObj.register) | reg.get(dstObj.register);
 						reg.set(dstObj.register, reg.get(srcObj.register) | reg.get(dstObj.register));
 					}else if(dstObj.flgAddress){
@@ -981,6 +1016,10 @@ class VirtualAddressSpace{
 
 				}else if(srcObj.flgAddress){
 					if(dstObj.flgRegister){
+						//System.out.print(" src=" + srcObj.address);
+						//System.out.print(" src=" + getMemory2(srcObj.address));
+						//System.out.print(" dst=" + reg.get(dstObj.register));
+
 						tmp = getMemory2(srcObj.address) | reg.get(dstObj.register);
 						reg.set(dstObj.register, getMemory2(srcObj.address) | reg.get(dstObj.register));
 					}else if(dstObj.flgAddress){
@@ -1126,7 +1165,8 @@ class VirtualAddressSpace{
 				break;
 			case ASR:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				tmp = dstObj.operand >> 1;
+				tmp = dstObj.operand << 16 >> 16;
+				tmp = tmp >> 1;
 				
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, tmp);
@@ -1303,7 +1343,7 @@ class VirtualAddressSpace{
 							BlockFile outFile = (BlockFile) fd.get(reg.get(0)); 
 					        File file = new File(outFile.inode.toString());
 					        
-					        BufferedOutputStream fis = new BufferedOutputStream(new FileOutputStream(file));
+					        BufferedOutputStream fis = new BufferedOutputStream(new FileOutputStream(file, true));
 					        
 			                fis.write(writeByte);
 			                fis.close();
@@ -2130,6 +2170,9 @@ class VirtualAddressSpace{
 					case 4:
 						mnemonic = Mnemonic.NEG;
 						break;
+					case 5:
+						mnemonic = Mnemonic.ADC;
+						break;
 					case 7:
 						mnemonic = Mnemonic.TST;
 						break;
@@ -2320,7 +2363,6 @@ class VirtualAddressSpace{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
-		System.out.print(" " + getMemory2(0xff88) );
 		System.out.print(" ");
 
 		if(cc.z){
@@ -2352,6 +2394,13 @@ class VirtualAddressSpace{
 	//メモリダンプの出力
 	void printMemory(){
 		System.out.print("\n--memory-start-------------");
+		for(int m=0x11a0;m<0x11cf;m=m+2){
+			if(m%16==0){
+				System.out.print(String.format("\n%02x:",m/16));
+			}
+			System.out.print(" " + String.format("%04x",getMemory2(m)));
+		}
+		/*
 		for(int m=0;m<textSize+dataSize+bssSize;m=m+2){
 			if(m%16==0){
 				System.out.print(String.format("\n%02x:",m/16));
@@ -2365,6 +2414,7 @@ class VirtualAddressSpace{
 			}
 			System.out.print(" " + String.format("%04x",getMemory2(m)));
 		}
+		*/
 		System.out.println("\n--memory-end-------------");
 	}
 }
@@ -2373,7 +2423,7 @@ class VirtualAddressSpace{
  * ニーモニックENUM
  */
 enum Mnemonic { 
-	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT, BITB, BISB, BIS,
+	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT, BITB, BISB, BIS, ADC,
 	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR, DECB, SWAB, ROL,
 	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE, BLOS, BCS, BLT, BICB, BVS, BMI, BPL,
 	NEG, ASL, ASR,
