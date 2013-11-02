@@ -1332,24 +1332,97 @@ class VirtualAddressSpace{
 
 					int i = 0;
 					if(fd.isFile(reg.get(0))){
-						byte[] writeByte = new byte[val2];
+			
+						BlockFile outFile = (BlockFile) fd.get(reg.get(0)); 
+				        File file = new File(outFile.inode.toString());
+				        
+						//ファイル名設定
+						Path fileName = file.toPath();
 						
-						for(i=0;i<val2;i++){
-					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
-							val1++;
+						//ファイル内容取得
+						byte[] beforeByte = null;
+						try {
+							beforeByte = java.nio.file.Files.readAllBytes(fileName);
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 
+						System.out.println(" beforebyte=" + beforeByte);
+						System.out.println(" beforelength=" + beforeByte.length);
+						
+						int writeSize = beforeByte.length;
+						if(beforeByte.length < fd.getOffset(reg.get(0)) + val2){
+							writeSize =  fd.getOffset(reg.get(0)) + val2;
+						}
+						byte[] writeByte = new byte[writeSize];
+
+						System.out.println(" writelength=" + writeByte.length);
+
+						System.out.println(" getOffset=" + fd.getOffset(reg.get(0)));
+
+						if(beforeByte.length < fd.getOffset(reg.get(0))){
+							System.out.print("debug1\n");
+							
+							for(i=0;i<beforeByte.length;i++){
+								writeByte[i] = beforeByte[i];
+								System.out.print(String.format("%02x ", writeByte[i]));
+							}
+							for(i=beforeByte.length;i<fd.getOffset(reg.get(0));i++){
+								writeByte[i] = 0;
+								System.out.print(String.format("%02x ", writeByte[i]));
+							}
+							System.out.print("\n");
+							
+						}else{
+							System.out.print("debug2\n");
+							for(i=0;i<fd.getOffset(reg.get(0));i++){
+								writeByte[i] = beforeByte[i];
+								System.out.print(String.format("%02x ", writeByte[i]));
+							}
+							System.out.print("\n");
+						}
+
+						System.out.print("debug3\n");
+						for(i=fd.getOffset(reg.get(0));i<fd.getOffset(reg.get(0))+val2;i++){
+					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
+							val1++;
+							System.out.print(String.format("%02x ", writeByte[i]));
+						}
+						System.out.print("\n");
+						
+						System.out.print("debug4\n");
+						for(i=fd.getOffset(reg.get(0))+val2;i<beforeByte.length;i++){
+					        writeByte[i] = beforeByte[i];
+							System.out.print(String.format("%02x ", writeByte[i]));
+						}
+						System.out.print("\n");
+						
+						System.out.println(" writebyte=" + writeByte);
+						
+						for(i=0;i<writeByte.length;i++){
+							System.out.print(String.format("%02x ", writeByte[i]));
+						}
+						System.out.print("\n");
+						
+
+				        try {
+							java.nio.file.Files.write(fileName, writeByte);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
+						/*
 						try{
-							BlockFile outFile = (BlockFile) fd.get(reg.get(0)); 
-					        File file = new File(outFile.inode.toString());
-					        
-					        BufferedOutputStream fis = new BufferedOutputStream(new FileOutputStream(file, true));
+					        BufferedOutputStream fis = new BufferedOutputStream(new FileOutputStream(file));
 					        
 			                fis.write(writeByte);
+			                
+			                fis.flush();
 			                fis.close();
 					    }catch(IOException e){
 					        System.out.println(e);
 					    }
+					    */
 						
 					}else{
 						for(i=0;i<val2;i++){
@@ -2394,7 +2467,7 @@ class VirtualAddressSpace{
 	//メモリダンプの出力
 	void printMemory(){
 		System.out.print("\n--memory-start-------------");
-		for(int m=0x11a0;m<0x11cf;m=m+2){
+		for(int m=0x14d0;m<0x14ef;m=m+2){
 			if(m%16==0){
 				System.out.print(String.format("\n%02x:",m/16));
 			}
