@@ -1478,6 +1478,30 @@ class VirtualAddressSpace{
 					reg.set(0,fd.open(fd.search(), createFile.toPath()));
 					
 					break;
+				case 9: //link
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n link:");
+
+					int linkTmp = getMem();
+					StringBuffer linkstr = new StringBuffer(""); 
+					
+					while(true){
+						if(getMemory1(linkTmp)!=0){
+							linkstr.append((char)getMemory1(linkTmp));
+							linkTmp = linkTmp + 1;
+						}else{
+							break;
+						}
+					}
+
+					System.out.print(":" + linkstr);
+					
+					reg.set(0, 0);
+					
+					//とりあえずエラーが発生しない体
+					cc.set(cc.n, cc.z, cc.v, false);
+					
+					break;
 				case 10: //unlink
 					//デバッグ用
 					if(dbgFlg) System.out.print("\n unlink:");
@@ -1650,9 +1674,10 @@ class VirtualAddressSpace{
 					if(dbgFlg) System.out.print("\n getpid:");
 				    String processName =
 				    	      java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
-				    System.out.println(" " + Long.parseLong(processName.split("@")[0]));
+				    int pid = (int)Long.parseLong(processName.split("@")[0]);
+				    System.out.println(" " + pid);
 				    	    
-					//reg.set(0,0);
+					reg.set(0,pid);
 
 					break;
 				case 41: //dup
