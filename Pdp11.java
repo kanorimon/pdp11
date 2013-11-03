@@ -821,7 +821,7 @@ class VirtualAddressSpace{
 			case DEC:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				
-				System.out.print(" bef=" + dstObj.operand);
+				//System.out.print(" bef=" + dstObj.operand);
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) - 1;
 					reg.set(dstObj.register, tmp);
@@ -833,7 +833,7 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				System.out.print(" af=" + tmp);
+				//System.out.print(" af=" + tmp);
 
 				cc.set((tmp << 16 >>> 31)>0, tmp==0, cc.v, cc.c);
 				
@@ -993,10 +993,10 @@ class VirtualAddressSpace{
 				tmp = srcObj.operand & dstObj.operand;
 				tmp = tmp << 24 >>> 24;
 				
-				System.out.print(" src=" + srcObj.operand);
-				System.out.print(" dst=" + dstObj.operand);
-				System.out.print(" tmp=" + tmp);
-				System.out.print(" &" + (srcObj.operand & dstObj.operand));
+				//System.out.print(" src=" + srcObj.operand);
+				//System.out.print(" dst=" + dstObj.operand);
+				//System.out.print(" tmp=" + tmp);
+				//System.out.print(" &" + (srcObj.operand & dstObj.operand));
 				
 				cc.set(false, //å„Ç≈èëÇ≠ 
 						tmp==0, 
@@ -1271,7 +1271,7 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				System.out.print(" tmp=" + tmp);
+				//System.out.print(" tmp=" + tmp);
 				
 				cc.set((tmp << 16 >>> 31) > 0, tmp==0, false, cc.c);
 
@@ -2049,15 +2049,28 @@ class VirtualAddressSpace{
 					field.setStr(String.format("%o",opcodeShort) + "(" + getRegisterName(regNo) + ")");
 				}
 				if(exeFlg){
+					//System.out.print(" getMemory2=" + getMemory2(reg.get(regNo)));
+					//System.out.print(" opcodeShort=" + opcodeShort);
+
+					if(byteFlg){
 					
-					System.out.print(" getMemory2=" + getMemory2(reg.get(regNo)));
-					System.out.print(" opcodeShort=" + opcodeShort);
+						//int exeAddress = reg.get(regNo) + opcodeShort;
 
-					System.out.print(" mov=" + getMemory2(getMemory2(reg.get(regNo) + opcodeShort)));
+						//System.out.print(" execaddress=" + exeAddress);
+					
+						//if(exeAddress > 0xFFFF) exeAddress = exeAddress - 0xFFFF;
 
-					field.setOperand(getMemory2(reg.get(regNo) + opcodeShort));
-					field.setAddress(reg.get(regNo) + opcodeShort);
-					System.out.print(" break");
+						//System.out.print(" execaddress=" + exeAddress);
+
+						field.setOperand(getMemory1(reg.get(regNo) + opcodeShort));
+						field.setAddress(reg.get(regNo) + opcodeShort);
+					}else{
+						field.setOperand(getMemory2(reg.get(regNo) + opcodeShort));
+						field.setAddress(reg.get(regNo) + opcodeShort);
+						
+					}
+					
+					//System.out.print(" break");
 
 				}
 				break;
