@@ -821,7 +821,7 @@ class VirtualAddressSpace{
 			case DEC:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				
-				//System.out.print(" bef=" + dstObj.operand);
+				System.out.print(" bef=" + dstObj.operand);
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) - 1;
 					reg.set(dstObj.register, tmp);
@@ -833,7 +833,7 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				//System.out.print(" af=" + tmp);
+				System.out.print(" af=" + tmp);
 
 				cc.set((tmp << 16 >>> 31)>0, tmp==0, cc.v, cc.c);
 				
@@ -885,7 +885,7 @@ class VirtualAddressSpace{
 				break;
 			case TST:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				cc.set((dstObj.operand << 1 >>> 16)>0, dstObj.operand==0, false, false);
+				cc.set((dstObj.operand << 16 >>> 31)>0, dstObj.operand==0, false, false);
 				
 				break;
 			case MOVB:
@@ -992,6 +992,11 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				tmp = srcObj.operand & dstObj.operand;
 				tmp = tmp << 24 >>> 24;
+				
+				System.out.print(" src=" + srcObj.operand);
+				System.out.print(" dst=" + dstObj.operand);
+				System.out.print(" tmp=" + tmp);
+				System.out.print(" &" + (srcObj.operand & dstObj.operand));
 				
 				cc.set(false, //後で書く 
 						tmp==0, 
@@ -1129,8 +1134,9 @@ class VirtualAddressSpace{
 				}else{
 					setMemory2(dstObj.address, tmp);
 				}
-				
-				cc.set((tmp << 1 >>> 16)>0, 
+
+
+				cc.set((tmp << 16 >>> 31)>0, 
 						tmp==0, 
 						getSubOverflow(srcObj.operand, dstObj.operand, tmp), 
 						!getSubBorrow(srcObj.operand, dstObj.operand, tmp));
@@ -1265,7 +1271,9 @@ class VirtualAddressSpace{
 					setMemory2(dstObj.address, tmp);
 				}
 
-				cc.set(tmp>0xFF, tmp==0, false, cc.c);
+				System.out.print(" tmp=" + tmp);
+				
+				cc.set((tmp << 16 >>> 31) > 0, tmp==0, false, cc.c);
 
 				break;
 			case BICB:
@@ -1290,6 +1298,7 @@ class VirtualAddressSpace{
 
 				switch(getDex(getOctal(opcode,4),getOctal(opcode,5))){
 				case 0: //systemcall
+					//if(dbgFlg) System.out.println("\n indir:");
 					int sub = getMem();
 					tmp = reg.get(7);
 					execute(sub, sub+1, true);
@@ -1306,19 +1315,20 @@ class VirtualAddressSpace{
 					val2 = getMem();  //読み込みサイズ
 					
 					//デバッグ用
-					if(dbgFlg) System.out.println("\n read:" + reg.get(0) + "," + val1 + "," + val2);
+					if(dbgFlg) System.out.print("\n read:" + reg.get(0) + "," + val1 + "," + val2);
 					
 					if(fd.getSize(reg.get(0)) < fd.getOffset(reg.get(0))+1){
 						reg.set(0,0);
 					}else{
-						for(int i=0;i<val2;i++){
+						int i;
+						for(i=0;i<val2;i++){
 							if(fd.getSize(reg.get(0)) < fd.getOffset(reg.get(0))+1){
 								break;
 							}
 							setMemory1(val1, fd.readByte(reg.get(0)));
 							val1++;
 						}
-						reg.set(0,fd.getOffset(reg.get(0)));
+						reg.set(0,i);
 					}
 					
 					cc.set(cc.n, cc.z, cc.v, false);
@@ -1496,7 +1506,6 @@ class VirtualAddressSpace{
 					//デバッグ用
 					if(dbgFlg) System.out.print("\n exec:");
 
-					System.exit(0);
 					String execTmp1 =getFileName(getMem());
 					if(dbgFlg) System.out.print(" ");
 					int argsIndex = getMem();
@@ -1509,7 +1518,6 @@ class VirtualAddressSpace{
 						execArgs.add(getFileName(getMemory2(argsIndex)));
 						argsIndex += 2;
 					}
-					
 					
 					//ファイル名設定
 					File file = new File(execTmp1);
@@ -1604,6 +1612,13 @@ class VirtualAddressSpace{
 					//デバッグ用
 					if(dbgFlg) System.out.print("\n lseek:" + reg.get(0) + "," + val1 + "," + val2);
 					
+					//mode
+					//0:top byte
+					//1:offset byte
+					//2:end byte
+					//3:top block
+					//4:offset block
+					//5:end block
 					switch(val2){
 					case 0:
 						fd.setOffset(reg.get(0),0);
@@ -1614,12 +1629,30 @@ class VirtualAddressSpace{
 						break;
 					case 2:
 						fd.setOffset(reg.get(0), fd.getSize(reg.get(0)) + val1);
-						//あとで書く
+					case 3:
+						fd.setOffset(reg.get(0),0);
+						fd.setOffset(reg.get(0), fd.getOffset(reg.get(0)) + (val1*512));
+						break;
+					case 4:
+						fd.setOffset(reg.get(0), fd.getOffset(reg.get(0)) + (val1*512));
+						break;
+					case 5:
+						fd.setOffset(reg.get(0), fd.getSize(reg.get(0)) + (val1*512));
 						break;
 					}
 					
 					reg.set(0, fd.getOffset(reg.get(0)));
 					cc.reset();
+
+					break;
+				case 20: //getpid
+					//デバッグ用
+					if(dbgFlg) System.out.print("\n getpid:");
+				    String processName =
+				    	      java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
+				    System.out.println(" " + Long.parseLong(processName.split("@")[0]));
+				    	    
+					//reg.set(0,0);
 
 					break;
 				case 41: //dup
@@ -1744,6 +1777,7 @@ class VirtualAddressSpace{
 	String getFileName(int val){
 		
 		StringBuffer str = new StringBuffer(""); 
+		StringBuffer str2 = new StringBuffer(""); 
 		
 		while(true){
 			if(getMemory1(val)!=0){
@@ -1753,15 +1787,31 @@ class VirtualAddressSpace{
 				break;
 			}
 		}
+		/*
 		
+		if(str.charAt(0) == '/' && str.charAt(1) == 't' && str.charAt(2) == 'm' && str.charAt(3) == 'p' && str.charAt(4) == '/'){
+			str2.append("D:\\03.workspace\\v6tmp\\");
+			str2.append(str.substring(5));
+		}else if(str.charAt(0) == '/' && str.charAt(1) == 'b' && str.charAt(2) == 'i' && str.charAt(3) == 'n' && str.charAt(4) == '/'){
+			str2.append("D:\\03.workspace\\v6root\\bin\\");
+			str2.append(str.substring(5));
+		}else if(str.charAt(0) == '/' && str.charAt(1) == 'l' && str.charAt(2) == 'i' && str.charAt(3) == 'b' && str.charAt(4) == '/'){
+			str2.append("D:\\03.workspace\\v6root\\lib\\");
+			str2.append(str.substring(5));
+		}else{
+			str2.append(str.substring(0));
+		}
+		*/
+
 		if(str.charAt(0) == '/' && str.charAt(1) != 'h'){
 			str.insert(0, "/home/zer0/v6root");
 		}
+		str2.append(str.substring(0));
 
 		//デバッグ用
-		if(dbgFlg) System.out.print(" :" + str.toString());
+		if(dbgFlg) System.out.print(" :" + str2.toString());
 		
-		return str.toString();
+		return str2.toString();
 	}	
 
 	//加算オーバーフロー判定
@@ -1999,8 +2049,16 @@ class VirtualAddressSpace{
 					field.setStr(String.format("%o",opcodeShort) + "(" + getRegisterName(regNo) + ")");
 				}
 				if(exeFlg){
+					
+					System.out.print(" getMemory2=" + getMemory2(reg.get(regNo)));
+					System.out.print(" opcodeShort=" + opcodeShort);
+
+					System.out.print(" mov=" + getMemory2(getMemory2(reg.get(regNo) + opcodeShort)));
+
 					field.setOperand(getMemory2(reg.get(regNo) + opcodeShort));
 					field.setAddress(reg.get(regNo) + opcodeShort);
+					System.out.print(" break");
+
 				}
 				break;
 			case 7:
@@ -2436,6 +2494,7 @@ class VirtualAddressSpace{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
+		//System.out.print(" " + String.format(" 0x1cba=%04x",getMemory2(0x1cba)));
 		System.out.print(" ");
 
 		if(cc.z){
