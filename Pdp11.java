@@ -885,7 +885,7 @@ class VirtualAddressSpace{
 				break;
 			case TST:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				cc.set((dstObj.operand << 16 >>> 31)>0, dstObj.operand==0, false, false);
+				cc.set((dstObj.operand << 16 >>> 31)>0, (dstObj.operand << 16 >>> 16)==0, false, false);
 				
 				break;
 			case MOVB:
@@ -1482,19 +1482,47 @@ class VirtualAddressSpace{
 					//デバッグ用
 					if(dbgFlg) System.out.print("\n link:");
 
-					int linkTmp = getMem();
-					StringBuffer linkstr = new StringBuffer(""); 
+					int existingInt = getMem();
+					StringBuffer existingStr = new StringBuffer(""); 
 					
 					while(true){
-						if(getMemory1(linkTmp)!=0){
-							linkstr.append((char)getMemory1(linkTmp));
-							linkTmp = linkTmp + 1;
+						if(getMemory1(existingInt)!=0){
+							existingStr.append((char)getMemory1(existingInt));
+							existingInt = existingInt + 1;
 						}else{
 							break;
 						}
 					}
 
-					System.out.print(":" + linkstr);
+					int newInt = getMem();
+					StringBuffer newStr = new StringBuffer(""); 
+					
+					while(true){
+						if(getMemory1(newInt)!=0){
+							newStr.append((char)getMemory1(newInt));
+							newInt = newInt + 1;
+						}else{
+							break;
+						}
+					}
+					
+					//ファイル名設定
+					File existringFile = new File(existingStr.toString());
+					Path existingLink = existringFile.toPath();
+
+					File newFile = new File(newStr.toString());
+					Path newLink = newFile.toPath();
+					
+					try {
+						java.nio.file.Files.createLink(newLink, existingLink);
+					} catch (IOException x) {
+					    System.err.println(x);
+					} catch (UnsupportedOperationException x) {
+					    //一部のファイル・システムではディレクトリに対して既存のファイルを追加する操作はサポートされません。
+					    System.err.println(x);
+					}
+
+					System.out.print(":" + existingStr.toString() + "," + newStr.toString());
 					
 					reg.set(0, 0);
 					
@@ -1984,6 +2012,7 @@ class VirtualAddressSpace{
 				//registerにオペランドがある。
 				field.setStr(getRegisterName(regNo));
 				if(exeFlg){
+					//System.out.print(" reg=" + reg.get(regNo));
 					field.setOperand(reg.get(regNo));
 					field.setReg(regNo);
 				}
@@ -2008,6 +2037,10 @@ class VirtualAddressSpace{
 				field.setStr("(" + getRegisterName(regNo) + ")+");
 				if(exeFlg){
 					if(byteFlg){
+						
+						System.out.print(" getmemory=" + getMemory1(reg.get(regNo)));
+						System.out.print(" address=" + reg.get(regNo));
+
 						field.setOperand(getMemory1(reg.get(regNo)));
 						field.setAddress(reg.get(regNo));
 						if(regNo==6){
