@@ -3,6 +3,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -13,7 +14,7 @@ public class Pdp11{
 	public static void main(String[] args){
 		//オプション
 		boolean flgDism = false;
-		boolean flgDebug = false;
+		int flgDebug = 0;
 		boolean flgExe = false;
 		boolean flgMmr = false;
 
@@ -24,8 +25,12 @@ public class Pdp11{
 				break;
 			}
 			//レジスタ・フラグ
+			if(args[i].equals("-s")){
+				flgDebug = 1;
+			}
+			//レジスタ・フラグ
 			if(args[i].equals("-v")){
-				flgDebug = true;
+				flgDebug = 2;
 			}
 			//逆アセンブル
 			if(args[i].equals("-d")){
@@ -43,7 +48,7 @@ public class Pdp11{
 		}
 		
 		//オプション指定がなければ逆アセンブルと実行
-		if(!flgDebug && !flgDism && !flgExe && !flgMmr){
+		if(flgDebug==0 && !flgDism && !flgExe && !flgMmr){
 			flgDism = true;
 			flgExe = true;
 		}
@@ -89,19 +94,7 @@ public class Pdp11{
 		}
 
 		//実行前設定
-		if(flgDebug){
-			if(flgMmr){
-				vas.reset(true, true, argStack);
-			}else{
-				vas.reset(true, false, argStack);
-			}
-		}else{
-			if(flgMmr){
-				vas.reset(false, true, argStack);
-			}else{
-				vas.reset(false, false, argStack);
-			}
-		}
+		vas.reset(flgDebug, flgMmr, argStack);
 
 		//実行
 		if(flgExe){
@@ -115,7 +108,7 @@ public class Pdp11{
 /*
  * 仮想アドレス空間クラス
  */
-class VirtualAddressSpace{
+class VirtualAddressSpace implements Cloneable{
 
 	//仮想メモリ
 	byte[] mem;
@@ -136,11 +129,18 @@ class VirtualAddressSpace{
 
 	//出力用ユーティリティ
 	int strnum;
+	
+	//プロセスID
+	int pid;
 
+	//
+	boolean childFlg;
+	int parentPc;
+	
 	//実行モード
 	boolean exeFlg;
 	//レジスタ・フラグモード
-	boolean dbgFlg;
+	int dbgFlg;
 	//メモリダンプモード
 	boolean mmrFlg;
 
@@ -152,7 +152,23 @@ class VirtualAddressSpace{
 
 	//マジックナンバー
 	int magicNo;
-
+	
+	//親プロセス
+	VirtualAddressSpace pva;
+	
+	public Object clone() {
+		Register defReg = new Register();
+		defReg = (Register)reg.clone();
+		byte[] mem2 = new byte[mem.length];
+		mem2 = mem.clone();
+	    return new VirtualAddressSpace(defReg,mem2);  
+	}
+	
+	VirtualAddressSpace(Register befReg,byte[] befmem){
+		reg = befReg;
+		mem = befmem;
+	}
+	
 	//コンストラクタ
 	VirtualAddressSpace(byte[] bf){
 
@@ -197,6 +213,16 @@ class VirtualAddressSpace{
 		
 		//シグナル初期化
 		signal = new Signal();
+		
+		//プロセスID初期化
+		pid = 256;
+		
+		//
+		childFlg = false;
+	}
+
+	public VirtualAddressSpace() {
+		// TODO Auto-generated constructor stub
 	}
 
 	//2バイト単位でリトルエンディアンを反転して10進数で取得
@@ -234,11 +260,17 @@ class VirtualAddressSpace{
 
 	//メモリ上のデータを取得して、PC+2する
 	int getMem(){
+		System.out.print(" mem=" + mem[1]);
+		System.out.print(" reg=" + reg.get(7));
+		System.out.print("getmem=" + getMemory2(reg.get(7)));
+		
 		int opcode = getMemory2(reg.get(7));
+
+		System.out.print("debug");
 
 		//逆アセンブルの場合は出力
 		if(exeFlg){
-			if(dbgFlg) printOpcode(opcode);
+			if(dbgFlg>1) printOpcode(opcode);
 		}else{
 			printOpcode(opcode);
 			strnum++;
@@ -246,6 +278,8 @@ class VirtualAddressSpace{
 
 		//PC+2
 		reg.add(7,2);
+
+		System.out.print("debug999");
 
 		return opcode;
 	}
@@ -590,7 +624,7 @@ class VirtualAddressSpace{
 	}
 
 	//インタプリタ実行前設定
-	public void reset(boolean debugFlg,boolean memoryFlg, Stack<Byte> args){
+	public void reset(int debugFlg,boolean memoryFlg, Stack<Byte> args){
 		//デバッグフラグ
 		dbgFlg = debugFlg;
 		mmrFlg = memoryFlg;
@@ -636,37 +670,57 @@ class VirtualAddressSpace{
 
 	//インタプリタ
 	public void execute(int start, int end){
-		execute(start, end, false);
+		execute(start, end, false,false);
 	}
 
 	//インタプリタ
-	public void execute(int start, int end, boolean endFlg){
+	public void execute(int start, int end,boolean endFlg){
+		execute(start, end, endFlg,false);
+	}
+
+	//インタプリタ
+	public void execute(int start, int end, boolean endFlg,boolean forkFlg){
+
+		System.out.print("debug1");
 
 		//実行モードオン
 		exeFlg = true;
 		
 		//PCを初期化
-		reg.set(7,start);
+		if(!forkFlg) reg.set(7,start);
+
+		System.out.print("debug2");
 
 		if(!endFlg) end = 65536;
-		for(reg.set(7,start);reg.get(7)<end;){
+		for(;reg.get(7)<end;){
+
+			System.out.print("debug3");
+			System.out.print(" dbgFlg=" + dbgFlg);
 
 			//レジスタ・フラグ出力
-			if(dbgFlg) printDebug();
+			if(dbgFlg>1) printDebug();
 			//メモリダンプ出力
 			if(mmrFlg) printMemory();
+
+			System.out.print("debug4");
 
 			//ワーク
 			FieldDto srcObj;
 			FieldDto dstObj;
 			int tmp = 0;
 
+			System.out.print("debug5");
+			System.out.print(" aaa=" + reg.get(7));
+
 			//命令取得
 			int opcode = getMem();
+
+			System.out.print("debug6");
 
 			//ニーモニック取得
 			Mnemonic nic = getMnemonic(opcode);
 
+			
 			switch(nic){
 			case RTT:
 				break;
@@ -955,8 +1009,13 @@ class VirtualAddressSpace{
 
 				break;
 			case CMPB:
+				//System.out.print(" cmpb in ");
 				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3), true);
+				//System.out.print(" src=" + srcObj.operand);
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				
+				//System.out.print(" dst=" + dstObj.operand);
+
 				tmp = (srcObj.operand << 24 >>> 24) - (dstObj.operand << 24 >>> 24);
 				
 				cc.set((tmp << 1 >>> 16)>0, 
@@ -1128,6 +1187,7 @@ class VirtualAddressSpace{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 
 				tmp = (dstObj.operand - srcObj.operand);
+				tmp = tmp << 16 >>> 16;
 
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, tmp);
@@ -1307,15 +1367,70 @@ class VirtualAddressSpace{
 
 					break;
 				case 1: //exit
-					if(dbgFlg) System.out.println("\n exit:");
-					System.exit(0);
+					if(dbgFlg>0) System.out.println("\n exit:");
+					if(childFlg){
+						System.out.println("child-end");
+						//実行
+						if(exeFlg){
+							pva.reg.set(0,pid);
+							pva.reg.set(7,parentPc+2);
+							pva.execute(0, pva.textSize,false,true);
+						}
+					}else{
+						System.exit(0);
+					}
+					break;
+				case 2: //fork
+					if(dbgFlg>0) System.out.println("\n fork:");
+
+					System.out.println(" forkpid-def=" + pid);
+					System.out.println(" forkreg0-def=" + reg.get(0));
+
+					//仮想メモリを退避
+					parentPc = reg.get(7);
+					pva = new VirtualAddressSpace();
+					pva = (VirtualAddressSpace) this.clone();
+					//pva.fork(reg, fd, cc);
+					pva.pid = 123;
+					pva.reg.set(0, 16);
+
+					System.out.println(" forkpid-def=" + pid);
+					System.out.println(" forkpid-pva=" + pva.pid);
+					System.out.println(" forkreg0-def=" + reg.get(0));
+					System.out.println(" forkreg0-pva=" + pva.reg.get(0));
+					
+					VirtualAddressSpace forkAddressSpace = new VirtualAddressSpace();
+					forkAddressSpace = (VirtualAddressSpace) this.clone();
+
+					forkAddressSpace.pid = 19673;
+					forkAddressSpace.childFlg = true;
+					//forkAddressSpace.fork(reg, fd, cc);
+					forkAddressSpace.reg.set(0, 256);
+
+					System.out.println(" forkpid-def=" + pid);
+					System.out.println(" forkpid-pva=" + pva.pid);
+					System.out.println(" forkpid-fork=" + forkAddressSpace.pid);
+					System.out.println(" forkreg0-def=" + reg.get(0));
+					System.out.println(" forkreg0-pva=" + pva.reg.get(0));
+					System.out.println(" forkreg0-fork=" + forkAddressSpace.reg.get(0));
+
+					//実行
+					if(exeFlg){
+						forkAddressSpace.execute(0, forkAddressSpace.textSize,false,true);
+					}
+					
+					/*
+					reg.set(0, 19673);
+					reg.set(7, reg.get(7)+2);
+					*/
+					
 					break;
 				case 3: //read
 					val1 = getMem(); //読み込み位置
 					val2 = getMem();  //読み込みサイズ
 					
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n read:" + reg.get(0) + "," + val1 + "," + val2);
+					if(dbgFlg>0) System.out.print("\n read:" + reg.get(0) + "," + val1 + "," + val2);
 					
 					if(fd.getSize(reg.get(0)) < fd.getOffset(reg.get(0))+1){
 						reg.set(0,0);
@@ -1338,7 +1453,7 @@ class VirtualAddressSpace{
 					val1 = getMem(); //書き込み元データ位置
 					val2 = getMem(); //書き込みサイズ
 
-					if(dbgFlg) System.out.print("\n write:" + reg.get(0) + "," + val1 + "," + val2);
+					if(dbgFlg>0) System.out.print("\n write:" + reg.get(0) + "," + val1 + "," + val2);
 
 					int i = 0;
 					if(fd.isFile(reg.get(0))){
@@ -1357,8 +1472,8 @@ class VirtualAddressSpace{
 							e.printStackTrace();
 						}
 
-						System.out.println(" beforebyte=" + beforeByte);
-						System.out.println(" beforelength=" + beforeByte.length);
+						//System.out.println(" beforebyte=" + beforeByte);
+						//System.out.println(" beforelength=" + beforeByte.length);
 						
 						int writeSize = beforeByte.length;
 						if(beforeByte.length < fd.getOffset(reg.get(0)) + val2){
@@ -1366,53 +1481,53 @@ class VirtualAddressSpace{
 						}
 						byte[] writeByte = new byte[writeSize];
 
-						System.out.println(" writelength=" + writeByte.length);
+						//System.out.println(" writelength=" + writeByte.length);
 
-						System.out.println(" getOffset=" + fd.getOffset(reg.get(0)));
+						//System.out.println(" getOffset=" + fd.getOffset(reg.get(0)));
 
 						if(beforeByte.length < fd.getOffset(reg.get(0))){
-							System.out.print("debug1\n");
+							//System.out.print("debug1\n");
 							
 							for(i=0;i<beforeByte.length;i++){
 								writeByte[i] = beforeByte[i];
-								System.out.print(String.format("%02x ", writeByte[i]));
+								//System.out.print(String.format("%02x ", writeByte[i]));
 							}
 							for(i=beforeByte.length;i<fd.getOffset(reg.get(0));i++){
 								writeByte[i] = 0;
-								System.out.print(String.format("%02x ", writeByte[i]));
+								//System.out.print(String.format("%02x ", writeByte[i]));
 							}
-							System.out.print("\n");
+							//System.out.print("\n");
 							
 						}else{
-							System.out.print("debug2\n");
+							//System.out.print("debug2\n");
 							for(i=0;i<fd.getOffset(reg.get(0));i++){
 								writeByte[i] = beforeByte[i];
-								System.out.print(String.format("%02x ", writeByte[i]));
+								//System.out.print(String.format("%02x ", writeByte[i]));
 							}
-							System.out.print("\n");
+							//System.out.print("\n");
 						}
 
-						System.out.print("debug3\n");
+						//System.out.print("debug3\n");
 						for(i=fd.getOffset(reg.get(0));i<fd.getOffset(reg.get(0))+val2;i++){
 					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
 							val1++;
-							System.out.print(String.format("%02x ", writeByte[i]));
+							//System.out.print(String.format("%02x ", writeByte[i]));
 						}
-						System.out.print("\n");
+						//System.out.print("\n");
 						
-						System.out.print("debug4\n");
+						//System.out.print("debug4\n");
 						for(i=fd.getOffset(reg.get(0))+val2;i<beforeByte.length;i++){
 					        writeByte[i] = beforeByte[i];
-							System.out.print(String.format("%02x ", writeByte[i]));
+					        //System.out.print(String.format("%02x ", writeByte[i]));
 						}
-						System.out.print("\n");
+						//System.out.print("\n");
 						
-						System.out.println(" writebyte=" + writeByte);
+						//System.out.println(" writebyte=" + writeByte);
 						
 						for(i=0;i<writeByte.length;i++){
-							System.out.print(String.format("%02x ", writeByte[i]));
+							//System.out.print(String.format("%02x ", writeByte[i]));
 						}
-						System.out.print("\n");
+						//System.out.print("\n");
 						
 
 				        try {
@@ -1450,7 +1565,7 @@ class VirtualAddressSpace{
 					break;
 				case 6: //close
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n close:" + reg.get(0));
+					if(dbgFlg>0) System.out.print("\n close:" + reg.get(0));
 					fd.clear(reg.get(0));
 					reg.set(0, 0);
 					
@@ -1458,7 +1573,7 @@ class VirtualAddressSpace{
 				case 8: //create
 
 					File createFile = getFile(getMem(),"creat");
-					System.out.print(" ,");
+					//System.out.print(" ,");
 					getMem();
 
 					if (createFile.exists()){
@@ -1480,7 +1595,7 @@ class VirtualAddressSpace{
 					break;
 				case 9: //link
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n link:");
+					if(dbgFlg>0) System.out.print("\n link:");
 
 					int existingInt = getMem();
 					StringBuffer existingStr = new StringBuffer(""); 
@@ -1522,7 +1637,7 @@ class VirtualAddressSpace{
 					    System.err.println(x);
 					}
 
-					System.out.print(":" + existingStr.toString() + "," + newStr.toString());
+					if(dbgFlg>0) System.out.print(":" + existingStr.toString() + "," + newStr.toString());
 					
 					reg.set(0, 0);
 					
@@ -1532,7 +1647,7 @@ class VirtualAddressSpace{
 					break;
 				case 10: //unlink
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n unlink:");
+					if(dbgFlg>0) System.out.print("\n unlink:");
 
 					int unlinkTmp = getMem();
 					StringBuffer unlinkstr = new StringBuffer(""); 
@@ -1546,7 +1661,7 @@ class VirtualAddressSpace{
 						}
 					}
 
-					System.out.print(":" + unlinkstr);
+					if(dbgFlg>0) System.out.print(":" + unlinkstr);
 					
 					reg.set(0, 0);
 					
@@ -1556,10 +1671,10 @@ class VirtualAddressSpace{
 					break;
 				case 11: //exec
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n exec:");
+					if(dbgFlg>0) System.out.print("\n exec:");
 
 					String execTmp1 =getFileName(getMem());
-					if(dbgFlg) System.out.print(" ");
+					if(dbgFlg>0) System.out.print(" ");
 					int argsIndex = getMem();
 					ArrayList<String> execArgs = new ArrayList<String>();
 					
@@ -1603,19 +1718,7 @@ class VirtualAddressSpace{
 					VirtualAddressSpace vas = new VirtualAddressSpace(bf);
 
 					//実行前設定
-					if(dbgFlg){
-						if(mmrFlg){
-							vas.reset(true, true, argStack);
-						}else{
-							vas.reset(true, false, argStack);
-						}
-					}else{
-						if(mmrFlg){
-							vas.reset(false, true, argStack);
-						}else{
-							vas.reset(false, false, argStack);
-						}
-					}
+					vas.reset(dbgFlg, mmrFlg, argStack);
 
 					//実行
 					if(exeFlg){
@@ -1628,17 +1731,17 @@ class VirtualAddressSpace{
 					break;
 				case 15: //chmod
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n chmod:");
+					if(dbgFlg>0) System.out.print("\n chmod:");
 					int chmodIndex = getMem();
-					if(dbgFlg) System.out.print(" " + getFileName(chmodIndex) + " ");
+					if(dbgFlg>0) System.out.print(" " + getFileName(chmodIndex) + " ");
 					int chmodIndex2 = getMem();
-					if(dbgFlg) System.out.print(" " + chmodIndex2);
+					if(dbgFlg>0) System.out.print(" " + chmodIndex2);
 					reg.set(0, 0);
 					
 					break;
 				case 17: //brk
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n brk:");
+					if(dbgFlg>0) System.out.print("\n brk:");
 					reg.set(0, 0);
 					
 					break;
@@ -1646,7 +1749,7 @@ class VirtualAddressSpace{
 					File statFile = getFile(getMem(),"stat");
 					
 					//デバッグ用
-					if(dbgFlg) System.out.print(" ,");
+					if(dbgFlg>0) System.out.print(" ,");
 
 					getMem();
 					
@@ -1662,7 +1765,7 @@ class VirtualAddressSpace{
 					val2 = getMem(); //モード
 					
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n lseek:" + reg.get(0) + "," + val1 + "," + val2);
+					if(dbgFlg>0) System.out.print("\n lseek:" + reg.get(0) + "," + val1 + "," + val2);
 					
 					//mode
 					//0:top byte
@@ -1699,18 +1802,21 @@ class VirtualAddressSpace{
 					break;
 				case 20: //getpid
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n getpid:");
+					if(dbgFlg>0) System.out.print("\n getpid:");
+					/*
 				    String processName =
 				    	      java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
 				    int pid = (int)Long.parseLong(processName.split("@")[0]);
 				    System.out.println(" " + pid);
-				    	    
+				    */
+					
+					if(dbgFlg>0) System.out.println(" " + pid);
 					reg.set(0,pid);
 
 					break;
 				case 41: //dup
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n dup:" + reg.get(0));
+					if(dbgFlg>0) System.out.print("\n dup:" + reg.get(0));
 					
 					reg.set(0,fd.copy(fd.search(), reg.get(0)));
 
@@ -1720,13 +1826,17 @@ class VirtualAddressSpace{
 					val2 = getMem(); //モード
 
 					//デバッグ用
-					if(dbgFlg) System.out.print("\n signal:" + reg.get(0) + "," + val1 + "," + val2);
+					if(dbgFlg>0) System.out.print("\n signal:" + reg.get(0) + "," + val1 + "," + val2);
 
 					signal.set(val1, val2);
 					reg.set(0,0);
 
 					break;
 				}
+				if(dbgFlg==1){
+					System.out.print("\n");
+				}
+
 				break;
 			case DIV: 
 				int divR1 = reg.get(getOctal(opcode,3)) << 16;
@@ -1817,7 +1927,7 @@ class VirtualAddressSpace{
 	File getFile(int val,String debugName){
 
 		//デバッグ用
-		if(dbgFlg) System.out.print("\n " + debugName);
+		if(dbgFlg>0) System.out.print("\n " + debugName);
 		
 		//ファイル名設定
 		File file = new File(getFileName(val));
@@ -1862,7 +1972,7 @@ class VirtualAddressSpace{
 		str2.append(str.substring(0));
 
 		//デバッグ用
-		if(dbgFlg) System.out.print(" :" + str2.toString());
+		if(dbgFlg>0) System.out.print(" :" + str2.toString());
 		
 		return str2.toString();
 	}	
@@ -2038,8 +2148,12 @@ class VirtualAddressSpace{
 				if(exeFlg){
 					if(byteFlg){
 						
-						System.out.print(" getmemory=" + getMemory1(reg.get(regNo)));
-						System.out.print(" address=" + reg.get(regNo));
+						//System.out.print(" autoincliment ");
+						//System.out.print(" regNo=" + regNo);
+						//System.out.print(" regAddress=" + reg.get(regNo));
+
+						//System.out.print(" getmemory=" + getMemory1(reg.get(regNo)));
+						//System.out.print(" address=" + reg.get(regNo));
 
 						field.setOperand(getMemory1(reg.get(regNo)));
 						field.setAddress(reg.get(regNo));
@@ -2565,7 +2679,7 @@ class VirtualAddressSpace{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
-		//System.out.print(" " + String.format(" 0x1cba=%04x",getMemory2(0x1cba)));
+		System.out.print(" " + String.format(" 0xffe2=%04x",getMemory2(0xffe2)));
 		System.out.print(" ");
 
 		if(cc.z){
@@ -2715,11 +2829,22 @@ class Signal{
  * R6:スタックポインタSP
  * R7:プログラムカウンタPC
  */
-class Register{
+class Register implements Cloneable{
 
 	//レジスタ
 	int[] reg;
 
+	public Object clone() {
+    	int[] reg2 = new int[reg.length];
+    	reg2 = reg.clone();
+	    return new Register(reg2);  
+	}
+	
+	Register(int[] befReg){
+		reg = befReg;
+	}
+	
+	
 	//コンストラクタ（初期化）
 	Register(){
 		reg = new int[8];
