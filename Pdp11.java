@@ -157,17 +157,29 @@ class VirtualAddressSpace implements Cloneable{
 	VirtualAddressSpace pva;
 	
 	public Object clone() {
-		Register defReg = new Register();
-		defReg = (Register)reg.clone();
+		VirtualAddressSpace cloneVas = null;
+		try {
+			cloneVas = (VirtualAddressSpace)super.clone();
+			cloneVas.mem = this.mem.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		cloneVas.reg = (Register) this.reg.clone();
+
+		/*
 		byte[] mem2 = new byte[mem.length];
 		mem2 = mem.clone();
-	    return new VirtualAddressSpace(defReg,mem2);  
+		*/
+	    return cloneVas;  
 	}
 	
+	/*
 	VirtualAddressSpace(Register befReg,byte[] befmem){
 		reg = befReg;
 		mem = befmem;
 	}
+	*/
 	
 	//コンストラクタ
 	VirtualAddressSpace(byte[] bf){
@@ -1385,10 +1397,10 @@ class VirtualAddressSpace implements Cloneable{
 
 					System.out.println(" forkpid-def=" + pid);
 					System.out.println(" forkreg0-def=" + reg.get(0));
+					System.out.println(" forkdebugFlg-def=" + dbgFlg);
 
 					//仮想メモリを退避
 					parentPc = reg.get(7);
-					pva = new VirtualAddressSpace();
 					pva = (VirtualAddressSpace) this.clone();
 					//pva.fork(reg, fd, cc);
 					pva.pid = 123;
@@ -1398,9 +1410,11 @@ class VirtualAddressSpace implements Cloneable{
 					System.out.println(" forkpid-pva=" + pva.pid);
 					System.out.println(" forkreg0-def=" + reg.get(0));
 					System.out.println(" forkreg0-pva=" + pva.reg.get(0));
+					System.out.println(" forkdebugFlg-def=" + dbgFlg);
+					System.out.println(" forkdebugFlg-pva=" + pva.dbgFlg);
 					
-					VirtualAddressSpace forkAddressSpace = new VirtualAddressSpace();
-					forkAddressSpace = (VirtualAddressSpace) this.clone();
+					//VirtualAddressSpace forkAddressSpace = new VirtualAddressSpace();
+					VirtualAddressSpace forkAddressSpace = (VirtualAddressSpace) this.clone();
 
 					forkAddressSpace.pid = 19673;
 					forkAddressSpace.childFlg = true;
@@ -1413,11 +1427,18 @@ class VirtualAddressSpace implements Cloneable{
 					System.out.println(" forkreg0-def=" + reg.get(0));
 					System.out.println(" forkreg0-pva=" + pva.reg.get(0));
 					System.out.println(" forkreg0-fork=" + forkAddressSpace.reg.get(0));
+					System.out.println(" forkdebugFlg-def=" + dbgFlg);
+					System.out.println(" forkdebugFlg-pva=" + pva.dbgFlg);
+					System.out.println(" forkdebugFlg-fork=" + forkAddressSpace.dbgFlg);
 
+					System.exit(0);
+					
+					/*
 					//実行
 					if(exeFlg){
 						forkAddressSpace.execute(0, forkAddressSpace.textSize,false,true);
 					}
+					*/
 					
 					/*
 					reg.set(0, 19673);
@@ -2835,14 +2856,22 @@ class Register implements Cloneable{
 	int[] reg;
 
 	public Object clone() {
-    	int[] reg2 = new int[reg.length];
-    	reg2 = reg.clone();
-	    return new Register(reg2);  
+		Register cloneRegister = null;
+		try {
+			cloneRegister = (Register)super.clone();
+			cloneRegister.reg = this.reg.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    return cloneRegister;
 	}
 	
+	/*
 	Register(int[] befReg){
 		reg = befReg;
 	}
+	*/
 	
 	
 	//コンストラクタ（初期化）
