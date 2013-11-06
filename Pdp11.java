@@ -136,6 +136,8 @@ class VirtualAddressSpace implements Cloneable{
 	//
 	boolean childFlg;
 	int parentPc;
+	int childPid;
+	int childExitNo;
 	
 	//実行モード
 	boolean exeFlg;
@@ -272,13 +274,13 @@ class VirtualAddressSpace implements Cloneable{
 
 	//メモリ上のデータを取得して、PC+2する
 	int getMem(){
-		System.out.print(" mem=" + mem[1]);
-		System.out.print(" reg=" + reg.get(7));
-		System.out.print("getmem=" + getMemory2(reg.get(7)));
+		//System.out.print(" mem=" + mem[1]);
+		//System.out.print(" reg=" + reg.get(7));
+		//System.out.print("getmem=" + getMemory2(reg.get(7)));
 		
 		int opcode = getMemory2(reg.get(7));
 
-		System.out.print("debug");
+		//System.out.print("debug");
 
 		//逆アセンブルの場合は出力
 		if(exeFlg){
@@ -291,7 +293,7 @@ class VirtualAddressSpace implements Cloneable{
 		//PC+2
 		reg.add(7,2);
 
-		System.out.print("debug999");
+		//System.out.print("debug999");
 
 		return opcode;
 	}
@@ -693,45 +695,30 @@ class VirtualAddressSpace implements Cloneable{
 	//インタプリタ
 	public void execute(int start, int end, boolean endFlg,boolean forkFlg){
 
-		System.out.print("debug1");
-
 		//実行モードオン
 		exeFlg = true;
 		
 		//PCを初期化
 		if(!forkFlg) reg.set(7,start);
 
-		System.out.print("debug2");
-
 		if(!endFlg) end = 65536;
 		for(;reg.get(7)<end;){
-
-			System.out.print("debug3");
-			System.out.print(" dbgFlg=" + dbgFlg);
 
 			//レジスタ・フラグ出力
 			if(dbgFlg>1) printDebug();
 			//メモリダンプ出力
 			if(mmrFlg) printMemory();
 
-			System.out.print("debug4");
-
 			//ワーク
 			FieldDto srcObj;
 			FieldDto dstObj;
 			int tmp = 0;
 
-			System.out.print("debug5");
-			System.out.print(" aaa=" + reg.get(7));
-
 			//命令取得
 			int opcode = getMem();
 
-			System.out.print("debug6");
-
 			//ニーモニック取得
 			Mnemonic nic = getMnemonic(opcode);
-
 			
 			switch(nic){
 			case RTT:
@@ -1380,10 +1367,13 @@ class VirtualAddressSpace implements Cloneable{
 					break;
 				case 1: //exit
 					if(dbgFlg>0) System.out.println("\n exit:");
+					int exitNo = reg.get(0);
 					if(childFlg){
-						System.out.println("child-end");
+						//System.out.println("child-end");
 						//実行
 						if(exeFlg){
+							pva.childPid = pid;
+							pva.childExitNo = exitNo;
 							pva.reg.set(0,pid);
 							pva.reg.set(7,parentPc+2);
 							pva.execute(0, pva.textSize,false,true);
@@ -1395,50 +1385,48 @@ class VirtualAddressSpace implements Cloneable{
 				case 2: //fork
 					if(dbgFlg>0) System.out.println("\n fork:");
 
-					System.out.println(" forkpid-def=" + pid);
-					System.out.println(" forkreg0-def=" + reg.get(0));
-					System.out.println(" forkdebugFlg-def=" + dbgFlg);
+					//System.out.println(" forkpid-def=" + pid);
+					//System.out.println(" forkreg0-def=" + reg.get(0));
+					//System.out.println(" forkdebugFlg-def=" + dbgFlg);
 
 					//仮想メモリを退避
 					parentPc = reg.get(7);
 					pva = (VirtualAddressSpace) this.clone();
-					//pva.fork(reg, fd, cc);
-					pva.pid = 123;
-					pva.reg.set(0, 16);
+					//pva.pid = pid;
+					pva.reg.set(0, pid+256);
 
-					System.out.println(" forkpid-def=" + pid);
-					System.out.println(" forkpid-pva=" + pva.pid);
-					System.out.println(" forkreg0-def=" + reg.get(0));
-					System.out.println(" forkreg0-pva=" + pva.reg.get(0));
-					System.out.println(" forkdebugFlg-def=" + dbgFlg);
-					System.out.println(" forkdebugFlg-pva=" + pva.dbgFlg);
+					//System.out.println(" forkpid-def=" + pid);
+					//System.out.println(" forkpid-pva=" + pva.pid);
+					//System.out.println(" forkreg0-def=" + reg.get(0));
+					//System.out.println(" forkreg0-pva=" + pva.reg.get(0));
+					//System.out.println(" forkdebugFlg-def=" + dbgFlg);
+					//System.out.println(" forkdebugFlg-pva=" + pva.dbgFlg);
 					
 					//VirtualAddressSpace forkAddressSpace = new VirtualAddressSpace();
 					VirtualAddressSpace forkAddressSpace = (VirtualAddressSpace) this.clone();
 
-					forkAddressSpace.pid = 19673;
+					forkAddressSpace.pid = pid+256;
 					forkAddressSpace.childFlg = true;
-					//forkAddressSpace.fork(reg, fd, cc);
-					forkAddressSpace.reg.set(0, 256);
+					forkAddressSpace.reg.set(0, 0);
 
-					System.out.println(" forkpid-def=" + pid);
-					System.out.println(" forkpid-pva=" + pva.pid);
-					System.out.println(" forkpid-fork=" + forkAddressSpace.pid);
-					System.out.println(" forkreg0-def=" + reg.get(0));
-					System.out.println(" forkreg0-pva=" + pva.reg.get(0));
-					System.out.println(" forkreg0-fork=" + forkAddressSpace.reg.get(0));
-					System.out.println(" forkdebugFlg-def=" + dbgFlg);
-					System.out.println(" forkdebugFlg-pva=" + pva.dbgFlg);
-					System.out.println(" forkdebugFlg-fork=" + forkAddressSpace.dbgFlg);
+					//System.out.println(" forkpid-def=" + pid);
+					//System.out.println(" forkpid-pva=" + pva.pid);
+					//System.out.println(" forkpid-fork=" + forkAddressSpace.pid);
+					//System.out.println(" forkreg0-def=" + reg.get(0));
+					//System.out.println(" forkreg0-pva=" + pva.reg.get(0));
+					//System.out.println(" forkreg0-fork=" + forkAddressSpace.reg.get(0));
+					//System.out.println(" forkdebugFlg-def=" + dbgFlg);
+					//System.out.println(" forkdebugFlg-pva=" + pva.dbgFlg);
+					//System.out.println(" forkdebugFlg-fork=" + forkAddressSpace.dbgFlg);
 
-					System.exit(0);
+					//System.exit(0);
 					
-					/*
+					
 					//実行
 					if(exeFlg){
 						forkAddressSpace.execute(0, forkAddressSpace.textSize,false,true);
 					}
-					*/
+					
 					
 					/*
 					reg.set(0, 19673);
@@ -1589,6 +1577,13 @@ class VirtualAddressSpace implements Cloneable{
 					if(dbgFlg>0) System.out.print("\n close:" + reg.get(0));
 					fd.clear(reg.get(0));
 					reg.set(0, 0);
+					
+					break;
+				case 7: //wait
+					//デバッグ用
+					if(dbgFlg>0) System.out.print("\n wait:");
+					reg.set(0, childPid);
+					reg.set(1, childExitNo << 8);
 					
 					break;
 				case 8: //create
