@@ -1369,7 +1369,7 @@ class VirtualAddressSpace implements Cloneable{
 					if(dbgFlg>0) System.out.println("\n exit:");
 					int exitNo = reg.get(0);
 					if(childFlg){
-						//System.out.println("child-end");
+						System.out.println("child-end");
 						//実行
 						if(exeFlg){
 							pva.childPid = pid;
@@ -1569,8 +1569,15 @@ class VirtualAddressSpace implements Cloneable{
 					break;
 				case 5: //open
 					File openFile = getFile(getMem(),"open");
-					reg.set(0,fd.open(fd.search(), openFile.toPath()));
-
+					
+					if(openFile.isFile()){
+						reg.set(0,fd.open(fd.search(), openFile.toPath()));
+						cc.set(cc.n, cc.z, cc.v, false);
+						
+					}else{
+						cc.set(cc.n, cc.z, cc.v, true);
+					}
+					
 					break;
 				case 6: //close
 					//デバッグ用
@@ -1736,6 +1743,11 @@ class VirtualAddressSpace implements Cloneable{
 					//実行前設定
 					vas.reset(dbgFlg, mmrFlg, argStack);
 
+					vas.childFlg = childFlg;
+					vas.parentPc = parentPc;
+					vas.pid = pid;
+					vas.pva = pva;
+					
 					//実行
 					if(exeFlg){
 						vas.execute(0, vas.textSize);
@@ -1762,6 +1774,7 @@ class VirtualAddressSpace implements Cloneable{
 					
 					break;
 				case 18: //stat
+					
 					File statFile = getFile(getMem(),"stat");
 					
 					//デバッグ用
