@@ -1,21 +1,15 @@
 package pdp11;
 
-
 public class VirtualAddressSpace implements Cloneable{
-
-	//仮想メモリ
-	byte[] mem;
-	//メモリサイズ
-	int memorySize = 65536;
+	byte[] mem; //仮想メモリ
+	int memorySize = 65536; //メモリサイズ
+	int magicNo; //マジックナンバー
 
 	//領域の大きさ
 	int headerSize = 16;
 	int textSize;
 	int dataSize;
 	int bssSize;
-
-	//マジックナンバー
-	int magicNo;
 	
 	public Object clone() {
 		VirtualAddressSpace cloneVas = null;
@@ -26,13 +20,8 @@ public class VirtualAddressSpace implements Cloneable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//cloneVas.reg = (Register) this.reg.clone();
 
-		/*
-		byte[] mem2 = new byte[mem.length];
-		mem2 = mem.clone();
-		*/
-	    return cloneVas;  
+		return cloneVas;  
 	}
 
 	
@@ -95,8 +84,4 @@ public class VirtualAddressSpace implements Cloneable{
 	void setMemory1(int add,int src){
 		mem[add] = (byte)src;
 	}
-
-	
-
-
 }

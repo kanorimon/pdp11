@@ -2,14 +2,9 @@ package pdp11;
 
 public class Process implements Cloneable{
 	
-	//仮想アドレス空間
-	VirtualAddressSpace vas;
-	
-	//プロセスID
-	int pid;
-	
-	//子プロセスフラグ
-	boolean flgChildProcess;
+	VirtualAddressSpace vas; //仮想アドレス空間
+	int pid; //プロセスID
+	boolean flgChildProcess; //子プロセスフラグ
 	
 	//wait時のRegister
 	int r0;
@@ -28,16 +23,11 @@ public class Process implements Cloneable{
 	int childPid;
 	int childExitNo;
 	
-	
 	//コンストラクタ
 	Process(int processNo, boolean inFlgChildProcess){
 		vas = new VirtualAddressSpace();
-		
-		//プロセスID初期化
-		pid = processNo;
-		
-		//子プロセスフラグ
-		flgChildProcess = inFlgChildProcess;
+		pid = processNo; //プロセスID初期化
+		flgChildProcess = inFlgChildProcess; //子プロセスフラグ
 	}
 
 	public Object clone() {

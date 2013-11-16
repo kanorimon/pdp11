@@ -7,9 +7,7 @@ package pdp11;
  * R7:プログラムカウンタPC
  */
 public class Register implements Cloneable{
-
-	//レジスタ
-	int[] reg;
+	int[] reg; //レジスタ
 
 	public Object clone() {
 		Register cloneRegister = null;
@@ -22,13 +20,6 @@ public class Register implements Cloneable{
 		}
 	    return cloneRegister;
 	}
-	
-	/*
-	Register(int[] befReg){
-		reg = befReg;
-	}
-	*/
-	
 	
 	//コンストラクタ（初期化）
 	Register(){
@@ -67,7 +58,6 @@ public class Register implements Cloneable{
 		return reg[regNo];
 	}
 }
-
 
 
 /*

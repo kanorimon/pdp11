@@ -76,9 +76,7 @@ public class FileDescriptor{
 	//search
 	int search(){
 		for(int i=0;i<16;i++){
-			if(inode[i]==null){
-				return i;
-			}
+			if(inode[i]==null) return i;
 		}
 		return 16;
 	}

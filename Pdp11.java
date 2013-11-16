@@ -20,33 +20,15 @@ public class Pdp11{
 		//オプション設定
 		int i = 0;
 		while(true){
-			if(!(args[i].substring(0,1).equals("-"))){
-				break;
-			}
-			//デバッグモード（システムコールのみ）
-			if(args[i].equals("-s")){
-				flgDebugMode = 1;
-			}
-			//デバッグモード（すべて）
-			if(args[i].equals("-v")){
-				flgDebugMode = 2;
-			}
-			//デバッグモード（メモリダンプ）
-			if(args[i].equals("-m")){
-				flgMemoryDump = true;
-			}
-			//Linuxモード
-			if(args[i].equals("-l")){
-				flgOsMode = 1;
-			}
-			//逆アセンブルモード
-			if(args[i].equals("-d")){
-				flgDismMode = true;
-			}
-			//実行モード
-			if(args[i].equals("-e")){
-				flgExeMode = true;
-			}
+			if(!(args[i].substring(0,1).equals("-"))) break;
+
+			if(args[i].equals("-s")) flgDebugMode = 1; //デバッグモード（システムコールのみ）
+			if(args[i].equals("-v")) flgDebugMode = 2; //デバッグモード（すべて）
+			if(args[i].equals("-m")) flgMemoryDump = true; //デバッグモード（メモリダンプ）
+			if(args[i].equals("-l")) flgOsMode = 1; //Linuxモード
+			if(args[i].equals("-d")) flgDismMode = true; //逆アセンブルモード
+			if(args[i].equals("-e")) flgExeMode = true; //実行モード
+
 			i++;
 		}
 		
@@ -61,24 +43,26 @@ public class Pdp11{
 		
 		//実行
 		kernel.start(args,i);
-
 	}
-	
 }
-
 
 
 /*
  * ニーモニックENUM
  */
 enum Mnemonic { 
-	RTT, RTS, JMP, JSR, CLR, CLRB, TST, TSTB, MOV, MOVB, CMP, CMPB, BIT, BITB, BISB, BIS, ADC,
-	INC, DEC, SUB, ADD, SOB, SXT, INCB, ROR, DECB, SWAB, ROL,
-	BR, BHI, BNE, BEQ, BCC, BGT, BGE, BIC, BLE, BLOS, BCS, BLT, BICB, BVS, BMI, BPL,
-	NEG, ASL, ASR,
-	DIV, ASH, ASHC, MUL,
-	SETD, SYS, WORD,
-	SEV
+	ADC, ADD, ASH, ASHC, ASL, ASR,
+	BCC, BCS, BEQ, BGE, BGT, BHI, BICB, BIC, BIT, BITB, BIS, BISB, BLE, BLOS, BLT, BMI, BNE, BPL, BR, BVS, 
+	CLR, CLRB, CMP, CMPB,
+	DEC, DECB, DIV,
+	INC, INCB,
+	JMP, JSR,
+    ROR, ROL, RTT, RTS,   
+	MOV, MOVB, MUL,
+	NEG, 
+	SETD, SEV, SOB, SUB, SWAB, SXT, SYS, 
+	TST, TSTB,
+	WORD
 };
 
 /*
@@ -144,9 +128,7 @@ class Signal{
 	}
 	
 	void reset(){
-		for(int i=0;i<signal.length;i++){
-			signal[i] = 0;
-		}
+		for(int i=0;i<signal.length;i++) signal[i] = 0;
 	}
 	
 	void set(int num, int pointer){
