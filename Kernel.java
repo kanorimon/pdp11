@@ -12,114 +12,116 @@ import java.util.Stack;
  */
 public class Kernel{
 	
-	//ãƒ—ãƒ­ã‚»ã‚¹
+	//ƒvƒƒZƒX
 	Process[] proc;
 	
-	//ç¾åœ¨å‡¦ç†ä¸­ã®ãƒ—ãƒ­ã‚»ã‚¹No
+	//Œ»İˆ—’†‚ÌƒvƒƒZƒXNo
 	int nowProcessNo;
 	
-	//ãƒ¬ã‚¸ã‚¹ã‚¿
+	//ƒŒƒWƒXƒ^
 	Register reg;
 	
-	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿
+	//ƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^
 	FileDescriptor fd;
 
-	//ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰
+	//ƒRƒ“ƒfƒBƒVƒ‡ƒ“ƒR[ƒh
 	ConditionCode cc;
 	
-	//ã‚·ã‚°ãƒŠãƒ«
+	//ƒVƒOƒiƒ‹
 	Signal signal;
 
-	//è¦ªãƒ—ãƒ­ã‚»ã‚¹
+	//eƒvƒƒZƒX
 	VirtualAddressSpace pva;
 	
-	//å‡ºåŠ›ç”¨ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
+	//o—Í—pƒ†[ƒeƒBƒŠƒeƒB
 	int strnum;
 	
-	//ã‚¹ã‚¿ãƒƒã‚¯ç”Ÿæˆç”¨
+	//ƒXƒ^ƒbƒN¶¬—p
 	Stack<Byte> argStack;
 	
-	//ãƒ¢ãƒ¼ãƒ‰
+	//ƒ‚[ƒh
 	int flgDebugMode;
 	boolean flgDismMode;
 	boolean flgExeMode;
 	boolean flgMemoryDump;
+	int flgOsMode;
 	
 
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	Kernel(int maxProcess,int inFlgDebugMode,boolean inFlgDismMode, boolean inFlgExeMode,boolean inFlgMemoryDump){
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	Kernel(int maxProcess,int inFlgDebugMode,boolean inFlgDismMode, boolean inFlgExeMode,boolean inFlgMemoryDump,int inFlgOsMode){
 		proc = new Process[maxProcess];
-		//ãƒ—ãƒ­ã‚»ã‚¹Noã¯0ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆ
+		//ƒvƒƒZƒXNo‚Í0‚©‚çƒXƒ^[ƒg
 		nowProcessNo = 0;
 
 		flgDebugMode = inFlgDebugMode;
 		flgDismMode = inFlgDismMode;
 		flgExeMode = inFlgExeMode;
 		flgMemoryDump = inFlgMemoryDump;
-		
+		flgOsMode = inFlgOsMode;
+
 		reset();
 	}
 	
 	void reset(){
-		//ãƒ¬ã‚¸ã‚¹ã‚¿åˆæœŸåŒ–
+		//ƒŒƒWƒXƒ^‰Šú‰»
 		reg = new Register();
 
-		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿åˆæœŸåŒ–
+		//ƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^‰Šú‰»
 		fd = new FileDescriptor();
 		
-		//ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰åˆæœŸåŒ–
+		//ƒRƒ“ƒfƒBƒVƒ‡ƒ“ƒR[ƒh‰Šú‰»
 		cc = new ConditionCode();
 		
-		//ã‚·ã‚°ãƒŠãƒ«åˆæœŸåŒ–
+		//ƒVƒOƒiƒ‹‰Šú‰»
 		signal = new Signal();
 	}
 
 	
-	//ã‚«ãƒ¼ãƒãƒ«ã‚¹ã‚¿ãƒ¼ãƒˆ
+	//ƒJ[ƒlƒ‹ƒXƒ^[ƒg
 	void start(String[] args,int argsNo){
 
-		//ãƒ—ãƒ­ã‚»ã‚¹ç”Ÿæˆ
+		//ƒvƒƒZƒX¶¬
 		createProcess(args,argsNo,false);
 		
-		//é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«
+		//‹tƒAƒZƒ“ƒuƒ‹
 		if(flgDismMode) dissAssemble();
 
-		//å®Ÿè¡Œå‰è¨­å®š
+		//Às‘Oİ’è
 		reset(flgDebugMode, flgMemoryDump, argStack);
 
-		//å®Ÿè¡Œ
+		//Às
 		if(flgExeMode) execute();
 	}
 	
-	//é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©
+	//‹tƒAƒZƒ“ƒuƒ‰
 	void dissAssemble(){
 		disassemble(0,proc[nowProcessNo].vas.textSize);
 	}
 	
-	//å®Ÿè¡Œ
+	//Às
 	void execute(){
 		execute(0, proc[nowProcessNo].vas.textSize);
 	}
 	
 	
-	//ãƒ—ãƒ­ã‚»ã‚¹ç”Ÿæˆ
+	//ƒvƒƒZƒX¶¬
 	void createProcess(String[] args,int argsNo,boolean inFlgChildProcess){
 		
-		//ãƒ—ãƒ­ã‚»ã‚¹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+		//ƒvƒƒZƒXƒCƒ“ƒXƒ^ƒ“ƒXì¬
 		proc[nowProcessNo] = new Process(nowProcessNo,inFlgChildProcess);
 
-		//ã‚¹ã‚¿ãƒƒã‚¯è¨­å®š
+		//ƒXƒ^ƒbƒNİ’è
 		setStack(args, argsNo);
 		
-		//ãƒ—ãƒ­ã‚»ã‚¹ã«ãƒã‚¤ãƒŠãƒªã‚’èª­ã¿è¾¼ã¿
+		//ƒvƒƒZƒX‚ÉƒoƒCƒiƒŠ‚ğ“Ç‚İ‚İ
 		readBinary(args[argsNo]);
 		
 	}
 	
-	//ã‚¹ã‚¿ãƒƒã‚¯ã®è¨­å®š
+	//ƒXƒ^ƒbƒN‚Ìİ’è
 	void setStack(String[] args,int argsNo){
 		
-		//å¼•æ•°ã‚’byteé…åˆ—ã«å¤‰æ›
+		//ˆø”‚ğbyte”z—ñ‚É•ÏŠ·
 		ArrayList<byte[]> arg = new ArrayList<byte[]>();
 		int argSize = 0;
 		int argCnt = 0;
@@ -129,7 +131,7 @@ public class Kernel{
 			argCnt++;
 		}
 		
-		//å¼•æ•°ã‚’Byteã®Stackã«ç©ã¿è¾¼ã¿
+		//ˆø”‚ğByte‚ÌStack‚ÉÏ‚İ‚İ
 		argStack = new Stack<Byte>();
 		for(int j=0;j<arg.size();j++){
 			for(int k=0;k<arg.get(j).length;k++){
@@ -161,12 +163,12 @@ public class Kernel{
 	
 	}
 	
-	//ãƒã‚¤ãƒŠãƒªèª­ã¿è¾¼ã¿
+	//ƒoƒCƒiƒŠ“Ç‚İ‚İ
 	void readBinary(String strFileName){
 		File file = new File(strFileName);
 		Path fileName = file.toPath();
 
-		//ãƒ•ã‚¡ã‚¤ãƒ«å†…å®¹å–å¾—
+		//ƒtƒ@ƒCƒ‹“à—eæ“¾
 		byte[] bf = null;
 		try {
 	        bf = java.nio.file.Files.readAllBytes(fileName);
@@ -174,53 +176,53 @@ public class Kernel{
 			e.printStackTrace();
 		}
 
-		//ä»®æƒ³ãƒ¡ãƒ¢ãƒªã«ãƒ­ãƒ¼ãƒ‰
+		//‰¼‘zƒƒ‚ƒŠ‚Éƒ[ƒh
 		proc[nowProcessNo].vas = new VirtualAddressSpace(bf);
 		
 	}
 	
-	//8é€²æ•°ã«å¤‰æ›ã—ãŸå‘½ä»¤ã®ä»»æ„ã®ç®‡æ‰€ã‚’å–å¾—
+	//8i”‚É•ÏŠ·‚µ‚½–½—ß‚Ì”CˆÓ‚Ì‰ÓŠ‚ğæ“¾
 	int getOctal(int dec,int index){
 		int val = Integer.parseInt(String.format("%06o",dec).substring(index, index+1));
 		return val;
 	}
 
-	//ASCIIã‚³ãƒ¼ãƒ‰ã«å¤‰æ›ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
+	//ASCIIƒR[ƒh‚É•ÏŠ·‚µ‚½ƒf[ƒ^‚ğ•\¦
 	void printChar(int dec){
 		System.out.print((char)Integer.parseInt(String.format("%02x",dec),16));
 	}
 
-	//æŒ‡å®šã—ãŸå‘½ä»¤ã‚’å‡ºåŠ›
+	//w’è‚µ‚½–½—ß‚ğo—Í
 	void printOpcode(int opcode){
 		System.out.print(String.format("%04x", opcode));
 		System.out.print(" ");
 	}
 	
-	//2ãƒã‚¤ãƒˆå˜ä½ã§ãƒªãƒˆãƒ«ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³ã‚’åè»¢ã—ã¦10é€²æ•°ã§å–å¾—
+	//2ƒoƒCƒg’PˆÊ‚ÅƒŠƒgƒ‹ƒGƒ“ƒfƒBƒAƒ“‚ğ”½“]‚µ‚Ä10i”‚Åæ“¾
 	int getMemory2(int start){
 		return proc[nowProcessNo].vas.getMemory2(start);
 	}
 
-	//1ãƒã‚¤ãƒˆå˜ä½ã§æŒ‡å®šç®‡æ‰€ã®ãƒ¡ãƒ¢ãƒªã‚’å–å¾—
+	//1ƒoƒCƒg’PˆÊ‚Åw’è‰ÓŠ‚Ìƒƒ‚ƒŠ‚ğæ“¾
 	int getMemory1(int start){
 		return proc[nowProcessNo].vas.getMemory1(start);
 	}
 
-	//2ãƒã‚¤ãƒˆå˜ä½ã§æŒ‡å®šç®‡æ‰€ã®ãƒ¡ãƒ¢ãƒªã‚’æ›´æ–°
+	//2ƒoƒCƒg’PˆÊ‚Åw’è‰ÓŠ‚Ìƒƒ‚ƒŠ‚ğXV
 	void setMemory2(int add,int src){
 		proc[nowProcessNo].vas.setMemory2(add,src);
 	}
 
-	//1ãƒã‚¤ãƒˆå˜ä½ã§æŒ‡å®šç®‡æ‰€ã®ãƒ¡ãƒ¢ãƒªã‚’æ›´æ–°
+	//1ƒoƒCƒg’PˆÊ‚Åw’è‰ÓŠ‚Ìƒƒ‚ƒŠ‚ğXV
 	void setMemory1(int add,int src){
 		proc[nowProcessNo].vas.setMemory1(add,src);
 	}
 	
-	//ãƒ¡ãƒ¢ãƒªä¸Šã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã¦ã€PC+2ã™ã‚‹
+	//ƒƒ‚ƒŠã‚Ìƒf[ƒ^‚ğæ“¾‚µ‚ÄAPC+2‚·‚é
 	int getMem(){
 		int opcode = getMemory2(reg.get(7));
 
-		//é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã®å ´åˆã¯å‡ºåŠ›
+		//‹tƒAƒZƒ“ƒuƒ‹‚Ìê‡‚Ío—Í
 		if(flgExeMode){
 			if(flgDebugMode>1) printOpcode(opcode);
 		}else{
@@ -234,7 +236,7 @@ public class Kernel{
 		return opcode;
 	}
 
-	//ã‚¹ã‚¿ãƒƒã‚¯ç©ã‚€
+	//ƒXƒ^ƒbƒNÏ‚Ş
 	void pushStack(int n){
 		reg.add(6,-2);
 		setMemory2(reg.get(6),n);
@@ -242,19 +244,19 @@ public class Kernel{
 
 	
 
-	//é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«
+	//‹tƒAƒZƒ“ƒuƒ‹
 	void disassemble(int start, int end){
 
-		//å®Ÿè¡Œãƒ¢ãƒ¼ãƒ‰ã‚ªãƒ•
+		//Àsƒ‚[ƒhƒIƒt
 		flgExeMode = false;
 
-		//ãƒ¬ã‚¸ã‚¹ã‚¿åˆæœŸåŒ–
+		//ƒŒƒWƒXƒ^‰Šú‰»
 		reg.reset();
 
-		//é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«
+		//‹tƒAƒZƒ“ƒuƒ‹
 		for(reg.set(7, start);reg.get(7)<end;){
 
-			//ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚«ã‚¦ãƒ³ã‚¿ã‚’å‡ºåŠ›
+			//ƒvƒƒOƒ‰ƒ€ƒJƒEƒ“ƒ^‚ğo—Í
 			System.out.print(String.format("%4x", reg.get(7)));
 			System.out.print(":   ");
 
@@ -280,8 +282,8 @@ public class Kernel{
 				break;
 			case RTS:
 				mnemonic = "rts";
-				srcOperand = getRegisterName(getOctal(opcode,5));
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getRegisterName(getOctal(opcode,5));
 				break;
 			case SEV:
 				mnemonic = "sev";
@@ -400,18 +402,18 @@ public class Kernel{
 				break;
 			case NEG:
 				mnemonic = "neg";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case ASL:
 				mnemonic = "asl";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case ASR:
 				mnemonic = "asr";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case SXT:
 				mnemonic = "sxt";
@@ -425,18 +427,18 @@ public class Kernel{
 				break;
 			case BR:
 				mnemonic = "br";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BCC:
 				mnemonic = "bcc";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BNE:
 				mnemonic = "bne";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BEQ:
 				mnemonic = "beq";
@@ -445,28 +447,28 @@ public class Kernel{
 				break;
 			case BGE:
 				mnemonic = "bge";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BGT:
 				mnemonic = "bgt";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BHI:
 				mnemonic = "bhi";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BLE:
 				mnemonic = "ble";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BLT:
 				mnemonic = "blt";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BIC:
 				mnemonic = "bic";
@@ -480,28 +482,28 @@ public class Kernel{
 				break;
 			case BLOS:
 				mnemonic = "blos";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BCS:
 				mnemonic = "bcs";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BVS:
 				mnemonic = "bvs";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BMI:
 				mnemonic = "bmi";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case BPL:
 				mnemonic = "bpl";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case SYS:
 				if(getDex(getOctal(opcode,4),getOctal(opcode,5)) == 0){
@@ -509,8 +511,8 @@ public class Kernel{
 				}
 
 				mnemonic = "sys";
-				srcOperand = String.valueOf(getOctal(opcode,5));
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = String.valueOf(getOctal(opcode,5));
 
 				break;
 			case SUB:
@@ -545,12 +547,12 @@ public class Kernel{
 				break;
 			case WORD:
 				mnemonic = ".word";
-				srcOperand = getNormal(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = "";
+				srcOperand = "";
+				dstOperand = getNormal(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			}
 
-			//å‡ºåŠ›
+			//o—Í
 			for(;strnum<3;strnum++){
 				System.out.print("     ");
 			}
@@ -569,22 +571,22 @@ public class Kernel{
 		}
 	}
 
-	//ã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿å®Ÿè¡Œå‰è¨­å®š
+	//ƒCƒ“ƒ^ƒvƒŠƒ^Às‘Oİ’è
 	public void reset(int debugFlg,boolean memoryFlg, Stack<Byte> args){
-		//ãƒ‡ãƒãƒƒã‚°ãƒ•ãƒ©ã‚°
+		//ƒfƒoƒbƒOƒtƒ‰ƒO
 		flgDebugMode = debugFlg;
 		flgMemoryDump = memoryFlg;
 
-		//ãƒ¬ã‚¸ã‚¹ã‚¿åˆæœŸåŒ–
+		//ƒŒƒWƒXƒ^‰Šú‰»
 		reg.reset();
 
-		//ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰åˆæœŸåŒ–
+		//ƒRƒ“ƒfƒBƒVƒ‡ƒ“ƒR[ƒh‰Šú‰»
 		cc.reset();
 		
-		//ã‚·ã‚°ãƒŠãƒ«åˆæœŸåŒ–
+		//ƒVƒOƒiƒ‹‰Šú‰»
 		signal.reset();
 
-		//å¼•æ•°è¨­å®š
+		//ˆø”İ’è
 		ArrayList<Integer> valAddress = new ArrayList<Integer> ();
 		boolean flgStack = false;
 		int valNum = 0;
@@ -614,42 +616,42 @@ public class Kernel{
 		pushStack(valAddress.size());
 	}
 
-	//ã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿
+	//ƒCƒ“ƒ^ƒvƒŠƒ^
 	public void execute(int start, int end){
 		execute(start, end, false,false);
 	}
 
-	//ã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿
+	//ƒCƒ“ƒ^ƒvƒŠƒ^
 	public void execute(int start, int end,boolean endFlg){
 		execute(start, end, endFlg,false);
 	}
 
-	//ã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿
+	//ƒCƒ“ƒ^ƒvƒŠƒ^
 	public void execute(int start, int end, boolean endFlg,boolean forkFlg){
 
-		//å®Ÿè¡Œãƒ¢ãƒ¼ãƒ‰ã‚ªãƒ³
+		//Àsƒ‚[ƒhƒIƒ“
 		flgExeMode = true;
 		
-		//PCã‚’åˆæœŸåŒ–
+		//PC‚ğ‰Šú‰»
 		if(!forkFlg) reg.set(7,start);
 
 		if(!endFlg) end = 65536;
 		for(;reg.get(7)<end;){
 
-			//ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ»ãƒ•ãƒ©ã‚°å‡ºåŠ›
+			//ƒŒƒWƒXƒ^Eƒtƒ‰ƒOo—Í
 			if(flgDebugMode>1) printDebug();
-			//ãƒ¡ãƒ¢ãƒªãƒ€ãƒ³ãƒ—å‡ºåŠ›
+			//ƒƒ‚ƒŠƒ_ƒ“ƒvo—Í
 			if(flgMemoryDump) printMemory();
 
-			//ãƒ¯ãƒ¼ã‚¯
+			//ƒ[ƒN
 			FieldDto srcObj;
 			FieldDto dstObj;
 			int tmp = 0;
 
-			//å‘½ä»¤å–å¾—
+			//–½—ßæ“¾
 			int opcode = getMem();
 
-			//ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯å–å¾—
+			//ƒj[ƒ‚ƒjƒbƒNæ“¾
 			Mnemonic nic = getMnemonic(opcode);
 			
 			switch(nic){
@@ -879,7 +881,7 @@ public class Kernel{
 				
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
-						//ãƒ¢ãƒ¼ãƒ‰0ã®å ´åˆã€ç¬¦å·æ‹¡å¼µã‚’è¡Œã†
+						//ƒ‚[ƒh0‚Ìê‡A•„†Šg’£‚ğs‚¤
 						tmp = reg.get(srcObj.register) << 24;
 						tmp = tmp >> 24;
 						reg.set(dstObj.register, tmp);
@@ -889,7 +891,7 @@ public class Kernel{
 					}
 				}else if(srcObj.flgAddress){
 					if(dstObj.flgRegister){
-						//ãƒ¢ãƒ¼ãƒ‰0ã®å ´åˆã€ç¬¦å·æ‹¡å¼µã‚’è¡Œã†
+						//ƒ‚[ƒh0‚Ìê‡A•„†Šg’£‚ğs‚¤
 						tmp = getMemory1(srcObj.address) << 24;
 						tmp = tmp >> 24;
 						reg.set(dstObj.register, tmp);
@@ -899,7 +901,7 @@ public class Kernel{
 					}
 				}else{
 					if(dstObj.flgRegister){
-						//ãƒ¢ãƒ¼ãƒ‰0ã®å ´åˆã€ç¬¦å·æ‹¡å¼µã‚’è¡Œã†
+						//ƒ‚[ƒh0‚Ìê‡A•„†Šg’£‚ğs‚¤
 						tmp = srcObj.operand << 24;
 						tmp = tmp >> 24;
 						reg.set(dstObj.register, tmp);
@@ -971,7 +973,7 @@ public class Kernel{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				tmp = srcObj.operand & dstObj.operand;
 				
-				cc.set(false, //å¾Œã§æ›¸ã 
+				cc.set(false, //Œã‚Å‘‚­ 
 						tmp==0, 
 						false, 
 						cc.c);
@@ -988,7 +990,7 @@ public class Kernel{
 				//System.out.print(" tmp=" + tmp);
 				//System.out.print(" &" + (srcObj.operand & dstObj.operand));
 				
-				cc.set(false, //å¾Œã§æ›¸ã 
+				cc.set(false, //Œã‚Å‘‚­ 
 						tmp==0, 
 						false, 
 						cc.c);
@@ -1031,7 +1033,7 @@ public class Kernel{
 					}
 				}
 				
-				cc.set(false, //å¾Œã§æ›¸ã 
+				cc.set(false, //Œã‚Å‘‚­ 
 						tmp==0, 
 						false, 
 						cc.c);
@@ -1068,7 +1070,7 @@ public class Kernel{
 					}
 				}
 				
-				cc.set(false, //å¾Œã§æ›¸ã 
+				cc.set(false, //Œã‚Å‘‚­ 
 						tmp == 0, 
 						false, 
 						cc.c);
@@ -1289,7 +1291,6 @@ public class Kernel{
 
 				switch(getDex(getOctal(opcode,4),getOctal(opcode,5))){
 				case 0: //systemcall
-					//if(dbgFlg) System.out.println("\n indir:");
 					int sub = getMem();
 					tmp = reg.get(7);
 					execute(sub, sub+1, true);
@@ -1302,7 +1303,7 @@ public class Kernel{
 					int exitNo = reg.get(0);
 					if(proc[nowProcessNo].flgChildProcess){
 						System.out.println("child-end");
-						//å®Ÿè¡Œ
+						//Às
 						if(flgExeMode){
 							System.out.println(nowProcessNo);
 							nowProcessNo = proc[nowProcessNo].parentPid;
@@ -1328,7 +1329,7 @@ public class Kernel{
 				case 2: //fork
 					if(flgDebugMode>0) System.out.println("\n fork:");
 
-					//ä»®æƒ³ãƒ¡ãƒ¢ãƒªã‚’é€€é¿
+					//‰¼‘zƒƒ‚ƒŠ‚ğ‘Ş”ğ
 					proc[nowProcessNo].r0 = reg.get(0);
 					proc[nowProcessNo].r1 = reg.get(1);
 					proc[nowProcessNo].r2 = reg.get(2);
@@ -1352,15 +1353,15 @@ public class Kernel{
 					proc[nowProcessNo].pid = nowProcessNo;
 					proc[nowProcessNo].parentPid = nowProcessNo-1;
 					
-					//å®Ÿè¡Œ
+					//Às
 					if(flgExeMode) execute(0, proc[nowProcessNo].vas.textSize,false,true);
 					
 					break;
 				case 3: //read
-					val1 = getMem(); //èª­ã¿è¾¼ã¿ä½ç½®
-					val2 = getMem();  //èª­ã¿è¾¼ã¿ã‚µã‚¤ã‚º
+					val1 = getMem(); //“Ç‚İ‚İˆÊ’u
+					val2 = getMem();  //“Ç‚İ‚İƒTƒCƒY
 					
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n read:" + reg.get(0) + "," + val1 + "," + val2);
 					
 					if(fd.getSize(reg.get(0)) < fd.getOffset(reg.get(0))+1){
@@ -1381,8 +1382,8 @@ public class Kernel{
 					
 					break;
 				case 4: //write
-					val1 = getMem(); //æ›¸ãè¾¼ã¿å…ƒãƒ‡ãƒ¼ã‚¿ä½ç½®
-					val2 = getMem(); //æ›¸ãè¾¼ã¿ã‚µã‚¤ã‚º
+					val1 = getMem(); //‘‚«‚İŒ³ƒf[ƒ^ˆÊ’u
+					val2 = getMem(); //‘‚«‚İƒTƒCƒY
 
 					if(flgDebugMode>0) System.out.print("\n write:" + reg.get(0) + "," + val1 + "," + val2);
 
@@ -1392,10 +1393,10 @@ public class Kernel{
 						BlockFile outFile = (BlockFile) fd.get(reg.get(0)); 
 				        File file = new File(outFile.inode.toString());
 				        
-						//ãƒ•ã‚¡ã‚¤ãƒ«åè¨­å®š
+						//ƒtƒ@ƒCƒ‹–¼İ’è
 						Path fileName = file.toPath();
 						
-						//ãƒ•ã‚¡ã‚¤ãƒ«å†…å®¹å–å¾—
+						//ƒtƒ@ƒCƒ‹“à—eæ“¾
 						byte[] beforeByte = null;
 						try {
 							beforeByte = java.nio.file.Files.readAllBytes(fileName);
@@ -1403,82 +1404,41 @@ public class Kernel{
 							e.printStackTrace();
 						}
 
-						//System.out.println(" beforebyte=" + beforeByte);
-						//System.out.println(" beforelength=" + beforeByte.length);
-						
 						int writeSize = beforeByte.length;
 						if(beforeByte.length < fd.getOffset(reg.get(0)) + val2){
 							writeSize =  fd.getOffset(reg.get(0)) + val2;
 						}
 						byte[] writeByte = new byte[writeSize];
 
-						//System.out.println(" writelength=" + writeByte.length);
-
-						//System.out.println(" getOffset=" + fd.getOffset(reg.get(0)));
-
 						if(beforeByte.length < fd.getOffset(reg.get(0))){
-							//System.out.print("debug1\n");
 							
 							for(i=0;i<beforeByte.length;i++){
 								writeByte[i] = beforeByte[i];
-								//System.out.print(String.format("%02x ", writeByte[i]));
 							}
 							for(i=beforeByte.length;i<fd.getOffset(reg.get(0));i++){
 								writeByte[i] = 0;
-								//System.out.print(String.format("%02x ", writeByte[i]));
 							}
-							//System.out.print("\n");
-							
 						}else{
-							//System.out.print("debug2\n");
 							for(i=0;i<fd.getOffset(reg.get(0));i++){
 								writeByte[i] = beforeByte[i];
-								//System.out.print(String.format("%02x ", writeByte[i]));
 							}
-							//System.out.print("\n");
 						}
 
-						//System.out.print("debug3\n");
 						for(i=fd.getOffset(reg.get(0));i<fd.getOffset(reg.get(0))+val2;i++){
 					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
 							val1++;
-							//System.out.print(String.format("%02x ", writeByte[i]));
 						}
-						//System.out.print("\n");
 						
-						//System.out.print("debug4\n");
 						for(i=fd.getOffset(reg.get(0))+val2;i<beforeByte.length;i++){
 					        writeByte[i] = beforeByte[i];
-					        //System.out.print(String.format("%02x ", writeByte[i]));
 						}
-						//System.out.print("\n");
 						
-						//System.out.println(" writebyte=" + writeByte);
-						
-						for(i=0;i<writeByte.length;i++){
-							//System.out.print(String.format("%02x ", writeByte[i]));
-						}
-						//System.out.print("\n");
-						
-
 				        try {
 							java.nio.file.Files.write(fileName, writeByte);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} 
-						/*
-						try{
-					        BufferedOutputStream fis = new BufferedOutputStream(new FileOutputStream(file));
-					        
-			                fis.write(writeByte);
-			                
-			                fis.flush();
-			                fis.close();
-					    }catch(IOException e){
-					        System.out.println(e);
-					    }
-					    */
 						
 					}else{
 						for(i=0;i<val2;i++){
@@ -1502,23 +1462,21 @@ public class Kernel{
 					
 					break;
 				case 6: //close
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n close:" + reg.get(0));
 					fd.clear(reg.get(0));
 					reg.set(0, 0);
 					
 					break;
 				case 7: //wait
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n wait:");
 					reg.set(0, proc[nowProcessNo].childPid);
 					reg.set(1, proc[nowProcessNo].childExitNo << 8);
 					
 					break;
 				case 8: //create
-
 					File createFile = getFile(getMem(),"creat");
-					//System.out.print(" ,");
 					getMem();
 
 					if (createFile.exists()){
@@ -1531,15 +1489,15 @@ public class Kernel{
 						e.printStackTrace();
 					}
 
-					//ã¨ã‚Šã‚ãˆãšã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãªã„ä½“
+					//‚Æ‚è‚ ‚¦‚¸ƒGƒ‰[‚ª”­¶‚µ‚È‚¢‘Ì
 					cc.set(cc.n, cc.z, cc.v, false);
 
-					//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã«è¨­å®š
+					//ƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^‚Éİ’è
 					reg.set(0,fd.open(fd.search(), createFile.toPath()));
 					
 					break;
 				case 9: //link
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n link:");
 
 					int existingInt = getMem();
@@ -1566,7 +1524,7 @@ public class Kernel{
 						}
 					}
 					
-					//ãƒ•ã‚¡ã‚¤ãƒ«åè¨­å®š
+					//ƒtƒ@ƒCƒ‹–¼İ’è
 					File existringFile = new File(existingStr.toString());
 					Path existingLink = existringFile.toPath();
 
@@ -1578,7 +1536,7 @@ public class Kernel{
 					} catch (IOException x) {
 					    System.err.println(x);
 					} catch (UnsupportedOperationException x) {
-					    //ä¸€éƒ¨ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ã‚·ã‚¹ãƒ†ãƒ ã§ã¯ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«å¯¾ã—ã¦æ—¢å­˜ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿½åŠ ã™ã‚‹æ“ä½œã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¾ã›ã‚“ã€‚
+					    //ˆê•”‚Ìƒtƒ@ƒCƒ‹EƒVƒXƒeƒ€‚Å‚ÍƒfƒBƒŒƒNƒgƒŠ‚É‘Î‚µ‚ÄŠù‘¶‚Ìƒtƒ@ƒCƒ‹‚ğ’Ç‰Á‚·‚é‘€ì‚ÍƒTƒ|[ƒg‚³‚ê‚Ü‚¹‚ñB
 					    System.err.println(x);
 					}
 
@@ -1586,12 +1544,12 @@ public class Kernel{
 					
 					reg.set(0, 0);
 					
-					//ã¨ã‚Šã‚ãˆãšã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãªã„ä½“
+					//‚Æ‚è‚ ‚¦‚¸ƒGƒ‰[‚ª”­¶‚µ‚È‚¢‘Ì
 					cc.set(cc.n, cc.z, cc.v, false);
 					
 					break;
 				case 10: //unlink
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n unlink:");
 
 					int unlinkTmp = getMem();
@@ -1613,16 +1571,16 @@ public class Kernel{
 					
 					reg.set(0, 0);
 					
-					//ã¨ã‚Šã‚ãˆãšã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãªã„ä½“
+					//‚Æ‚è‚ ‚¦‚¸ƒGƒ‰[‚ª”­¶‚µ‚È‚¢‘Ì
 					cc.set(cc.n, cc.z, cc.v, false);
 					
 					break;
 				case 11: //exec
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n exec:");
 					if(flgDebugMode>0) System.out.print(" ");
 
-					String execTmp1 =getFileName(getMem());
+					String execTmp1 = getFileName(getMem());
 					int argsIndex = getMem();
 					ArrayList<String> execArgs = new ArrayList<String>();
 					
@@ -1634,25 +1592,24 @@ public class Kernel{
 						argsIndex += 2;
 					}
 					
-					//ã‚¹ã‚¿ãƒƒã‚¯è¨­å®š
+					//ƒXƒ^ƒbƒNİ’è
 					setStack(execArgs);
 					
-					//ãƒ—ãƒ­ã‚»ã‚¹ã«ãƒã‚¤ãƒŠãƒªã‚’èª­ã¿è¾¼ã¿
+					//ƒvƒƒZƒX‚ÉƒoƒCƒiƒŠ‚ğ“Ç‚İ‚İ
 					readBinary(execTmp1);
 
-					//å®Ÿè¡Œå‰è¨­å®š
+					//Às‘Oİ’è
 					reset(flgDebugMode, flgMemoryDump, argStack);
-
 
 					if(flgExeMode) execute(0, proc[nowProcessNo].vas.textSize);
 					
 
-					//ã¨ã‚Šã‚ãˆãšã‚¨ãƒ©ãƒ¼ã«ã—ã¦ãŠãä»•æ§˜
+					//‚Æ‚è‚ ‚¦‚¸ƒGƒ‰[‚É‚µ‚Ä‚¨‚­d—l
 					cc.set(cc.n, cc.z, cc.v, false);
 
 					break;
 				case 15: //chmod
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n chmod:");
 					int chmodIndex = getMem();
 					if(flgDebugMode>0) System.out.print(" " + getFileName(chmodIndex) + " ");
@@ -1662,16 +1619,15 @@ public class Kernel{
 					
 					break;
 				case 17: //brk
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n brk:");
 					reg.set(0, 0);
 					
 					break;
 				case 18: //stat
-					
 					File statFile = getFile(getMem(),"stat");
 					
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print(" ,");
 
 					getMem();
@@ -1684,10 +1640,10 @@ public class Kernel{
 					
 					break;
 				case 19: //lseek
-					val1 = getMem(); //ã‚·ãƒ¼ã‚¯ã‚µã‚¤ã‚º
-					val2 = getMem(); //ãƒ¢ãƒ¼ãƒ‰
+					val1 = getMem(); //ƒV[ƒNƒTƒCƒY
+					val2 = getMem(); //ƒ‚[ƒh
 					
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n lseek:" + reg.get(0) + "," + val1 + "," + val2);
 					
 					//mode
@@ -1724,7 +1680,7 @@ public class Kernel{
 
 					break;
 				case 20: //getpid
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n getpid:");
 					/*
 				    String processName =
@@ -1738,17 +1694,17 @@ public class Kernel{
 
 					break;
 				case 41: //dup
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n dup:" + reg.get(0));
 					
 					reg.set(0,fd.copy(fd.search(), reg.get(0)));
 
 					break;
 				case 48: //signal
-					val1 = getMem(); //ã‚·ãƒ¼ã‚¯ã‚µã‚¤ã‚º
-					val2 = getMem(); //ãƒ¢ãƒ¼ãƒ‰
+					val1 = getMem(); //ƒV[ƒNƒTƒCƒY
+					val2 = getMem(); //ƒ‚[ƒh
 
-					//ãƒ‡ãƒãƒƒã‚°ç”¨
+					//ƒfƒoƒbƒO—p
 					if(flgDebugMode>0) System.out.print("\n signal:" + reg.get(0) + "," + val1 + "," + val2);
 
 					signal.set(val1, val2);
@@ -1774,11 +1730,11 @@ public class Kernel{
 
 				cc.set((reg.get(getOctal(opcode,3)) >> 15)>0, 
 						reg.get(getOctal(opcode,3))==0, 
-						srcObj.operand==0, //å¾Œã§æ›¸ã
+						srcObj.operand==0, //Œã‚Å‘‚­
 						srcObj.operand==0);
 				
 				break;
-			case MUL: //å¾Œã§æ›¸ã
+			case MUL: //Œã‚Å‘‚­
 				int mulR = reg.get(getOctal(opcode,3));
 				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				
@@ -1808,13 +1764,13 @@ public class Kernel{
 					reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
 				}
 				
-				cc.set((reg.get(getOctal(opcode,3)) << 1 >>> 16)>0,  //è¦èª¿æŸ»
+				cc.set((reg.get(getOctal(opcode,3)) << 1 >>> 16)>0,  //—v’²¸
 						reg.get(getOctal(opcode,3))==0, 
-						((ashReg << 16 ) >>> 31) != ((reg.get(getOctal(opcode,3)) << 16) >>> 31), //è¦èª¿æŸ»
-						false); //å¾Œã§æ›¸ã
+						((ashReg << 16 ) >>> 31) != ((reg.get(getOctal(opcode,3)) << 16) >>> 31), //—v’²¸
+						false); //Œã‚Å‘‚­
 				
 				break;
-			case ASHC: //å¾Œã§æ›¸ã
+			case ASHC: //Œã‚Å‘‚­
 				int ashcReg1 = reg.get(getOctal(opcode,3));
 				int ashcReg2 = reg.get(getOctal(opcode,3) + 1);
 				int ashcTmp = (ashcReg1 << 16) + (ashcReg2 << 16 >>> 16);
@@ -1832,10 +1788,10 @@ public class Kernel{
 					reg.set(getOctal(opcode,3)+1, ashcTmp << Math.abs(ashcInt) << 16 >>> 16);
 				}
 				
-				cc.set(tmp>0,  //è¦èª¿æŸ»
+				cc.set(tmp>0,  //—v’²¸
 						tmp==0, 
-						(ashcTmp >>> 31) != (tmp  >>> 31), //è¦èª¿æŸ»
-						false); //å¾Œã§æ›¸ã
+						(ashcTmp >>> 31) != (tmp  >>> 31), //—v’²¸
+						false); //Œã‚Å‘‚­
 				
 				break;
 			case SETD:
@@ -1846,20 +1802,20 @@ public class Kernel{
 		}
 	}
 	
-	//ãƒ•ã‚¡ã‚¤ãƒ«è¿”å´
+	//ƒtƒ@ƒCƒ‹•Ô‹p
 	File getFile(int val,String debugName){
 
-		//ãƒ‡ãƒãƒƒã‚°ç”¨
+		//ƒfƒoƒbƒO—p
 		if(flgDebugMode>0) System.out.print("\n " + debugName);
 		
-		//ãƒ•ã‚¡ã‚¤ãƒ«åè¨­å®š
+		//ƒtƒ@ƒCƒ‹–¼İ’è
 		File file = new File(getFileName(val));
 		
 		return file;
 		
 	}
 	
-	//FileNameè¿”å´
+	//FileName•Ô‹p
 	String getFileName(int val){
 		
 		StringBuffer str = new StringBuffer(""); 
@@ -1873,34 +1829,36 @@ public class Kernel{
 				break;
 			}
 		}
-		/*
 		
-		if(str.charAt(0) == '/' && str.charAt(1) == 't' && str.charAt(2) == 'm' && str.charAt(3) == 'p' && str.charAt(4) == '/'){
-			str2.append("D:\\03.workspace\\v6tmp\\");
-			str2.append(str.substring(5));
-		}else if(str.charAt(0) == '/' && str.charAt(1) == 'b' && str.charAt(2) == 'i' && str.charAt(3) == 'n' && str.charAt(4) == '/'){
-			str2.append("D:\\03.workspace\\v6root\\bin\\");
-			str2.append(str.substring(5));
-		}else if(str.charAt(0) == '/' && str.charAt(1) == 'l' && str.charAt(2) == 'i' && str.charAt(3) == 'b' && str.charAt(4) == '/'){
-			str2.append("D:\\03.workspace\\v6root\\lib\\");
-			str2.append(str.substring(5));
-		}else{
+		if(flgOsMode == 0){
+			if(str.charAt(0) == '/' && str.charAt(1) == 't' && str.charAt(2) == 'm' && str.charAt(3) == 'p' && str.charAt(4) == '/'){
+				str2.append("D:\\03.workspace\\v6tmp\\");
+				str2.append(str.substring(5));
+			}else if(str.charAt(0) == '/' && str.charAt(1) == 'b' && str.charAt(2) == 'i' && str.charAt(3) == 'n' && str.charAt(4) == '/'){
+				str2.append("D:\\03.workspace\\v6root\\bin\\");
+				str2.append(str.substring(5));
+			}else if(str.charAt(0) == '/' && str.charAt(1) == 'l' && str.charAt(2) == 'i' && str.charAt(3) == 'b' && str.charAt(4) == '/'){
+				str2.append("D:\\03.workspace\\v6root\\lib\\");
+				str2.append(str.substring(5));
+			}else{
+				str2.append(str.substring(0));
+			}
+		}
+
+		if(flgOsMode == 1){
+			if(str.charAt(0) == '/' && str.charAt(1) != 'h'){
+				str.insert(0, "/home/zer0/v6root");
+			}
 			str2.append(str.substring(0));
 		}
-		*/
-
-		if(str.charAt(0) == '/' && str.charAt(1) != 'h'){
-			str.insert(0, "/home/zer0/v6root");
-		}
-		str2.append(str.substring(0));
-
-		//ãƒ‡ãƒãƒƒã‚°ç”¨
+		
+		//ƒfƒoƒbƒO—p
 		if(flgDebugMode>0) System.out.print(" :" + str2.toString());
 		
 		return str2.toString();
 	}	
 
-	//åŠ ç®—ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼åˆ¤å®š
+	//‰ÁZƒI[ƒo[ƒtƒ[”»’è
 	boolean getAddOverflow(int src, int dst, int val){
 		boolean addV = false;
 		if((dst << 1 >>> 16) == (src << 1 >>> 16)){
@@ -1911,7 +1869,7 @@ public class Kernel{
 		return addV;
 	}
 
-	//æ¸›ç®—ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼åˆ¤å®š
+	//Œ¸ZƒI[ƒo[ƒtƒ[”»’è
 	boolean getSubOverflow(int src, int dst, int val){
 		boolean subV = false;
 		if((dst << 16 >>> 31) != (src << 16 >>> 31)){
@@ -1922,7 +1880,7 @@ public class Kernel{
 		return subV;
 	}
 
-	//åŠ ç®—ã‚­ãƒ£ãƒªãƒ¼åˆ¤å®š
+	//‰ÁZƒLƒƒƒŠ[”»’è
 	boolean getAddCarry(int src, int dst, int val){
 		boolean addC = false;
 		if(((src << 16) >>> 31) == 1){
@@ -1943,7 +1901,7 @@ public class Kernel{
 		return addC;
 	}
 	
-	//æ¸›ç®—ãƒœãƒ­ãƒ¼åˆ¤å®š
+	//Œ¸Zƒ{ƒ[”»’è
 	boolean getSubBorrow(int src, int dst, int val){
 		boolean subC = false;
 		if(((src << 16) >>> 31) == 0){
@@ -1964,12 +1922,12 @@ public class Kernel{
 		return subC;
 	}
 	
-	//8é€²æ•°ã‹ã‚‰10é€²æ•°ã«å¤‰æ›
+	//8i”‚©‚ç10i”‚É•ÏŠ·
 	int getDex(int first,int second){
 		return Integer.parseInt(Integer.toString(first * 10 + second), 8);
 	}
 		
-	//ãƒ¬ã‚¸ã‚¹ã‚¿åç§°å–å¾—
+	//ƒŒƒWƒXƒ^–¼Ìæ“¾
 	String getRegisterName(int no){
 		if(no == 7){
 			return "pc";
@@ -1980,7 +1938,7 @@ public class Kernel{
 		}
 	}
 
-	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å–å¾—ï¼ˆPC+ã‚ªãƒ•ã‚»ãƒƒãƒˆ*2 8bitï¼ˆç¬¦å·ä»˜ï¼‰ï¼‰
+	//ƒtƒB[ƒ‹ƒhæ“¾iPC+ƒIƒtƒZƒbƒg*2 8biti•„†•tjj
 	FieldDto getOffset(int first,int second,int third){
 		FieldDto operand = new FieldDto();
 		int tmp = (first << 6) + (second << 3) + third;
@@ -1993,7 +1951,7 @@ public class Kernel{
 		return operand;
 	}
 
-	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å–å¾—ï¼ˆPC-ã‚ªãƒ•ã‚»ãƒƒãƒˆ*2 6bitï¼ˆç¬¦å·ãªã—ã€æ­£ã®æ•°å€¤ï¼‰ï¼‰
+	//ƒtƒB[ƒ‹ƒhæ“¾iPC-ƒIƒtƒZƒbƒg*2 6biti•„†‚È‚µA³‚Ì”’ljj
 	FieldDto getOffset6(int first,int second){
 		FieldDto operand = new FieldDto();
 		int tmp = (first << 3) + second;
@@ -2005,7 +1963,7 @@ public class Kernel{
 		return operand;
 	}
 
-	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å–å¾—ï¼ˆ8é€²æ•° 6bitï¼‰
+	//ƒtƒB[ƒ‹ƒhæ“¾i8i” 6bitj
 	FieldDto getNormal(int first,int second,int third){
 		FieldDto operand = new FieldDto();
 		operand.setStr(String.format("%o",(first << 6) + (second << 3) + third));
@@ -2014,19 +1972,19 @@ public class Kernel{
 		return operand;
 	}
 
-	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å–å¾—ï¼ˆdst,srcï¼‰
+	//ƒtƒB[ƒ‹ƒhæ“¾idst,srcj
 	FieldDto getField(int mode, int regNo){
 		FieldDto field = getField(mode, regNo, false);
 		return field;
 	}
 
-	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å–å¾—ï¼ˆdst,srcï¼‰
+	//ƒtƒB[ƒ‹ƒhæ“¾idst,srcj
 	FieldDto getField(int mode, int regNo, boolean byteFlg){
 
-		//è¿”ã‚Šå€¤
+		//•Ô‚è’l
 		FieldDto field = new FieldDto();
 
-		//ãƒ¯ãƒ¼ã‚¯
+		//ƒ[ƒN
 		short opcodeShort;
 		int opcodeInt;
 		int tmp;
@@ -2041,8 +1999,8 @@ public class Kernel{
 		case 6:
 			switch(mode){
 			case 0:
-				//ãƒ¬ã‚¸ã‚¹ã‚¿
-				//registerã«ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚‹ã€‚
+				//ƒŒƒWƒXƒ^
+				//register‚ÉƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚éB
 				field.setStr(getRegisterName(regNo));
 				if(flgExeMode){
 					//System.out.print(" reg=" + reg.get(regNo));
@@ -2051,8 +2009,8 @@ public class Kernel{
 				}
 				break;
 			case 1:
-				//ãƒ¬ã‚¸ã‚¹ã‚¿é–“æ¥
-				//registerã«ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚ã‚‹ã€‚
+				//ƒŒƒWƒXƒ^ŠÔÚ
+				//register‚ÉƒIƒyƒ‰ƒ“ƒh‚ÌƒAƒhƒŒƒX‚ª‚ ‚éB
 				field.setStr("(" + getRegisterName(regNo) + ")");
 				if(flgExeMode){
 					if(byteFlg){
@@ -2065,8 +2023,8 @@ public class Kernel{
 				}
 				break;
 			case 2:
-				//è‡ªå‹•ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
-				//registerã«ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚ã‚Šã€å‘½ä»¤å®Ÿè¡Œå¾Œã«registerã®å†…å®¹ã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã™ã‚‹ã€‚
+				//©“®ƒCƒ“ƒNƒŠƒƒ“ƒg
+				//register‚ÉƒIƒyƒ‰ƒ“ƒh‚ÌƒAƒhƒŒƒX‚ª‚ ‚èA–½—ßÀsŒã‚Éregister‚Ì“à—e‚ğƒCƒ“ƒNƒŠƒƒ“ƒg‚·‚éB
 				field.setStr("(" + getRegisterName(regNo) + ")+");
 				if(flgExeMode){
 					if(byteFlg){
@@ -2093,8 +2051,8 @@ public class Kernel{
 				}
 				break;
 			case 3:
-				//è‡ªå‹•ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆé–“æ¥
-				//registerã«ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚ã‚Šã€å‘½ä»¤å®Ÿè¡Œå¾Œã«registerã®å†…å®¹ã‚’2ã ã‘ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã™ã‚‹ã€‚
+				//©“®ƒCƒ“ƒNƒŠƒƒ“ƒgŠÔÚ
+				//register‚ÉƒIƒyƒ‰ƒ“ƒh‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÌƒAƒhƒŒƒX‚ª‚ ‚èA–½—ßÀsŒã‚Éregister‚Ì“à—e‚ğ2‚¾‚¯ƒCƒ“ƒNƒŠƒƒ“ƒg‚·‚éB
 				field.setStr("*(" + getRegisterName(regNo) + ")+");
 				if(flgExeMode){
 					field.setOperand(getMemory2(getMemory2(reg.get(regNo))));
@@ -2104,8 +2062,8 @@ public class Kernel{
 				}
 				break;
 			case 4:
-				//è‡ªå‹•ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
-				//å‘½ä»¤å®Ÿè¡Œå‰ã«registerã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã€ãã‚Œã‚’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
+				//©“®ƒfƒNƒŠƒƒ“ƒg
+				//–½—ßÀs‘O‚Éregister‚ğƒfƒNƒŠƒƒ“ƒg‚µA‚»‚ê‚ğƒIƒyƒ‰ƒ“ƒh‚ÌƒAƒhƒŒƒX‚Æ‚µ‚Äg—p‚·‚éB
 				if(flgExeMode){
 					if(byteFlg){
 						if(regNo==6){
@@ -2124,8 +2082,8 @@ public class Kernel{
 				field.setStr("-(" + getRegisterName(regNo) + ")");
 				break;
 			case 5:
-				//è‡ªå‹•ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆé–“æ¥
-				//å‘½ä»¤å®Ÿè¡Œå‰ã«registerã‚’2ã ã‘ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã€ãã‚Œã‚’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
+				//©“®ƒfƒNƒŠƒƒ“ƒgŠÔÚ
+				//–½—ßÀs‘O‚Éregister‚ğ2‚¾‚¯ƒfƒNƒŠƒƒ“ƒg‚µA‚»‚ê‚ğƒIƒyƒ‰ƒ“ƒh‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÌƒAƒhƒŒƒX‚Æ‚µ‚Äg—p‚·‚éB
 				if(flgExeMode){
 					//reg.add(regNo,-4);
 					reg.add(regNo,-2);
@@ -2135,8 +2093,8 @@ public class Kernel{
 				field.setStr("*-(" + getRegisterName(regNo) + ")");
 				break;
 			case 6:
-				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
-				//register+XãŒã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã€‚Xã¯ã“ã®å‘½ä»¤ã«ç¶šããƒ¯ãƒ¼ãƒ‰ã€‚
+				//ƒCƒ“ƒfƒbƒNƒX
+				//register+X‚ªƒIƒyƒ‰ƒ“ƒh‚ÌƒAƒhƒŒƒXBX‚Í‚±‚Ì–½—ß‚É‘±‚­ƒ[ƒhB
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
 					field.setStr("-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(regNo) + ")");
@@ -2170,8 +2128,8 @@ public class Kernel{
 				}
 				break;
 			case 7:
-				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é–“æ¥
-				//register+XãŒã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã€‚Xã¯ã“ã®å‘½ä»¤ã«ç¶šããƒ¯ãƒ¼ãƒ‰ã€‚
+				//ƒCƒ“ƒfƒbƒNƒXŠÔÚ
+				//register+X‚ªƒIƒyƒ‰ƒ“ƒh‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÌƒAƒhƒŒƒXBX‚Í‚±‚Ì–½—ß‚É‘±‚­ƒ[ƒhB
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
 					field.setStr("*-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(regNo) + ")");
@@ -2189,8 +2147,8 @@ public class Kernel{
 		case 7:
 			switch(mode){
 			case 0:
-				//ãƒ¬ã‚¸ã‚¹ã‚¿
-				//registerã«ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚‹ã€‚
+				//ƒŒƒWƒXƒ^
+				//register‚ÉƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚éB
 				field.setStr(getRegisterName(regNo));
 				if(flgExeMode){
 					field.setOperand(reg.get(regNo));
@@ -2198,8 +2156,8 @@ public class Kernel{
 				}
 				break;
 			case 1:
-				//ãƒ¬ã‚¸ã‚¹ã‚¿é–“æ¥
-				//registerã«ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚ã‚‹ã€‚
+				//ƒŒƒWƒXƒ^ŠÔÚ
+				//register‚ÉƒIƒyƒ‰ƒ“ƒh‚ÌƒAƒhƒŒƒX‚ª‚ ‚éB
 				field.setStr("(" + getRegisterName(regNo) + ")");
 				if(flgExeMode){
 					if(byteFlg){
@@ -2212,8 +2170,8 @@ public class Kernel{
 				}
 				break;			
 			case 2:
-				//ã‚¤ãƒŸãƒ‡ã‚£ã‚¨ãƒ¼ãƒˆ
-				//ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯å‘½ä»¤å†…ã«ã‚ã‚‹ã€‚
+				//ƒCƒ~ƒfƒBƒG[ƒg
+				//ƒIƒyƒ‰ƒ“ƒh‚Í–½—ß“à‚É‚ ‚éB
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
 					field.setStr("$" + "-" + String.format("%o",~(opcodeShort - 1)));
@@ -2225,8 +2183,8 @@ public class Kernel{
 				}
 				break;
 			case 3:
-				//çµ¶å¯¾
-				//ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®çµ¶å¯¾ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒå‘½ä»¤å†…ã«ã‚ã‚‹ã€‚
+				//â‘Î
+				//ƒIƒyƒ‰ƒ“ƒh‚Ìâ‘ÎƒAƒhƒŒƒX‚ª–½—ß“à‚É‚ ‚éB
 				opcodeShort = (short)getMem();
 				if(opcodeShort < 0){
 					field.setStr("*$" + "-" + String.format("%o",~(opcodeShort - 1)));
@@ -2234,13 +2192,13 @@ public class Kernel{
 					field.setStr("*$" + String.format("%o",opcodeShort));
 				}
 				if(flgExeMode){
-					field.setOperand((int)opcodeShort); //æœªæ¤œè¨¼
+					field.setOperand((int)opcodeShort); //–¢ŒŸØ
 					field.setAddress((int)opcodeShort);
 				}
 				break;
 			case 4:
-				//è‡ªå‹•ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
-				//å‘½ä»¤å®Ÿè¡Œå‰ã«registerã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã€ãã‚Œã‚’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
+				//©“®ƒfƒNƒŠƒƒ“ƒg
+				//–½—ßÀs‘O‚Éregister‚ğƒfƒNƒŠƒƒ“ƒg‚µA‚»‚ê‚ğƒIƒyƒ‰ƒ“ƒh‚ÌƒAƒhƒŒƒX‚Æ‚µ‚Äg—p‚·‚éB
 				if(flgExeMode){
 					if(byteFlg){
 						reg.add(regNo,-2);
@@ -2256,8 +2214,8 @@ public class Kernel{
 				field.setStr("-(" + getRegisterName(regNo) + ")");
 				break;
 			case 5:
-				//è‡ªå‹•ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆé–“æ¥
-				//å‘½ä»¤å®Ÿè¡Œå‰ã«registerã‚’2ã ã‘ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã€ãã‚Œã‚’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
+				//©“®ƒfƒNƒŠƒƒ“ƒgŠÔÚ
+				//–½—ßÀs‘O‚Éregister‚ğ2‚¾‚¯ƒfƒNƒŠƒƒ“ƒg‚µA‚»‚ê‚ğƒIƒyƒ‰ƒ“ƒh‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÌƒAƒhƒŒƒX‚Æ‚µ‚Äg—p‚·‚éB
 				if(flgExeMode){
 					reg.add(regNo,-4);
 					field.setOperand(getMemory2(getMemory2(reg.get(regNo))));
@@ -2266,8 +2224,8 @@ public class Kernel{
 				field.setStr("*-(" + getRegisterName(regNo) + ")");
 				break;
 			case 6:
-				//ç›¸å¯¾
-				//å‘½ä»¤ã«ç¶šããƒ¯ãƒ¼ãƒ‰ã®å†…å®¹ a ã‚’ PC+2 ã«åŠ ç®—ã—ãŸã‚‚ã®ã‚’ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
+				//‘Š‘Î
+				//–½—ß‚É‘±‚­ƒ[ƒh‚Ì“à—e a ‚ğ PC+2 ‚É‰ÁZ‚µ‚½‚à‚Ì‚ğƒAƒhƒŒƒX‚Æ‚µ‚Äg—p‚·‚éB
 				opcodeShort = (short)getMem();
 				tmp = opcodeShort + reg.get(7);
 				
@@ -2278,14 +2236,14 @@ public class Kernel{
 				}
 				break;
 			case 7:
-				//ç›¸å¯¾é–“æ¥
-				//å‘½ä»¤ã«ç¶šããƒ¯ãƒ¼ãƒ‰ã®å†…å®¹ a ã‚’ PC+2 ã«åŠ ç®—ã—ãŸã‚‚ã®ã‚’ã‚¢ãƒ‰ãƒ¬ã‚¹ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
+				//‘Š‘ÎŠÔÚ
+				//–½—ß‚É‘±‚­ƒ[ƒh‚Ì“à—e a ‚ğ PC+2 ‚É‰ÁZ‚µ‚½‚à‚Ì‚ğƒAƒhƒŒƒX‚ÌƒAƒhƒŒƒX‚Æ‚µ‚Äg—p‚·‚éB
 				opcodeInt = (int)getMem() << 16 >>> 16;
 				
 				tmp = opcodeInt + reg.get(7);
 
 				field.setStr("*$0x" + String.format("%02x",(tmp)));
-				field.setOperand(getMemory2(tmp)); //æœªæ¤œè¨¼
+				field.setOperand(getMemory2(tmp)); //–¢ŒŸØ
 				field.setAddress(getMemory2(tmp));
 				break;
 			}
@@ -2294,7 +2252,7 @@ public class Kernel{
 		return field;
 	}
 
-	//ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯å–å¾—
+	//ƒj[ƒ‚ƒjƒbƒNæ“¾
 	Mnemonic getMnemonic(int opcode){
 		Mnemonic mnemonic = null;
 
@@ -2590,7 +2548,7 @@ public class Kernel{
 		return mnemonic;
 	}
 
-	//ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ»ãƒ•ãƒ©ã‚°ã®å‡ºåŠ›
+	//ƒŒƒWƒXƒ^Eƒtƒ‰ƒO‚Ìo—Í
 	void printDebug(){
 		System.out.print("\n");
 
@@ -2631,7 +2589,7 @@ public class Kernel{
 		System.out.print(":");
 	}
 
-	//ãƒ¡ãƒ¢ãƒªãƒ€ãƒ³ãƒ—ã®å‡ºåŠ›
+	//ƒƒ‚ƒŠƒ_ƒ“ƒv‚Ìo—Í
 	void printMemory(){
 		System.out.print("\n--memory-start-------------");
 		for(int m=0x14d0;m<0x14ef;m=m+2){

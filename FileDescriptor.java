@@ -6,7 +6,7 @@ import java.nio.file.Path;
 public class FileDescriptor{
 	BlockFile inode[];
 	
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆåˆæœŸåŒ–ï¼‰
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^i‰Šú‰»j
 	FileDescriptor(){
 		inode = new BlockFile[16];
 		inode[0] = new BlockFile(System.in,true,false,false,false);
@@ -21,7 +21,7 @@ public class FileDescriptor{
 		return no;
 	}
 	
-	//ç¨®é¡ã‚’å–å¾—
+	//í—Ş‚ğæ“¾
 	boolean isStdin(int no){
 		return inode[no].stdin;
 	}
@@ -86,7 +86,7 @@ public class FileDescriptor{
 }
 
 /*
- * ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ©ã‚¹
+ * ƒtƒ@ƒCƒ‹ƒNƒ‰ƒX
  */
 class BlockFile{
 	Object inode;
@@ -97,7 +97,7 @@ class BlockFile{
 	boolean stderror;
 	boolean file;
 	
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆåˆæœŸåŒ–ï¼‰
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^i‰Šú‰»j
 	BlockFile(Object input,boolean in,boolean out,boolean error,boolean fl){
 		inode = input;
 		offset = 0;

@@ -3,18 +3,18 @@ package pdp11;
 
 public class VirtualAddressSpace implements Cloneable{
 
-	//ä»®æƒ³ãƒ¡ãƒ¢ãƒª
+	//‰¼‘zƒƒ‚ƒŠ
 	byte[] mem;
-	//ãƒ¡ãƒ¢ãƒªã‚µã‚¤ã‚º
+	//ƒƒ‚ƒŠƒTƒCƒY
 	int memorySize = 65536;
 
-	//é ˜åŸŸã®å¤§ãã•
+	//—Ìˆæ‚Ì‘å‚«‚³
 	int headerSize = 16;
 	int textSize;
 	int dataSize;
 	int bssSize;
 
-	//ãƒã‚¸ãƒƒã‚¯ãƒŠãƒ³ãƒãƒ¼
+	//ƒ}ƒWƒbƒNƒiƒ“ƒo[
 	int magicNo;
 	
 	public Object clone() {
@@ -36,35 +36,35 @@ public class VirtualAddressSpace implements Cloneable{
 	}
 
 	
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	VirtualAddressSpace(byte[] bf){
 
-		//ãƒã‚¸ãƒƒã‚¯ãƒŠãƒ³ãƒãƒ¼ã‚’å–å¾—
+		//ƒ}ƒWƒbƒNƒiƒ“ƒo[‚ğæ“¾
 		magicNo = ((int)bf[1] & 0xFF)|(((int)bf[2] & 0xFF) << 8);
 
-		//ã‚µã‚¤ã‚ºã‚’å–å¾—
+		//ƒTƒCƒY‚ğæ“¾
 		textSize = ((int)bf[2] & 0xFF)|(((int)bf[3] & 0xFF) << 8);
 		dataSize = ((int)bf[4] & 0xFF)|(((int)bf[5] & 0xFF) << 8);
 		bssSize = ((int)bf[6] & 0xFF)|(((int)bf[7] & 0xFF) << 8);
 
-		//ãƒ¡ãƒ¢ãƒªåˆæœŸåŒ–
+		//ƒƒ‚ƒŠ‰Šú‰»
 		mem = new byte[memorySize];
 		int i;
 		int cnt = 0;
 
-		//ãƒ†ã‚­ã‚¹ãƒˆé ˜åŸŸèª­ã¿è¾¼ã¿
+		//ƒeƒLƒXƒg—Ìˆæ“Ç‚İ‚İ
 		for(i=headerSize;i<headerSize+textSize;i++){
 			mem[cnt] = bf[i];
 			cnt++;
 		}
 
-		//ãƒ‡ãƒ¼ã‚¿é ˜åŸŸèª­ã¿è¾¼ã¿
+		//ƒf[ƒ^—Ìˆæ“Ç‚İ‚İ
 		for(;i<headerSize+textSize+dataSize;i++){
 			mem[cnt] = bf[i];
 			cnt++;
 		}
 
-		//ãã®ä»–ã®ãƒ¡ãƒ¢ãƒªåˆæœŸåŒ–
+		//‚»‚Ì‘¼‚Ìƒƒ‚ƒŠ‰Šú‰»
 		for(;cnt<memorySize;cnt++){
 			mem[cnt] = 0;
 		}
@@ -75,23 +75,23 @@ public class VirtualAddressSpace implements Cloneable{
 		// TODO Auto-generated constructor stub
 	}
 
-	//2ãƒã‚¤ãƒˆå˜ä½ã§ãƒªãƒˆãƒ«ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³ã‚’åè»¢ã—ã¦10é€²æ•°ã§å–å¾—
+	//2ƒoƒCƒg’PˆÊ‚ÅƒŠƒgƒ‹ƒGƒ“ƒfƒBƒAƒ“‚ğ”½“]‚µ‚Ä10i”‚Åæ“¾
 	int getMemory2(int start){
 		return (int) ((int)(mem[start]) & 0xFF)|( (int)((mem[start+1] & 0xFF) << 8));
 	}
 
-	//1ãƒã‚¤ãƒˆå˜ä½ã§æŒ‡å®šç®‡æ‰€ã®ãƒ¡ãƒ¢ãƒªã‚’å–å¾—
+	//1ƒoƒCƒg’PˆÊ‚Åw’è‰ÓŠ‚Ìƒƒ‚ƒŠ‚ğæ“¾
 	int getMemory1(int start){
 		return mem[start];
 	}
 
-	//2ãƒã‚¤ãƒˆå˜ä½ã§æŒ‡å®šç®‡æ‰€ã®ãƒ¡ãƒ¢ãƒªã‚’æ›´æ–°
+	//2ƒoƒCƒg’PˆÊ‚Åw’è‰ÓŠ‚Ìƒƒ‚ƒŠ‚ğXV
 	void setMemory2(int add,int src){
 		mem[add] = (byte)src;
 		mem[add+1] = (byte)(src >> 8);
 	}
 
-	//1ãƒã‚¤ãƒˆå˜ä½ã§æŒ‡å®šç®‡æ‰€ã®ãƒ¡ãƒ¢ãƒªã‚’æ›´æ–°
+	//1ƒoƒCƒg’PˆÊ‚Åw’è‰ÓŠ‚Ìƒƒ‚ƒŠ‚ğXV
 	void setMemory1(int add,int src){
 		mem[add] = (byte)src;
 	}

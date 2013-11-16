@@ -1,14 +1,14 @@
 package pdp11;
 
 /*
- * ãƒ¬ã‚¸ã‚¹ã‚¿ã‚¯ãƒ©ã‚¹
- * R1-R5:æ±ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
- * R6:ã‚¹ã‚¿ãƒƒã‚¯ãƒã‚¤ãƒ³ã‚¿SP
- * R7:ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚«ã‚¦ãƒ³ã‚¿PC
+ * ƒŒƒWƒXƒ^ƒNƒ‰ƒX
+ * R1-R5:”Ä—pƒŒƒWƒXƒ^
+ * R6:ƒXƒ^ƒbƒNƒ|ƒCƒ“ƒ^SP
+ * R7:ƒvƒƒOƒ‰ƒ€ƒJƒEƒ“ƒ^PC
  */
 public class Register implements Cloneable{
 
-	//ãƒ¬ã‚¸ã‚¹ã‚¿
+	//ƒŒƒWƒXƒ^
 	int[] reg;
 
 	public Object clone() {
@@ -30,13 +30,13 @@ public class Register implements Cloneable{
 	*/
 	
 	
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆåˆæœŸåŒ–ï¼‰
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^i‰Šú‰»j
 	Register(){
 		reg = new int[8];
 		reset();
 	}
 
-	//ãƒ¬ã‚¸ã‚¹ã‚¿åˆæœŸåŒ–
+	//ƒŒƒWƒXƒ^‰Šú‰»
 	void reset(){
 		reg[0] = 0;
 		reg[1] = 0;
@@ -44,16 +44,16 @@ public class Register implements Cloneable{
 		reg[3] = 0;
 		reg[4] = 0;
 		reg[5] = 0;
-		reg[6] = 65536; //spã¯æœ€å¾Œå°¾ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡ã™
+		reg[6] = 65536; //sp‚ÍÅŒã”ö‚ÌƒAƒhƒŒƒX‚ğw‚·
 		reg[7] = 0;
 	}
 
-	//ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’ä¸Šæ›¸ã
+	//ƒŒƒWƒXƒ^‚ğã‘‚«
 	void set(int regNo,int val){
 		reg[regNo] = val;
 	}
 
-	//ãƒ¬ã‚¸ã‚¹ã‚¿ã«åŠ ç®—
+	//ƒŒƒWƒXƒ^‚É‰ÁZ
 	void add(int regNo,int val){
 		if(reg[regNo]+val > 0xffff){
 			reg[regNo] = (reg[regNo]+val) << 16 >>> 16;
@@ -62,7 +62,7 @@ public class Register implements Cloneable{
 		}
 	}
 
-	//ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’å–å¾—
+	//ƒŒƒWƒXƒ^‚ğæ“¾
 	int get(int regNo){
 		return reg[regNo];
 	}
@@ -71,11 +71,11 @@ public class Register implements Cloneable{
 
 
 /*
- * ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰ã‚¯ãƒ©ã‚¹
- * Z:ã‚¼ãƒ­ã®å ´åˆ
- * N:è² ã®å ´åˆ
- * C:MSB(æœ€ä¸Šä½ãƒ“ãƒƒãƒˆ)ã‹ã‚‰ã‚­ãƒ£ãƒªãŒç™ºç”Ÿã€MSB/LSB(æœ€ä¸‹ä½ãƒ“ãƒƒãƒˆ)ã‹ã‚‰1ãŒã‚·ãƒ•ãƒˆã•ã‚ŒãŸå ´åˆ
- * V:ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ãŒç™ºç”Ÿã—ãŸå ´åˆ
+ * ƒRƒ“ƒfƒBƒVƒ‡ƒ“ƒR[ƒhƒNƒ‰ƒX
+ * Z:ƒ[ƒ‚Ìê‡
+ * N:•‰‚Ìê‡
+ * C:MSB(ÅãˆÊƒrƒbƒg)‚©‚çƒLƒƒƒŠ‚ª”­¶AMSB/LSB(Å‰ºˆÊƒrƒbƒg)‚©‚ç1‚ªƒVƒtƒg‚³‚ê‚½ê‡
+ * V:ƒI[ƒo[ƒtƒ[‚ª”­¶‚µ‚½ê‡
  */
 class ConditionCode{
 
@@ -84,12 +84,12 @@ class ConditionCode{
 	boolean v;
 	boolean c;
 
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆåˆæœŸåŒ–ï¼‰
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^i‰Šú‰»j
 	ConditionCode(){
 		reset();
 	}
 
-	//ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰åˆæœŸåŒ–
+	//ƒRƒ“ƒfƒBƒVƒ‡ƒ“ƒR[ƒh‰Šú‰»
 	void reset(){
 		n = false;
 		z = false;
@@ -97,7 +97,7 @@ class ConditionCode{
 		c = false;
 	}
 	
-	//ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰è¨­å®š
+	//ƒRƒ“ƒfƒBƒVƒ‡ƒ“ƒR[ƒhİ’è
 	void set(boolean boolN,boolean boolZ,boolean boolV,boolean boolC){
 		n= boolN;
 		z= boolZ;

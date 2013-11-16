@@ -15,6 +15,7 @@ public class Pdp11{
 		boolean flgDismMode = false;
 		boolean flgExeMode = false;
 		boolean flgMemoryDump = false;
+		int flgOsMode = 0;
 
 		//オプション設定
 		int i = 0;
@@ -34,6 +35,10 @@ public class Pdp11{
 			if(args[i].equals("-m")){
 				flgMemoryDump = true;
 			}
+			//Linuxモード
+			if(args[i].equals("-l")){
+				flgOsMode = 1;
+			}
 			//逆アセンブルモード
 			if(args[i].equals("-d")){
 				flgDismMode = true;
@@ -52,18 +57,12 @@ public class Pdp11{
 		}
 		
 		//カーネル作成
-		Kernel kernel = new Kernel(MAX_PROCESS,flgDebugMode, flgDismMode, flgExeMode, flgMemoryDump);
+		Kernel kernel = new Kernel(MAX_PROCESS,flgDebugMode, flgDismMode, flgExeMode, flgMemoryDump, flgOsMode);
 		
 		//実行
 		kernel.start(args,i);
 
 	}
-	
-	
-	/*
-	 * 解釈
-	 */
-	
 	
 }
 

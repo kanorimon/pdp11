@@ -2,16 +2,16 @@ package pdp11;
 
 public class Process implements Cloneable{
 	
-	//ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ç©ºé–“
+	//‰¼‘zƒAƒhƒŒƒX‹óŠÔ
 	VirtualAddressSpace vas;
 	
-	//ãƒ—ãƒ­ã‚»ã‚¹ID
+	//ƒvƒƒZƒXID
 	int pid;
 	
-	//å­ãƒ—ãƒ­ã‚»ã‚¹ãƒ•ãƒ©ã‚°
+	//qƒvƒƒZƒXƒtƒ‰ƒO
 	boolean flgChildProcess;
 	
-	//waitæ™‚ã®Register
+	//wait‚ÌRegister
 	int r0;
 	int r1;
 	int r2;
@@ -21,22 +21,22 @@ public class Process implements Cloneable{
 	int r6;
 	int r7;
 	
-	//è¦ªã®ãƒ—ãƒ­ã‚»ã‚¹ID
+	//e‚ÌƒvƒƒZƒXID
 	int parentPid;
 	
-	//å­ã®ãƒ—ãƒ­ã‚»ã‚¹ID
+	//q‚ÌƒvƒƒZƒXID
 	int childPid;
 	int childExitNo;
 	
 	
-	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	Process(int processNo, boolean inFlgChildProcess){
 		vas = new VirtualAddressSpace();
 		
-		//ãƒ—ãƒ­ã‚»ã‚¹IDåˆæœŸåŒ–
+		//ƒvƒƒZƒXID‰Šú‰»
 		pid = processNo;
 		
-		//å­ãƒ—ãƒ­ã‚»ã‚¹ãƒ•ãƒ©ã‚°
+		//qƒvƒƒZƒXƒtƒ‰ƒO
 		flgChildProcess = inFlgChildProcess;
 	}
 
