@@ -61,7 +61,7 @@ public class VirtualAddressSpace implements Cloneable{
 	}
 
 	public VirtualAddressSpace() {
-		// TODO Auto-generated constructor stub
+		// TODO
 	}
 
 	//2バイト単位でリトルエンディアンを反転して10進数で取得

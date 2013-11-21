@@ -436,6 +436,11 @@ public class Kernel{
 				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
+			case COM:
+				mnemonic = "com";
+				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
 			case DEC:
 				mnemonic = "dec";
 				srcOperand = "";
@@ -942,6 +947,17 @@ public class Kernel{
 						getSubBorrow(srcObj.operand << 24 >>> 24, dstObj.operand << 24 >>> 24, tmp));
 
 				break;
+			case COM:
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, ~dstObj.operand);
+				}else{
+					setMemory2(dstObj.address, ~dstObj.operand);
+				}
+				
+				cc.set(((~dstObj.operand)<<16>>>31)>0, ((~dstObj.operand)<<16>>>16)==0, false, true);
+				
+				break;
 			case DEC:
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				
@@ -1384,12 +1400,16 @@ public class Kernel{
 							for(i=0;i<fd.getOffset(reg.get(0));i++) writeByte[i] = beforeByte[i];
 						}
 
+						int writeCnt = 0;
 						for(i=fd.getOffset(reg.get(0));i<fd.getOffset(reg.get(0))+val2;i++){
 					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
 							val1++;
+							writeCnt++;
 						}
 						
 						for(i=fd.getOffset(reg.get(0))+val2;i<beforeByte.length;i++) writeByte[i] = beforeByte[i];
+						
+						fd.setOffset(reg.get(0),writeCnt);
 						
 				        try {
 							java.nio.file.Files.write(fileName, writeByte);
@@ -1483,6 +1503,8 @@ public class Kernel{
 				case 11: //exec
 					if(flgDebugMode>0) System.out.print("\n exec");
 
+					System.exit(0);
+					
 					String execTmp1 = getFileName(getMem());
 					int argsIndex = getMem();
 					ArrayList<String> execArgs = new ArrayList<String>();
@@ -1609,6 +1631,8 @@ public class Kernel{
 				cc.set((dstObj.operand << 1 >>> 15)>0, (dstObj.operand << 24 >>> 24)==0, false, false);
 				break;
 			case WORD:
+				System.out.println("not case");
+				System.exit(0);
 				break;
 			}
 		}
@@ -1649,6 +1673,9 @@ public class Kernel{
 			}else if(str.charAt(0) == '/' && str.charAt(1) == 'l' && str.charAt(2) == 'i' && str.charAt(3) == 'b' && str.charAt(4) == '/'){
 				str2.append("D:\\03.workspace\\v6root\\lib\\");
 				str2.append(str.substring(5));
+			}else if(str.charAt(0) == '.' && str.charAt(1) == '.' && str.charAt(2) == '/'){
+				str2.append("D:\\03.workspace\\kernel_cmp\\v6root\\usr\\sys\\");
+				str2.append(str.substring(3));
 			}else{
 				str2.append(str.substring(0));
 			}
@@ -1999,7 +2026,7 @@ public class Kernel{
 				tmp = opcodeInt + reg.get(7);
 
 				field.setStr("*$0x" + String.format("%02x",(tmp)));
-				field.setOperand(getMemory2(tmp)); //TODO
+				field.setOperand(getMemory2(getMemory2(tmp))); //TODO
 				field.setAddress(getMemory2(tmp));
 				break;
 			}
@@ -2115,6 +2142,9 @@ public class Kernel{
 					switch(getOctal(opcode,3)){
 					case 0:
 						mnemonic = Mnemonic.CLR;
+						break;
+					case 1:
+						mnemonic = Mnemonic.COM;
 						break;
 					case 2:
 						mnemonic = Mnemonic.INC;
@@ -2321,6 +2351,8 @@ public class Kernel{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
+		//System.out.print(" " + String.format("%04x",getMemory2(0x19b0)));
+		//System.out.print(" " + String.format("%04x",getMemory2(0x29ca)));
 		System.out.print(" ");
 
 		if(cc.z){
