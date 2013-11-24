@@ -1,7 +1,9 @@
 package pdp11;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -560,6 +562,11 @@ public class Kernel{
 			case TSTB:
 				mnemonic = "tstb";
 				srcOperand = "";
+				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				break;
+			case XOR:
+				mnemonic = "xor";
+				srcOperand = String.valueOf(reg.get(getOctal(opcode,3)));
 				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
 				break;
 			case WORD:
@@ -1370,7 +1377,7 @@ public class Kernel{
 					val1 = getMem(); //書き込み元データ位置
 					val2 = getMem(); //書き込みサイズ
 
-					if(flgDebugMode>0) System.out.print("\n write:" + reg.get(0) + "," + val1 + "," + val2);
+					if(flgDebugMode>0) System.out.print("\n write:" + reg.get(0) + "," + val1 + "," + val2 + "," + reg.get(0) + "," + fd.getOffset(reg.get(0)));
 
 					int i = 0;
 					if(fd.isFile(reg.get(0))){
@@ -1378,46 +1385,32 @@ public class Kernel{
 						BlockFile outFile = (BlockFile) fd.get(reg.get(0)); 
 				        File file = new File(outFile.inode.toString());
 				        
-						//ファイル名設定
-						Path fileName = file.toPath();
-						
-						//ファイル内容取得
-						byte[] beforeByte = null;
-						try {
-							beforeByte = java.nio.file.Files.readAllBytes(fileName);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-
-						int writeSize = beforeByte.length;
-						if(beforeByte.length < fd.getOffset(reg.get(0)) + val2)	writeSize =  fd.getOffset(reg.get(0)) + val2;
-						byte[] writeByte = new byte[writeSize];
-
-						if(beforeByte.length < fd.getOffset(reg.get(0))){
-							for(i=0;i<beforeByte.length;i++) writeByte[i] = beforeByte[i];
-							for(i=beforeByte.length;i<fd.getOffset(reg.get(0));i++) writeByte[i] = 0;
-						}else{
-							for(i=0;i<fd.getOffset(reg.get(0));i++) writeByte[i] = beforeByte[i];
-						}
-
-						int writeCnt = 0;
-						for(i=fd.getOffset(reg.get(0));i<fd.getOffset(reg.get(0))+val2;i++){
+				        //書き込み内容取得
+						byte[] writeByte = new byte[val2];
+				        for(i=0;i<val2;i++){
 					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
+					        //System.out.print(String.format("%02x", getMemory1(val1) << 24 >>> 24));
 							val1++;
-							writeCnt++;
 						}
-						
-						for(i=fd.getOffset(reg.get(0))+val2;i<beforeByte.length;i++) writeByte[i] = beforeByte[i];
-						
-						fd.setOffset(reg.get(0),writeCnt);
-						
+				        
+				        //ランダムアクセスファイル取得
+				        RandomAccessFile raf;
 				        try {
-							java.nio.file.Files.write(fileName, writeByte);
+							raf = new RandomAccessFile(file, "rw");
+					        raf.seek(fd.getOffset(reg.get(0)));
+					        raf.write(writeByte);
+					        raf.close();
+					        
+					        fd.setOffset(reg.get(0),fd.getOffset(reg.get(0)) + writeByte.length);
+					        
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						} 
-						
+						}
+ 						
 					}else{
 						for(i=0;i<val2;i++){
 							printChar(getMemory1(val1));
@@ -1503,7 +1496,7 @@ public class Kernel{
 				case 11: //exec
 					if(flgDebugMode>0) System.out.print("\n exec");
 
-					System.exit(0);
+					//System.exit(0);
 					
 					String execTmp1 = getFileName(getMem());
 					int argsIndex = getMem();
@@ -1630,8 +1623,17 @@ public class Kernel{
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
 				cc.set((dstObj.operand << 1 >>> 15)>0, (dstObj.operand << 24 >>> 24)==0, false, false);
 				break;
+			case XOR:
+				int srcreg = reg.get(getOctal(opcode,3));
+				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				tmp = srcreg^(dstObj.operand);
+				setMemory2(dstObj.address,tmp);
+				cc.set((tmp << 16 >>> 31)>0, (tmp << 16 >>> 16)==0, false, cc.c);
+				break;
 			case WORD:
+				System.out.print("\n");
 				System.out.println("not case");
+				System.out.println(getMemory2(reg.get(7)-2));
 				System.exit(0);
 				break;
 			}
@@ -2215,6 +2217,9 @@ public class Kernel{
 					break;
 				case 3:
 					mnemonic = Mnemonic.ASHC;
+					break;
+				case 4:
+					mnemonic = Mnemonic.XOR;
 					break;
 				case 7:
 					mnemonic = Mnemonic.SOB;

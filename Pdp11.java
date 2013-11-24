@@ -62,6 +62,7 @@ enum Mnemonic {
 	NEG, 
 	SETD, SEV, SOB, SUB, SWAB, SXT, SYS, 
 	TST, TSTB,
+	XOR,
 	WORD
 };
 
