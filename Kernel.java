@@ -1201,13 +1201,13 @@ public class Kernel{
 				if(dstObj.operand << 31 >>> 31 == 0) cc.c = false;
 				
 				if(dstObj.flgRegister){
-					tmp = (rortmp << 15) + (reg.get(dstObj.register) >> 1);
+					tmp = (rortmp << 15) + (reg.get(dstObj.register) << 16 >>> 16 >> 1);
 					reg.set(dstObj.register, tmp);
 				}else if(dstObj.flgAddress){
-					tmp =  (rortmp << 15) + (getMemory2(dstObj.address) >> 1);
+					tmp =  (rortmp << 15) + (getMemory2(dstObj.address) << 16 >>> 16 >> 1);
 					setMemory2(dstObj.address, tmp);
 				}else{
-					tmp =  (rortmp << 15) + (dstObj.operand >> 1);
+					tmp =  (rortmp << 15) + (dstObj.operand << 16 >>> 16 >> 1);
 					setMemory2(dstObj.address, tmp);
 				}
 
@@ -1314,7 +1314,14 @@ public class Kernel{
 							reg.set(5,proc[nowProcessNo].r5);
 							reg.set(6,proc[nowProcessNo].r6);
 							reg.set(7,proc[nowProcessNo].r7+2);
-							
+
+							/*
+							if(flgDebugMode>0) System.out.println("callPID=" + nowProcessNo);
+							if(flgDebugMode>0) System.out.print(" PID=" + proc[nowProcessNo].pid);
+							if(flgDebugMode>0) System.out.print(" childPID=" + proc[nowProcessNo].childPid);
+							if(flgDebugMode>0) System.out.print(" parentPID=" + proc[nowProcessNo].parentPid);
+							*/
+
 							if(flgExeMode) execute(0, proc[nowProcessNo].vas.textSize,false,true);
 						}
 					}else{
@@ -1323,7 +1330,7 @@ public class Kernel{
 					break;
 				case 2: //fork
 					if(flgDebugMode>0) System.out.println("\n fork:");
-
+					
 					//仮想メモリを退避
 					proc[nowProcessNo].r0 = reg.get(0);
 					proc[nowProcessNo].r1 = reg.get(1);
@@ -1334,7 +1341,14 @@ public class Kernel{
 					proc[nowProcessNo].r6 = reg.get(6);
 					proc[nowProcessNo].r7 = reg.get(7);
 					proc[nowProcessNo].childPid = nowProcessNo+1;
-					
+
+					/*
+					if(flgDebugMode>0) System.out.println("nowPID=" + nowProcessNo);
+					if(flgDebugMode>0) System.out.print(" PID=" + proc[nowProcessNo].pid);
+					if(flgDebugMode>0) System.out.print(" childPID=" + proc[nowProcessNo].childPid);
+					if(flgDebugMode>0) System.out.print(" parentPID=" + proc[nowProcessNo].parentPid);
+					*/
+
 					proc[nowProcessNo+1] = (Process) proc[nowProcessNo].clone();
 
 					nowProcessNo++;
@@ -1345,6 +1359,13 @@ public class Kernel{
 					proc[nowProcessNo].flgChildProcess = true;
 					proc[nowProcessNo].pid = nowProcessNo;
 					proc[nowProcessNo].parentPid = nowProcessNo-1;
+
+					/*
+					if(flgDebugMode>0) System.out.println(" nowPID=" + nowProcessNo);
+					if(flgDebugMode>0) System.out.print(" PID=" + proc[nowProcessNo].pid);
+					if(flgDebugMode>0) System.out.print(" childPID=" + proc[nowProcessNo].childPid);
+					if(flgDebugMode>0) System.out.print(" parentPID=" + proc[nowProcessNo].parentPid);
+					*/
 					
 					//実行
 					if(flgExeMode) execute(0, proc[nowProcessNo].vas.textSize,false,true);
@@ -1355,20 +1376,33 @@ public class Kernel{
 					val2 = getMem();  //読み込みサイズ
 					
 					if(flgDebugMode>0) System.out.print("\n read:" + reg.get(0) + "," + val1 + "," + val2);
-					
-					if(fd.getSize(reg.get(0)) < fd.getOffset(reg.get(0))+1){
-						reg.set(0,0);
-					}else{
-						int i;
-						for(i=0;i<val2;i++){
-							if(fd.getSize(reg.get(0)) < fd.getOffset(reg.get(0))+1){
-								break;
-							}
-							setMemory1(val1, fd.readByte(reg.get(0)));
-							val1++;
+
+					BlockFile inBlockFile = (BlockFile) fd.get(reg.get(0)); 
+			        File infile = new File(inBlockFile.inode.toString());
+
+			        //ランダムアクセスファイル取得
+			        RandomAccessFile inraf;
+			        try {
+			        	inraf = new RandomAccessFile(infile, "r");
+			        	inraf.seek(fd.getOffset(reg.get(0)));
+
+						if(inraf.length() < fd.getOffset(reg.get(0))+1){
+							reg.set(0,0);
+						}else{
+							int inSize = inraf.read(proc[nowProcessNo].vas.mem, val1, val2);
+							fd.setOffset(reg.get(0),fd.getOffset(reg.get(0))+inSize);
+							reg.set(0,inSize);
 						}
-						reg.set(0,i);
+						inraf.close();
+			        
+			        } catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					
 					
 					cc.set(cc.n, cc.z, cc.v, false);
 					
@@ -1422,12 +1456,14 @@ public class Kernel{
 					break;
 				case 5: //open
 					File openFile = getFile(getMem(),"open");
+					getMem();
 					
 					if(openFile.isFile()){
 						reg.set(0,fd.open(fd.search(), openFile.toPath()));
 						cc.set(cc.n, cc.z, cc.v, false);
 						
 					}else{
+						reg.set(0,0);
 						cc.set(cc.n, cc.z, cc.v, true);
 					}
 					
@@ -1494,7 +1530,7 @@ public class Kernel{
 					
 					break;
 				case 11: //exec
-					if(flgDebugMode>0) System.out.print("\n exec");
+					if(flgDebugMode>0) System.out.print("\n exec:");
 
 					//System.exit(0);
 					
@@ -1512,6 +1548,13 @@ public class Kernel{
 					readBinary(execTmp1); //プロセスにバイナリを読み込み
 					setExecute(flgDebugMode, flgMemoryDump, argStack); //実行前設定
 
+					/*
+					if(flgDebugMode>0) System.out.print("execPID=" + nowProcessNo);
+					if(flgDebugMode>0) System.out.print(" PID=" + proc[nowProcessNo].pid);
+					if(flgDebugMode>0) System.out.print(" childPID=" + proc[nowProcessNo].childPid);
+					if(flgDebugMode>0) System.out.print(" parentPID=" + proc[nowProcessNo].parentPid);
+					*/
+					
 					if(flgExeMode) execute(0, proc[nowProcessNo].vas.textSize);
 
 					//TODO エラー発生しない体
@@ -1537,10 +1580,21 @@ public class Kernel{
 					
 					if(flgDebugMode>0) System.out.print(" ");
 
-					getMem();
+					int writeMem = getMem();
 					
 					if(statFile.isFile()){
-						
+					    setMemory2(writeMem,0); /* ファイルがあるデバイスの ID */
+					    setMemory2(writeMem+2,0); /* inode 番号 */
+					    setMemory2(writeMem+4,0xb6); /* アクセス保護 */
+					    setMemory2(writeMem+6,0); /* ハードリンクの数 */
+					    setMemory2(writeMem+7,0); /* 所有者のユーザ ID */
+					    setMemory2(writeMem+8,0); /* 所有者のグループ ID */
+					    setMemory2(writeMem+9,0);  /* 全体のサイズ (バイト単位) */
+					    setMemory2(writeMem+10,(int)statFile.length()); /* 全体のサイズ (バイト単位)  */
+					    setMemory2(writeMem+28,0); /* 最終アクセス時刻 */
+					    setMemory2(writeMem+30,0); /* 最終アクセス時刻 */
+					    setMemory2(writeMem+32,0); /* 最終修正時刻 */ 
+					    setMemory2(writeMem+34,0); /* 最終修正時刻 */
 					}else{
 						cc.set(cc.n, cc.z, cc.v, true);
 					}
@@ -1611,6 +1665,7 @@ public class Kernel{
 
 					signal.set(val1, val2);
 					reg.set(0,0);
+					cc.set(cc.n,cc.z,cc.v,false);
 
 					break;
 				}
@@ -2356,8 +2411,11 @@ public class Kernel{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
-		//System.out.print(" " + String.format("%04x",getMemory2(0x19b0)));
-		//System.out.print(" " + String.format("%04x",getMemory2(0x29ca)));
+		/*
+		System.out.print(" " + String.format("%04x",getMemory1(0xffe2)));
+		System.out.print(" " + String.format("%04x",getMemory1(0xffe3)));
+		*/
+		//System.out.print(" " + String.format("%04x",getMemory2(0x2026)));
 		System.out.print(" ");
 
 		if(cc.z){
