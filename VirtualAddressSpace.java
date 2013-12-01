@@ -29,7 +29,7 @@ public class VirtualAddressSpace implements Cloneable{
 	VirtualAddressSpace(byte[] bf){
 
 		//マジックナンバーを取得
-		magicNo = ((int)bf[1] & 0xFF)|(((int)bf[2] & 0xFF) << 8);
+		magicNo = ((int)bf[0] & 0xFF)|(((int)bf[1] & 0xFF) << 8);
 
 		//サイズを取得
 		textSize = ((int)bf[2] & 0xFF)|(((int)bf[3] & 0xFF) << 8);
@@ -40,11 +40,20 @@ public class VirtualAddressSpace implements Cloneable{
 		mem = new byte[memorySize];
 		int i;
 		int cnt = 0;
-
+		
 		//テキスト領域読み込み
 		for(i=headerSize;i<headerSize+textSize;i++){
 			mem[cnt] = bf[i];
 			cnt++;
+		}
+		
+		//マジックナンバー410対応
+		if(magicNo==0x108){
+			while(true){
+				if(cnt%0x2000==0) break;
+				mem[cnt] = 0;
+				cnt++;
+			}
 		}
 
 		//データ領域読み込み

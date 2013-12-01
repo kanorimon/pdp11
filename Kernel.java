@@ -1588,8 +1588,9 @@ public class Kernel{
 					    setMemory2(writeMem+6,0); /* ハードリンクの数 */
 					    setMemory2(writeMem+7,0); /* 所有者のユーザ ID */
 					    setMemory2(writeMem+8,0); /* 所有者のグループ ID */
-					    setMemory2(writeMem+9,0);  /* 全体のサイズ (バイト単位) */
-					    setMemory2(writeMem+10,(int)statFile.length()); /* 全体のサイズ (バイト単位)  */
+					    setMemory1(writeMem+9,(int)statFile.length() >> 16);  /* 全体のサイズ (バイト単位) */
+					    setMemory2(writeMem+10,(int)statFile.length() << 16 >>> 16); /* 全体のサイズ (バイト単位)  */
+					    setMemory2(writeMem+12,0); /* アドレス */
 					    setMemory2(writeMem+28,0); /* 最終アクセス時刻 */
 					    setMemory2(writeMem+30,0); /* 最終アクセス時刻 */
 					    setMemory2(writeMem+32,0); /* 最終修正時刻 */ 
@@ -1681,7 +1682,13 @@ public class Kernel{
 				int srcreg = reg.get(getOctal(opcode,3));
 				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
 				tmp = srcreg^(dstObj.operand);
-				setMemory2(dstObj.address,tmp);
+				
+				if(dstObj.flgRegister){
+					reg.set(dstObj.register, tmp);
+				}else if(dstObj.flgAddress){
+					setMemory2(dstObj.address, tmp);
+				}
+				
 				cc.set((tmp << 16 >>> 31)>0, (tmp << 16 >>> 16)==0, false, cc.c);
 				break;
 			case WORD:
