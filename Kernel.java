@@ -667,26 +667,25 @@ public class Kernel{
 
 				break;
 			case ASH: 
-				int ashReg = reg.get(getOctal(opcode,3));
-				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				int ashInt = srcObj.operand << 26 >>> 26;
-				boolean ashccc = false;
-				if(ashInt < 0){
-					ashReg = ashReg << 16 >> 16;
-					reg.set(getOctal(opcode,3), ashReg >> Math.abs(ashInt));
-					reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
-					if((ashReg >> Math.abs(ashInt+1)) << 31 >> 31 == 1) ashccc = true;
-				}else if(ashInt > 0){
-					reg.set(getOctal(opcode,3), ashReg << ashInt);
-					reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
-					if((ashReg << Math.abs(ashInt-1)) << 16 >> 31 == 1) ashccc = true;
-				}
-				
-				cc.set((reg.get(getOctal(opcode,3)) << 16 >>> 31)>0, //TODO
-						reg.get(getOctal(opcode,3))==0, 
-						((ashReg << 16 ) >>> 31) != ((reg.get(getOctal(opcode,3)) << 16) >>> 31), //TODO
-						ashccc); //TODO
-				
+                int ashReg = reg.get(getOctal(opcode,3));
+                srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+                int ashInt = srcObj.operand << 26;
+                ashInt = ashInt >> 26;
+                if(ashInt < 0){
+                        ashReg = ashReg << 16;
+                        ashReg = ashReg >> 16;
+                        reg.set(getOctal(opcode,3), ashReg >> Math.abs(ashInt));
+                        reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
+                }else{
+                        reg.set(getOctal(opcode,3), ashReg << ashInt);
+                        reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
+                }
+                
+                cc.set((reg.get(getOctal(opcode,3)) << 1 >>> 16)>0, //TODO
+                                reg.get(getOctal(opcode,3))==0, 
+                                ((ashReg << 16 ) >>> 31) != ((reg.get(getOctal(opcode,3)) << 16) >>> 31), //TODO
+                                false); //TODO
+                
 				break;
 			case ASHC: //TODO
 				int ashcReg1 = reg.get(getOctal(opcode,3));
@@ -1216,7 +1215,6 @@ public class Kernel{
 
 				break;
 			case RTT:
-				break;
 			case SETD:
 				break;
 			case SEV:
@@ -1404,7 +1402,6 @@ public class Kernel{
 						e.printStackTrace();
 					}
 					
-					
 					cc.set(cc.n, cc.z, cc.v, false);
 					
 					break;
@@ -1534,7 +1531,7 @@ public class Kernel{
 				case 11: //exec
 					if(flgDebugMode>0) System.out.print("\n exec:");
 
-					System.exit(0);
+					//System.exit(0);
 					
 					String execTmp1 = getFileName(getMem());
 					int argsIndex = getMem();
