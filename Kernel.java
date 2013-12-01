@@ -669,22 +669,23 @@ public class Kernel{
 			case ASH: 
 				int ashReg = reg.get(getOctal(opcode,3));
 				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				int ashInt = srcObj.operand << 26;
-				ashInt = ashInt >> 26;
+				int ashInt = srcObj.operand << 26 >>> 26;
+				boolean ashccc = false;
 				if(ashInt < 0){
-					ashReg = ashReg << 16;
-					ashReg = ashReg >> 16;
+					ashReg = ashReg << 16 >> 16;
 					reg.set(getOctal(opcode,3), ashReg >> Math.abs(ashInt));
 					reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
-				}else{
+					if((ashReg >> Math.abs(ashInt+1)) << 31 >> 31 == 1) ashccc = true;
+				}else if(ashInt > 0){
 					reg.set(getOctal(opcode,3), ashReg << ashInt);
 					reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
+					if((ashReg << Math.abs(ashInt-1)) << 16 >> 31 == 1) ashccc = true;
 				}
 				
-				cc.set((reg.get(getOctal(opcode,3)) << 1 >>> 16)>0, //TODO
+				cc.set((reg.get(getOctal(opcode,3)) << 16 >>> 31)>0, //TODO
 						reg.get(getOctal(opcode,3))==0, 
 						((ashReg << 16 ) >>> 31) != ((reg.get(getOctal(opcode,3)) << 16) >>> 31), //TODO
-						false); //TODO
+						ashccc); //TODO
 				
 				break;
 			case ASHC: //TODO
@@ -1423,6 +1424,7 @@ public class Kernel{
 						byte[] writeByte = new byte[val2];
 				        for(i=0;i<val2;i++){
 					        writeByte[i] = (byte) (getMemory1(val1) << 24 >>> 24);
+					        //if(i%16==0) System.out.print("\n");
 					        //System.out.print(String.format("%02x", getMemory1(val1) << 24 >>> 24));
 							val1++;
 						}
@@ -1532,7 +1534,7 @@ public class Kernel{
 				case 11: //exec
 					if(flgDebugMode>0) System.out.print("\n exec:");
 
-					//System.exit(0);
+					System.exit(0);
 					
 					String execTmp1 = getFileName(getMem());
 					int argsIndex = getMem();
@@ -2411,10 +2413,10 @@ public class Kernel{
 		System.out.print(" " + String.format("%04x",reg.get(5) << 16 >>> 16));
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
-		/*
-		System.out.print(" " + String.format("%04x",getMemory1(0xffe2)));
-		System.out.print(" " + String.format("%04x",getMemory1(0xffe3)));
-		*/
+		
+		System.out.print(" " + String.format("%04x",getMemory2(0x1646)));
+		//System.out.print(" " + String.format("%04x",getMemory2(0x11b0)));
+		
 		//System.out.print(" " + String.format("%04x",getMemory2(0x2026)));
 		System.out.print(" ");
 
