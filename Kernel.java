@@ -1376,30 +1376,52 @@ public class Kernel{
 					
 					if(flgDebugMode>0) System.out.print("\n read:" + reg.get(0) + "," + val1 + "," + val2);
 
-					BlockFile inBlockFile = (BlockFile) fd.get(reg.get(0)); 
-			        File infile = new File(inBlockFile.inode.toString());
+					if(fd.isFile(reg.get(0))){
+						BlockFile inBlockFile = (BlockFile) fd.get(reg.get(0)); 
+						File infile = new File(inBlockFile.inode.toString());
 
-			        //ランダムアクセスファイル取得
-			        RandomAccessFile inraf;
-			        try {
-			        	inraf = new RandomAccessFile(infile, "r");
-			        	inraf.seek(fd.getOffset(reg.get(0)));
+						//ランダムアクセスファイル取得
+						RandomAccessFile inraf;
+						try {
+							inraf = new RandomAccessFile(infile, "r");
+			        		inraf.seek(fd.getOffset(reg.get(0)));
 
-						if(inraf.length() < fd.getOffset(reg.get(0))+1){
-							reg.set(0,0);
-						}else{
-							int inSize = inraf.read(proc[nowProcessNo].vas.mem, val1, val2);
-							fd.setOffset(reg.get(0),fd.getOffset(reg.get(0))+inSize);
-							reg.set(0,inSize);
-						}
-						inraf.close();
+			        		if(inraf.length() < fd.getOffset(reg.get(0))+1){
+			        			reg.set(0,0);
+			        		}else{
+			        			int inSize = inraf.read(proc[nowProcessNo].vas.mem, val1, val2);
+			        			fd.setOffset(reg.get(0),fd.getOffset(reg.get(0))+inSize);
+			        			reg.set(0,inSize);
+			        		}
+			        		inraf.close();
 			        
-			        } catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}else{
+
+						for(int i=0;i<val2;i++){
+					        int c;
+					        try {
+					        	int inSize = 0;
+								while ((c = System.in.read()) != -1){
+									if(c != 0x0d && c != 0x20){
+										setMemory1(val1,c);
+										val1++;
+										inSize++;
+										break;
+									}
+								}
+			        			reg.set(0,inSize);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
 					}
 					
 					cc.set(cc.n, cc.z, cc.v, false);
@@ -2418,7 +2440,7 @@ public class Kernel{
 		System.out.print(" " + String.format("%04x",reg.get(6) << 16 >>> 16));
 
 		
-		System.out.print(" " + String.format("%04x",getMemory2(0x1646)));
+		System.out.print(" " + String.format("%04x",getMemory2(0xff5e)));
 		//System.out.print(" " + String.format("%04x",getMemory2(0x11b0)));
 		
 		//System.out.print(" " + String.format("%04x",getMemory2(0x2026)));
