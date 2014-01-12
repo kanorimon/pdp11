@@ -3,7 +3,7 @@ package pdp11;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.RandomAccessFile; 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -187,12 +187,6 @@ public class Kernel{
 		proc[nowProcessNo].vas = new VirtualAddressSpace(bf);
 	}
 	
-	//8進数に変換した命令の任意の箇所を取得
-	int getOctal(int dec,int index){
-		int val = Integer.parseInt(String.format("%06o",dec).substring(index, index+1));
-		return val;
-	}
-
 	//ASCIIコードに変換したデータを表示
 	void printChar(int dec){
 		System.out.print((char)Integer.parseInt(String.format("%02x",dec),16));
@@ -271,6 +265,9 @@ public class Kernel{
 
 		reg.reset(); //レジスタ初期化
 
+		FieldDto dstObj = new FieldDto();
+		FieldDto srcObj = new FieldDto();
+		
 		//逆アセンブル
 		for(reg.set(7, start);reg.get(7)<end;){
 
@@ -291,227 +288,227 @@ public class Kernel{
 			case ADC:
 				mnemonic = "adc";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case ADD:
 				mnemonic = "add";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case ASH:
 				mnemonic = "ash";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = getRegisterName(getOctal(opcode,3));
+				srcOperand = getField(srcObj,(opcode >> 3) & 7,opcode  & 7).str;
+				dstOperand = getRegisterName((opcode >> 6) & 7);
 				break;
 			case ASHC:
 				mnemonic = "ashc";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = getRegisterName(getOctal(opcode,3));
+				srcOperand = getField(srcObj,(opcode >> 3) & 7,opcode  & 7).str;
+				dstOperand = getRegisterName((opcode >> 6) & 7);
 				break;
 			case ASL:
 				mnemonic = "asl";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case ASR:
 				mnemonic = "asr";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BCC:
 				mnemonic = "bcc";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BCS:
 				mnemonic = "bcs";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BEQ:
 				mnemonic = "beq";
-				srcOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				dstOperand = "";
 				break;
 			case BGE:
 				mnemonic = "bge";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BGT:
 				mnemonic = "bgt";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BHI:
 				mnemonic = "bhi";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BIC:
 				mnemonic = "bic";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BICB:
 				mnemonic = "bicb";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BIS:
 				mnemonic = "bis";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BISB:
 				mnemonic = "bisb";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BIT:
 				mnemonic = "bit";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BITB:
 				mnemonic = "bitb";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BLE:
 				mnemonic = "ble";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BLOS:
 				mnemonic = "blos";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BLT:
 				mnemonic = "blt";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BMI:
 				mnemonic = "bmi";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BNE:
 				mnemonic = "bne";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BPL:
 				mnemonic = "bpl";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BR:
 				mnemonic = "br";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case BVS:
 				mnemonic = "bvs";
 				srcOperand = "";
-				dstOperand = getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case CLR:
 				mnemonic = "clr";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case CLRB:
 				mnemonic = "clrb";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case CMP:
 				mnemonic = "cmp";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case CMPB:
 				mnemonic = "cmpb";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case COM:
 				mnemonic = "com";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case DEC:
 				mnemonic = "dec";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case DECB:
 				mnemonic = "decb";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case DIV:
 				mnemonic = "div";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = getRegisterName(getOctal(opcode,3));
+				srcOperand = getField(srcObj,(opcode >> 3) & 7,opcode  & 7).str;
+				dstOperand = getRegisterName((opcode >> 6) & 7);
 				break;
 			case INC:
 				mnemonic = "inc";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case INCB:
 				mnemonic = "incb";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case JMP:
 				mnemonic = "jmp";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case JSR:
 				mnemonic = "jsr";
-				srcOperand = getRegisterName(getOctal(opcode,3));
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getRegisterName((opcode >> 6) & 7);
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case MOV:
 				mnemonic = "mov";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case MOVB:
 				mnemonic = "movb";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case MUL:
 				mnemonic = "mul";
-				srcOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
-				dstOperand = getRegisterName(getOctal(opcode,3));
+				srcOperand = getField(srcObj,(opcode >> 3) & 7,opcode  & 7).str;
+				dstOperand = getRegisterName((opcode >> 6) & 7);
 				break;
 			case NEG:
 				mnemonic = "neg";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case ROL:
 				mnemonic = "rol";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case ROR:
 				mnemonic = "ror";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case RTS:
 				mnemonic = "rts";
 				srcOperand = "";
-				dstOperand = getRegisterName(getOctal(opcode,5));
+				dstOperand = getRegisterName(opcode  & 7);
 				break;
 			case RTT:
 				mnemonic = "rtt";
@@ -530,49 +527,49 @@ public class Kernel{
 				break;
 			case SOB:
 				mnemonic = "sob";
-				srcOperand = getRegisterName(getOctal(opcode,3));
-				dstOperand = getOffset6(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getRegisterName((opcode >> 6) & 7);
+				dstOperand = getOffset6(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case SUB:
 				mnemonic = "sub";
-				srcOperand = getField(getOctal(opcode,2),getOctal(opcode,3)).str;
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case SWAB:
 				mnemonic = "swab";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case SXT:
 				mnemonic = "sxt";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case SYS:
-				if(getDex(getOctal(opcode,4),getOctal(opcode,5)) == 0) getMem();
+				if(getDex((opcode >> 3) & 7,opcode  & 7) == 0) getMem();
 				mnemonic = "sys";
 				srcOperand = "";
-				dstOperand = String.valueOf(getOctal(opcode,5));
+				dstOperand = String.valueOf(opcode  & 7);
 				break;
 			case TST:
 				mnemonic = "tst";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case TSTB:
 				mnemonic = "tstb";
 				srcOperand = "";
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case XOR:
 				mnemonic = "xor";
-				srcOperand = String.valueOf(reg.get(getOctal(opcode,3)));
-				dstOperand = getField(getOctal(opcode,4),getOctal(opcode,5)).str;
+				srcOperand = String.valueOf(reg.get((opcode >> 6) & 7));
+				dstOperand = getField(dstObj,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			case WORD:
 				mnemonic = ".word";
 				srcOperand = "";
-				dstOperand = getNormal(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).str;
+				dstOperand = getNormal(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).str;
 				break;
 			}
 
@@ -612,13 +609,14 @@ public class Kernel{
 		if(!forkFlg) reg.set(7,start); //PCを初期化
 		if(!endFlg) end = 65536;
 
+		FieldDto srcObj = new FieldDto();
+		FieldDto dstObj = new FieldDto();
+
 		for(;reg.get(7)<end;){
 			if(flgDebugMode>1) printDebug(); //レジスタ・フラグ出力
 			if(flgMemoryDump) printMemory(); //メモリダンプ出力
 
 			//ワーク
-			FieldDto srcObj;
-			FieldDto dstObj;
 			int tmp = 0;
 			
 			int opcode = getMem(); //命令取得
@@ -626,7 +624,7 @@ public class Kernel{
 			
 			switch(nic){
 			case ADC:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				getField(dstObj,(opcode >> 3) & 7,opcode & 7);
 				
 				int adctmp = 0;
 				if(cc.c) adctmp = 1;
@@ -650,8 +648,8 @@ public class Kernel{
 				
 				break;
 			case ADD:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = srcObj.operand + dstObj.operand;
 				
 				if(dstObj.flgRegister){
@@ -667,42 +665,42 @@ public class Kernel{
 
 				break;
 			case ASH: 
-                int ashReg = reg.get(getOctal(opcode,3));
-                srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+                int ashReg = reg.get((opcode >> 6) & 7);
+                srcObj = getField(srcObj,(opcode >> 3) & 7,opcode  & 7);
                 int ashInt = srcObj.operand << 26;
                 ashInt = ashInt >> 26;
                 if(ashInt < 0){
                         ashReg = ashReg << 16;
                         ashReg = ashReg >> 16;
-                        reg.set(getOctal(opcode,3), ashReg >> Math.abs(ashInt));
-                        reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
+                        reg.set((opcode >> 6) & 7, ashReg >> Math.abs(ashInt));
+                        reg.set((opcode >> 6) & 7, (reg.get((opcode >> 6) & 7) << 16) >>> 16);
                 }else{
-                        reg.set(getOctal(opcode,3), ashReg << ashInt);
-                        reg.set(getOctal(opcode,3), (reg.get(getOctal(opcode,3)) << 16) >>> 16);
+                        reg.set((opcode >> 6) & 7, ashReg << ashInt);
+                        reg.set((opcode >> 6) & 7, (reg.get((opcode >> 6) & 7) << 16) >>> 16);
                 }
                 
-                cc.set((reg.get(getOctal(opcode,3)) << 1 >>> 16)>0, //TODO
-                                reg.get(getOctal(opcode,3))==0, 
-                                ((ashReg << 16 ) >>> 31) != ((reg.get(getOctal(opcode,3)) << 16) >>> 31), //TODO
+                cc.set((reg.get((opcode >> 6) & 7) << 1 >>> 16)>0, //TODO
+                                reg.get((opcode >> 6) & 7)==0, 
+                                ((ashReg << 16 ) >>> 31) != ((reg.get((opcode >> 6) & 7) << 16) >>> 31), //TODO
                                 false); //TODO
                 
 				break;
 			case ASHC: //TODO
-				int ashcReg1 = reg.get(getOctal(opcode,3));
-				int ashcReg2 = reg.get(getOctal(opcode,3) + 1);
+				int ashcReg1 = reg.get((opcode >> 6) & 7);
+				int ashcReg2 = reg.get(((opcode >> 6) & 7) + 1);
 				int ashcTmp = (ashcReg1 << 16) + (ashcReg2 << 16 >>> 16);
 				
-				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 3) & 7,opcode  & 7);
 				int ashcInt = srcObj.operand << 26 >> 26;
 			
 				if(ashcInt < 0){
 					tmp = ashcTmp >> Math.abs(ashcInt);
-					reg.set(getOctal(opcode,3), ashcTmp >> Math.abs(ashcInt) >>> 16);
-					reg.set(getOctal(opcode,3)+1, ashcTmp >> Math.abs(ashcInt) << 16 >>> 16);
+					reg.set((opcode >> 6) & 7, ashcTmp >> Math.abs(ashcInt) >>> 16);
+					reg.set(((opcode >> 6) & 7)+1, ashcTmp >> Math.abs(ashcInt) << 16 >>> 16);
 				}else{
 					tmp = ashcTmp << Math.abs(ashcInt);
-					reg.set(getOctal(opcode,3), ashcTmp << Math.abs(ashcInt) >>> 16);
-					reg.set(getOctal(opcode,3)+1, ashcTmp << Math.abs(ashcInt) << 16 >>> 16);
+					reg.set((opcode >> 6) & 7, ashcTmp << Math.abs(ashcInt) >>> 16);
+					reg.set(((opcode >> 6) & 7)+1, ashcTmp << Math.abs(ashcInt) << 16 >>> 16);
 				}
 				
 				cc.set(tmp>0, //TODO
@@ -712,7 +710,7 @@ public class Kernel{
 				
 				break;
 			case ASL:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = dstObj.operand << 1;
 				
 				if(dstObj.flgRegister){
@@ -726,7 +724,7 @@ public class Kernel{
 
 				break;
 			case ASR:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = dstObj.operand << 16 >> 16;
 				tmp = tmp >> 1;
 				
@@ -741,26 +739,26 @@ public class Kernel{
 
 				break;
 			case BCC:
-				if(cc.c == false) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.c == false) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BCS:
-				if(cc.c == true) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.c == true) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BEQ:
-				if(cc.z == true) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == true) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BGE:
-				if(cc.n == cc.v) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.n == cc.v) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BGT:
-				if(cc.z == false && cc.n == cc.v) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == false && cc.n == cc.v) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BHI:
-				if(cc.c == false && cc.z == false) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.c == false && cc.z == false) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BIC:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 
 				tmp = ~(srcObj.operand) & dstObj.operand;
 
@@ -774,8 +772,8 @@ public class Kernel{
 
 				break;
 			case BICB:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3),true);
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),true);
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7,true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7,true);
 
 				tmp = ~(srcObj.operand) & dstObj.operand;
 
@@ -789,8 +787,8 @@ public class Kernel{
 
 				break;
 			case BIS:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
@@ -826,8 +824,8 @@ public class Kernel{
 
 				break;
 			case BISB:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
@@ -863,8 +861,8 @@ public class Kernel{
 
 				break;
 			case BIT:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = srcObj.operand & dstObj.operand;
 				
 				cc.set(false, //TODO 
@@ -874,8 +872,8 @@ public class Kernel{
 
 				break;
 			case BITB:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = srcObj.operand & dstObj.operand;
 				tmp = tmp << 24 >>> 24;
 				
@@ -886,31 +884,31 @@ public class Kernel{
 
 				break;
 			case BLE:
-				if(cc.z == true || cc.n != cc.v) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == true || cc.n != cc.v) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BLOS:
-				if(cc.c == true || cc.z == true) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.c == true || cc.z == true) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BLT:
-				if(cc.n != cc.v) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.n != cc.v) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BMI:
-				if(cc.n == true) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.n == true) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BNE:
-				if(cc.z == false) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.z == false) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BPL:
-				if(cc.n == false) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.n == false) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BR:
-				reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case BVS:
-				if(cc.v == true) reg.set(7,getOffset(getOctal(opcode,3),getOctal(opcode,4),getOctal(opcode,5)).address);
+				if(cc.v == true) reg.set(7,getOffset(dstObj,(opcode >> 6) & 7,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case CLR:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, 0);
 				}else{
@@ -921,7 +919,7 @@ public class Kernel{
 				
 				break;
 			case CLRB:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7, true);
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, 0);
 				}else{
@@ -932,8 +930,8 @@ public class Kernel{
 				
 				break;
 			case CMP:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = (srcObj.operand << 16 >>> 16) - (dstObj.operand << 16 >>> 16);
 				
 				cc.set((tmp << 16 >>> 31)>0, 
@@ -943,8 +941,8 @@ public class Kernel{
 
 				break;
 			case CMPB:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3), true);
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7, true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7, true);
 
 				tmp = (srcObj.operand << 24 >>> 24) - (dstObj.operand << 24 >>> 24);
 				
@@ -955,7 +953,7 @@ public class Kernel{
 
 				break;
 			case COM:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				if(dstObj.flgRegister){
 					reg.set(dstObj.register, ~dstObj.operand);
 				}else{
@@ -966,7 +964,7 @@ public class Kernel{
 				
 				break;
 			case DEC:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) - 1;
@@ -983,7 +981,7 @@ public class Kernel{
 				
 				break;
 			case DECB:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7, true);
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) - 1;
 					reg.set(dstObj.register, tmp);
@@ -999,24 +997,24 @@ public class Kernel{
 				
 				break;
 			case DIV: 
-				int divR1 = reg.get(getOctal(opcode,3)) << 16;
-				int divR2 = reg.get(getOctal(opcode,3)+1);
+				int divR1 = reg.get((opcode >> 6) & 7) << 16;
+				int divR2 = reg.get(((opcode >> 6) & 7)+1);
 				
 				int divValue = divR1 + divR2;
 				
-				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 3) & 7,opcode & 7);
 				
-				reg.set(getOctal(opcode,3), divValue / srcObj.operand);
-				reg.set(getOctal(opcode,3)+1, divValue % srcObj.operand);
+				reg.set((opcode >> 6) & 7, divValue / srcObj.operand);
+				reg.set(((opcode >> 6) & 7)+1, divValue % srcObj.operand);
 
-				cc.set((reg.get(getOctal(opcode,3)) >> 15)>0, 
-						reg.get(getOctal(opcode,3))==0, 
+				cc.set((reg.get((opcode >> 6) & 7) >> 15)>0, 
+						reg.get((opcode >> 6) & 7)==0, 
 						srcObj.operand==0, //TODO
 						srcObj.operand==0);
 				
 				break;
 			case INC:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) + 1;
 					reg.set(dstObj.register, tmp);
@@ -1032,7 +1030,7 @@ public class Kernel{
 
 				break;
 			case INCB:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5),true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7,true);
 				if(dstObj.flgRegister){
 					tmp = reg.get(dstObj.register) + 1;
 					reg.set(dstObj.register, tmp);
@@ -1048,7 +1046,7 @@ public class Kernel{
 
 				break;
 			case JMP:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 
 				if(dstObj.flgRegister){
 					reg.set(7,reg.get(dstObj.register));
@@ -1062,17 +1060,17 @@ public class Kernel{
 
 				break;
 			case JSR:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
-				pushStack(reg.get(getOctal(opcode,3)));
-				reg.set(getOctal(opcode,3),reg.get(7));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
+				pushStack(reg.get((opcode >> 6) & 7));
+				reg.set((opcode >> 6) & 7,reg.get(7));
 				reg.set(7, dstObj.address);
 
 				cc.set(cc.n, cc.z, cc.v, cc.c);
 
 				break;
 			case MOV:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
@@ -1098,8 +1096,8 @@ public class Kernel{
 
 				break;
 			case MOVB:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3), true);
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7, true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7, true);
 				
 				if(srcObj.flgRegister){
 					if(dstObj.flgRegister){
@@ -1137,14 +1135,14 @@ public class Kernel{
 				
 				break;
 			case MUL: //TODO
-				int mulR = reg.get(getOctal(opcode,3));
-				srcObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				int mulR = reg.get((opcode >> 6) & 7);
+				srcObj = getField(srcObj,(opcode >> 3) & 7,opcode  & 7);
 				
-				if(getOctal(opcode,3)%2 ==0){
-					reg.set(getOctal(opcode,3), (mulR * srcObj.operand >> 16) << 16);
-					reg.set(getOctal(opcode,3)+1, (mulR * srcObj.operand << 16) >>> 16);
+				if(((opcode >> 6) & 7) %2 ==0){
+					reg.set((opcode >> 6) & 7, (mulR * srcObj.operand >> 16) << 16);
+					reg.set(((opcode >> 6) & 7)+1, (mulR * srcObj.operand << 16) >>> 16);
 				}else{
-					reg.set(getOctal(opcode,3), (mulR * srcObj.operand << 16) >>> 16);
+					reg.set((opcode >> 6) & 7, (mulR * srcObj.operand << 16) >>> 16);
 				}
 				cc.set((mulR * srcObj.operand  >>> 15)>0, 
 						mulR * srcObj.operand==0, 
@@ -1152,7 +1150,7 @@ public class Kernel{
 						false);
 				break;
 			case NEG:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = (~(dstObj.operand << 16) >>> 16) + 1;
 				
 				if(dstObj.flgRegister){
@@ -1165,15 +1163,15 @@ public class Kernel{
 
 				break;
 			case RTS:
-				reg.set(7,reg.get(getOctal(opcode,5)));
-				reg.set(getOctal(opcode,5),getMemory2(reg.get(6)));
+				reg.set(7,reg.get(opcode  & 7));
+				reg.set(opcode  & 7,getMemory2(reg.get(6)));
 				reg.add(6,2);
 				
 				cc.set(cc.n, cc.z, cc.v, cc.c);
 
 				break;
 			case ROL:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				int roltmp = 0;
 				if(cc.c) roltmp = 1;
 				if(dstObj.operand << 16 >>> 31 == 1) cc.c = true;
@@ -1194,7 +1192,7 @@ public class Kernel{
 
 				break;
 			case ROR:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				int rortmp = 0;
 				if(cc.c) rortmp = 1;
 				if(dstObj.operand << 31 >>> 31 == 1) cc.c = true;
@@ -1221,13 +1219,13 @@ public class Kernel{
 				cc.set(cc.n, cc.z, true, cc.c);
 				break;
 			case SOB:
-				short tmpShort = (short)(reg.get(getOctal(opcode,3)) - 1);
-				reg.set(getOctal(opcode,3),((reg.get(getOctal(opcode,3)) - 1) << 16) >>> 16);
-				if(tmpShort != 0) reg.set(7,getOffset6(getOctal(opcode,4),getOctal(opcode,5)).address);
+				short tmpShort = (short)(reg.get((opcode >> 6) & 7) - 1);
+				reg.set((opcode >> 6) & 7,((reg.get((opcode >> 6) & 7) - 1) << 16) >>> 16);
+				if(tmpShort != 0) reg.set(7,getOffset6(dstObj,(opcode >> 3) & 7,opcode  & 7).address);
 				break;
 			case SUB:
-				srcObj = getField(getOctal(opcode,2),getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				srcObj = getField(srcObj,(opcode >> 9) & 7,(opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 
 				tmp = (dstObj.operand - srcObj.operand);
 				tmp = tmp << 16 >>> 16;
@@ -1246,7 +1244,7 @@ public class Kernel{
 	
 				break;
 			case SWAB:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				
 				tmp = (dstObj.operand << 16 >>> 24 ) + (dstObj.operand << 24 >>> 16);
 
@@ -1261,7 +1259,7 @@ public class Kernel{
 
 				break;
 			case SXT:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				if(cc.n == true){
 					if(dstObj.flgRegister){
 						reg.set(dstObj.register, 0xffff);
@@ -1287,7 +1285,7 @@ public class Kernel{
 				int val1;
 				int val2;
 
-				switch(getDex(getOctal(opcode,4),getOctal(opcode,5))){
+				switch(getDex((opcode >> 3) & 7,opcode  & 7)){
 				case 0: //systemcall
 					int sub = getMem();
 					tmp = reg.get(7);
@@ -1693,16 +1691,16 @@ public class Kernel{
 				}
 				break;
 			case TST:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				cc.set((dstObj.operand << 16 >>> 31)>0, (dstObj.operand << 16 >>> 16)==0, false, false);
 				break;
 			case TSTB:
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5), true);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7, true);
 				cc.set((dstObj.operand << 1 >>> 15)>0, (dstObj.operand << 24 >>> 24)==0, false, false);
 				break;
 			case XOR:
-				int srcreg = reg.get(getOctal(opcode,3));
-				dstObj = getField(getOctal(opcode,4),getOctal(opcode,5));
+				int srcreg = reg.get((opcode >> 6) & 7);
+				dstObj = getField(dstObj,(opcode >> 3) & 7,opcode  & 7);
 				tmp = srcreg^(dstObj.operand);
 				
 				if(dstObj.flgRegister){
@@ -1835,48 +1833,48 @@ public class Kernel{
 	/*フィールド関数------------------------------------------*/
 	
 	//フィールド取得（PC+オフセット*2 8bit（符号付））
-	FieldDto getOffset(int first,int second,int third){
-		FieldDto operand = new FieldDto();
+	FieldDto getOffset(FieldDto operand,int first,int second,int third){
+		operand.reset();
 		int tmp = (first << 6) + (second << 3) + third;
 		byte tmpByte = (byte)tmp;
 		tmp = reg.get(7) + tmpByte * 2;
 		
-		operand.setStr("0x" + String.format("%x",tmp));
+		if(!flgExeMode) operand.setStr("0x" + String.format("%x",tmp));
 		operand.setAddress(tmp);
 
 		return operand;
 	}
 
 	//フィールド取得（PC-オフセット*2 6bit（符号なし、正の数値））
-	FieldDto getOffset6(int first,int second){
-		FieldDto operand = new FieldDto();
+	FieldDto getOffset6(FieldDto operand,int first,int second){
+		operand.reset();
 		int tmp = (first << 3) + second;
 		tmp = reg.get(7) - tmp * 2;
 
-		operand.setStr("0x" + String.format("%x",tmp));
+		if(!flgExeMode) operand.setStr("0x" + String.format("%x",tmp));
 		operand.setAddress(tmp);
 
 		return operand;
 	}
 
 	//フィールド取得（8進数 6bit）
-	FieldDto getNormal(int first,int second,int third){
-		FieldDto operand = new FieldDto();
-		operand.setStr(String.format("%o",(first << 6) + (second << 3) + third));
+	FieldDto getNormal(FieldDto operand,int first,int second,int third){
+		operand.reset();
+		if(!flgExeMode) operand.setStr(String.format("%o",(first << 6) + (second << 3) + third));
 		operand.setAddress(((first << 3) + second) * 2 + reg.get(7));
 
 		return operand;
 	}
 
 	//フィールド取得（dst,src）
-	FieldDto getField(int mode, int regNo){
-		return getField(mode, regNo, false);
+	FieldDto getField(FieldDto field,int mode, int regNo){
+		return getField(field, mode, regNo, false);
 	}
 
 	//フィールド取得（dst,src）
-	FieldDto getField(int mode, int regNo, boolean byteFlg){
-		FieldDto field = new FieldDto(); //返り値
-
+	FieldDto getField(FieldDto field,int mode, int regNo, boolean byteFlg){
+		field.reset();
+		
 		//ワーク
 		short opcodeShort;
 		int opcodeInt;
@@ -1894,16 +1892,16 @@ public class Kernel{
 			case 0:
 				//レジスタ
 				//registerにオペランドがある。
-				field.setStr(getRegisterName(regNo));
 				if(flgExeMode){
 					field.setOperand(reg.get(regNo));
 					field.setReg(regNo);
+				}else{
+					field.setStr(getRegisterName(regNo));
 				}
 				break;
 			case 1:
 				//レジスタ間接
 				//registerにオペランドのアドレスがある。
-				field.setStr("(" + getRegisterName(regNo) + ")");
 				if(flgExeMode){
 					if(byteFlg){
 						field.setOperand(getMemory1(reg.get(regNo)));
@@ -1912,12 +1910,13 @@ public class Kernel{
 						field.setOperand(getMemory2(reg.get(regNo)));
 						field.setAddress(reg.get(regNo));
 					}
+				}else{
+					field.setStr("(" + getRegisterName(regNo) + ")");
 				}
 				break;
 			case 2:
 				//自動インクリメント
 				//registerにオペランドのアドレスがあり、命令実行後にregisterの内容をインクリメントする。
-				field.setStr("(" + getRegisterName(regNo) + ")+");
 				if(flgExeMode){
 					if(byteFlg){
 						field.setOperand(getMemory1(reg.get(regNo)));
@@ -1932,16 +1931,19 @@ public class Kernel{
 						field.setAddress(reg.get(regNo));
 						reg.add(regNo,2);
 					}
+				}else{
+					field.setStr("(" + getRegisterName(regNo) + ")+");
 				}
 				break;
 			case 3:
 				//自動インクリメント間接
 				//registerにオペランドへのポインタのアドレスがあり、命令実行後にregisterの内容を2だけインクリメントする。
-				field.setStr("*(" + getRegisterName(regNo) + ")+");
 				if(flgExeMode){
 					field.setOperand(getMemory2(getMemory2(reg.get(regNo))));
 					field.setAddress(getMemory2(reg.get(regNo)));
 					reg.add(regNo,2);
+				}else{
+					field.setStr("*(" + getRegisterName(regNo) + ")+");
 				}
 				break;
 			case 4:
@@ -1961,8 +1963,9 @@ public class Kernel{
 						field.setOperand(getMemory2(reg.get(regNo)));
 						field.setAddress(reg.get(regNo));
 					}
+				}else{
+					field.setStr("-(" + getRegisterName(regNo) + ")");
 				}
-				field.setStr("-(" + getRegisterName(regNo) + ")");
 				break;
 			case 5:
 				//自動デクリメント間接
@@ -1972,18 +1975,15 @@ public class Kernel{
 					reg.add(regNo,-2);
 					field.setOperand(getMemory2(getMemory2(reg.get(regNo))));
 					field.setAddress(getMemory2(reg.get(regNo)));
+				}else{
+					field.setStr("*-(" + getRegisterName(regNo) + ")");
 				}
-				field.setStr("*-(" + getRegisterName(regNo) + ")");
 				break;
 			case 6:
 				//インデックス
 				//register+Xがオペランドのアドレス。Xはこの命令に続くワード。
 				opcodeShort = (short)getMem();
-				if(opcodeShort < 0){
-					field.setStr("-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(regNo) + ")");
-				}else{
-					field.setStr(String.format("%o",opcodeShort) + "(" + getRegisterName(regNo) + ")");
-				}
+
 				if(flgExeMode){
 					if(byteFlg){
 						field.setOperand(getMemory1(reg.get(regNo) + opcodeShort));
@@ -1993,20 +1993,28 @@ public class Kernel{
 						field.setAddress(reg.get(regNo) + opcodeShort);
 						
 					}
+				}else{
+					if(opcodeShort < 0){
+						field.setStr("-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(regNo) + ")");
+					}else{
+						field.setStr(String.format("%o",opcodeShort) + "(" + getRegisterName(regNo) + ")");
+					}
 				}
 				break;
 			case 7:
 				//インデックス間接
 				//register+Xがオペランドへのポインタのアドレス。Xはこの命令に続くワード。
 				opcodeShort = (short)getMem();
-				if(opcodeShort < 0){
-					field.setStr("*-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(regNo) + ")");
-				}else{
-					field.setStr("*-" + String.format("%o",opcodeShort) + "(" + getRegisterName(regNo) + ")");
-				}
+
 				if(flgExeMode){
 					field.setOperand(getMemory2(getMemory2(reg.get(regNo) + opcodeShort)));
 					field.setAddress(getMemory2(reg.get(regNo) + opcodeShort));
+				}else{
+					if(opcodeShort < 0){
+						field.setStr("*-" + String.format("%o",~(opcodeShort - 1)) + "(" + getRegisterName(regNo) + ")");
+					}else{
+						field.setStr("*-" + String.format("%o",opcodeShort) + "(" + getRegisterName(regNo) + ")");
+					}
 				}
 				break;
 			}
@@ -2017,16 +2025,17 @@ public class Kernel{
 			case 0:
 				//レジスタ
 				//registerにオペランドがある。
-				field.setStr(getRegisterName(regNo));
 				if(flgExeMode){
 					field.setOperand(reg.get(regNo));
 					field.setReg(regNo);
+				}else{
+					field.setStr(getRegisterName(regNo));
 				}
 				break;
 			case 1:
 				//レジスタ間接
 				//registerにオペランドのアドレスがある。
-				field.setStr("(" + getRegisterName(regNo) + ")");
+				
 				if(flgExeMode){
 					if(byteFlg){
 						field.setOperand(getMemory1(reg.get(regNo)));
@@ -2035,33 +2044,39 @@ public class Kernel{
 						field.setOperand(getMemory2(reg.get(regNo)));
 						field.setAddress(reg.get(regNo));
 					}
+				}else{
+					field.setStr("(" + getRegisterName(regNo) + ")");
 				}
 				break;			
 			case 2:
 				//イミディエート
 				//オペランドは命令内にある。
 				opcodeShort = (short)getMem();
-				if(opcodeShort < 0){
-					field.setStr("$" + "-" + String.format("%o",~(opcodeShort - 1)));
-				}else{
-					field.setStr("$" + String.format("%o",opcodeShort));
-				}
+
 				if(flgExeMode){
 					field.setOperand((int)opcodeShort);
+				}else{
+					if(opcodeShort < 0){
+						field.setStr("$" + "-" + String.format("%o",~(opcodeShort - 1)));
+					}else{
+						field.setStr("$" + String.format("%o",opcodeShort));
+					}
 				}
 				break;
 			case 3:
 				//絶対
 				//オペランドの絶対アドレスが命令内にある。
 				opcodeShort = (short)getMem();
-				if(opcodeShort < 0){
-					field.setStr("*$" + "-" + String.format("%o",~(opcodeShort - 1)));
-				}else{
-					field.setStr("*$" + String.format("%o",opcodeShort));
-				}
+
 				if(flgExeMode){
 					field.setOperand((int)opcodeShort); //未検証
 					field.setAddress((int)opcodeShort);
+				}else{
+					if(opcodeShort < 0){
+						field.setStr("*$" + "-" + String.format("%o",~(opcodeShort - 1)));
+					}else{
+						field.setStr("*$" + String.format("%o",opcodeShort));
+					}
 				}
 				break;
 			case 4:
@@ -2078,8 +2093,9 @@ public class Kernel{
 						field.setOperand(getMemory2(reg.get(regNo)));
 						field.setAddress(reg.get(regNo));
 					}
+				}else{
+					field.setStr("-(" + getRegisterName(regNo) + ")");
 				}
-				field.setStr("-(" + getRegisterName(regNo) + ")");
 				break;
 			case 5:
 				//自動デクリメント間接
@@ -2088,8 +2104,9 @@ public class Kernel{
 					reg.add(regNo,-4);
 					field.setOperand(getMemory2(getMemory2(reg.get(regNo))));
 					field.setAddress(getMemory2(reg.get(regNo)));
+				}else{
+					field.setStr("*-(" + getRegisterName(regNo) + ")");
 				}
-				field.setStr("*-(" + getRegisterName(regNo) + ")");
 				break;
 			case 6:
 				//相対
@@ -2097,10 +2114,12 @@ public class Kernel{
 				opcodeShort = (short)getMem();
 				tmp = opcodeShort + reg.get(7);
 				
-				field.setStr("0x" + String.format("%02x",tmp));
 				if(flgExeMode){
 					field.setOperand(getMemory2(tmp));
 					field.setAddress(tmp);
+				}else{
+					field.setStr("0x" + String.format("%02x",tmp));
+					
 				}
 				break;
 			case 7:
@@ -2110,7 +2129,7 @@ public class Kernel{
 				
 				tmp = opcodeInt + reg.get(7);
 
-				field.setStr("*$0x" + String.format("%02x",(tmp)));
+				if(!flgExeMode) field.setStr("*$0x" + String.format("%02x",(tmp)));
 				field.setOperand(getMemory2(getMemory2(tmp))); //TODO
 				field.setAddress(getMemory2(tmp));
 				break;
@@ -2126,17 +2145,17 @@ public class Kernel{
 	Mnemonic getMnemonic(int opcode){
 		Mnemonic mnemonic = null;
 
-		switch(getOctal(opcode,0)){
+		switch(opcode >> 15){
 		case 0:
-			switch(getOctal(opcode,1)){
+			switch((opcode >> 12) & 7){
 			case 0:
-				switch(getOctal(opcode,2)){
+				switch((opcode >> 9) & 7){
 				case 0:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
-						switch(getOctal(opcode,4)){
+						switch((opcode >> 3) & 7){
 						case 0:
-							switch(getOctal(opcode,5)){
+							switch(opcode  & 7){
 							case 6:
 								mnemonic = Mnemonic.RTT;
 								break;
@@ -2148,12 +2167,12 @@ public class Kernel{
 						mnemonic = Mnemonic.JMP;
 						break;
 					case 2:
-						switch(getOctal(opcode,4)){
+						switch((opcode >> 3) & 7){
 						case 0:
 							mnemonic = Mnemonic.RTS;
 							break;
 						case 6:
-							switch(getOctal(opcode,5)){
+							switch(opcode  & 7){
 							case 2:
 								mnemonic = Mnemonic.SEV;
 								break;
@@ -2173,7 +2192,7 @@ public class Kernel{
 					}
 					break;
 				case 1:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 					case 1:
 					case 2:
@@ -2189,7 +2208,7 @@ public class Kernel{
 					}
 					break;
 				case 2:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 					case 1:
 					case 2:
@@ -2205,7 +2224,7 @@ public class Kernel{
 					}
 					break;
 				case 3:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 					case 1:
 					case 2:
@@ -2224,7 +2243,7 @@ public class Kernel{
 					mnemonic = Mnemonic.JSR;
 					break;
 				case 5:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 						mnemonic = Mnemonic.CLR;
 						break;
@@ -2249,7 +2268,7 @@ public class Kernel{
 					}
 					break;
 				case 6:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 						mnemonic = Mnemonic.ROR;
 						break;
@@ -2288,7 +2307,7 @@ public class Kernel{
 				mnemonic = Mnemonic.ADD;
 				break;
 			case 7:
-				switch(getOctal(opcode,2)){
+				switch((opcode >> 9) & 7){
 				case 0:
 					mnemonic = Mnemonic.MUL;
 					break;
@@ -2312,11 +2331,11 @@ public class Kernel{
 			}
 			break;
 		case 1:
-			switch(getOctal(opcode,1)){
+			switch((opcode >> 12) & 7){
 			case 0:
-				switch(getOctal(opcode,2)){
+				switch((opcode >> 9) & 7){
 				case 0:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 					case 1:
 					case 2:
@@ -2332,7 +2351,7 @@ public class Kernel{
 					}
 					break;
 				case 1:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 					case 1:
 					case 2:
@@ -2348,7 +2367,7 @@ public class Kernel{
 					}
 					break;
 				case 2:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 4:
 					case 5:
 					case 6:
@@ -2358,7 +2377,7 @@ public class Kernel{
 					}
 					break;
 				case 3:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 						mnemonic = Mnemonic.BCC;
 						break;
@@ -2371,14 +2390,14 @@ public class Kernel{
 					}
 					break;
 				case 4:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 4:	
 						mnemonic = Mnemonic.SYS;
 						break;
 					}
 					break;
 				case 5:
-					switch(getOctal(opcode,3)){
+					switch((opcode >> 6) & 7){
 					case 0:
 						mnemonic = Mnemonic.CLRB;
 						break;

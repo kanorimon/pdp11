@@ -1,8 +1,5 @@
 package pdp11;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
 public class FileDescriptor{
 	BlockFile inode[];
 	
@@ -107,12 +104,6 @@ class BlockFile{
 	}
 	
 	void open(){
-		try {
-			strage = java.nio.file.Files.readAllBytes((Path)inode);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 	
 	int getSize(){

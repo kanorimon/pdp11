@@ -80,9 +80,13 @@ class FieldDto{
 	boolean flgRegister;
 	boolean flgAddress;
 
-	public FieldDto(){
+	public void reset(){
 		flgRegister = false;
 		flgAddress = false;
+		operand = 0;
+		operandShort = 0;
+		address = 0;
+		register = 0;
 	}
 
 	public void setOperand(int input){
